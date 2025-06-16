@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Wolverine Workout Frontend
 
-## Getting Started
+A Next.js-based frontend for the Wolverine Workout tracking application with AI-powered workout generation.
 
-First, run the development server:
+## Features
 
+- Create, edit, and delete workouts
+- Track exercises with sets, reps, and weights
+- **AI-powered workout generation using ChatGPT**
+- Modern, responsive UI built with Tailwind CSS
+- Single-server architecture with Next.js API routes
+
+## Setup
+
+1. Install dependencies:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Set up environment variables:
+Create a `.env.local` file in the frontend directory with:
+```
+OPENAI_API_KEY=your_openai_api_key_here
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Run the development server:
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-## Learn More
+## AI Workout Generation
 
-To learn more about Next.js, take a look at the following resources:
+The app now includes ChatGPT integration for generating personalized workouts:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Click "Generate AI Workout" button
+2. Select your fitness level, workout type, and focus area
+3. Choose available equipment
+4. Set desired duration
+5. Click "Generate Workout" to get an AI-created workout plan
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project Structure
 
-## Deploy on Vercel
+```
+src/
+├── app/                 # Next.js app directory
+│   ├── api/            # API routes
+│   │   ├── workouts/   # Workout CRUD operations
+│   │   └── generate-workout/ # AI workout generation
+│   ├── page.tsx        # Main application page
+│   ├── layout.tsx      # Root layout
+│   └── globals.css     # Global styles
+├── components/         # React components
+│   ├── WorkoutForm.tsx # Form for creating/editing workouts
+│   ├── WorkoutList.tsx # List of workouts
+│   └── WorkoutGenerator.tsx # AI workout generator
+├── services/          # API services
+│   └── api.ts         # Backend API communication
+└── types/             # TypeScript type definitions
+    └── workout.ts     # Workout and exercise types
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Available Scripts
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
+
+## API Routes
+
+The app uses Next.js API routes for backend functionality:
+
+- `GET /api/workouts` - Get all workouts
+- `POST /api/workouts` - Create new workout
+- `GET /api/workouts/[id]` - Get specific workout
+- `PUT /api/workouts/[id]` - Update workout
+- `DELETE /api/workouts/[id]` - Delete workout
+- `POST /api/generate-workout` - Generate AI workout
+
+## Technologies Used
+
+- Next.js 15 (App Router)
+- React 18
+- TypeScript
+- Tailwind CSS
+- OpenAI API (ChatGPT)
+- Next.js API Routes
