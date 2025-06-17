@@ -174,6 +174,7 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
   };
 
   const generateWorkout = async () => {
+    console.log('🏋️ Generating workout with context:', conversationContext);
     try {
       const response = await fetch('/api/generate-simple-workout', {
         method: 'POST',
@@ -194,6 +195,7 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
       }
 
       const workout = await response.json();
+      console.log('✅ Workout generated successfully:', workout);
       onWorkoutProposed(workout);
     } catch (error) {
       console.error('Error generating workout:', error);
@@ -332,8 +334,8 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
 
       {/* Input */}
       <div className="p-6 border-t border-gray-700">
-        {/* Show Generate Workout button if we have meaningful info */}
-        {(conversationContext.goals && (conversationContext.fitnessLevel || conversationContext.timeAvailable || conversationContext.equipment)) && (
+        {/* Show Generate Workout button if we have some basic info */}
+        {(conversationContext.goals || conversationContext.fitnessLevel || (conversationContext.timeAvailable && conversationContext.equipment)) && (
           <div className="mb-4">
             <button
               onClick={generateWorkout}
