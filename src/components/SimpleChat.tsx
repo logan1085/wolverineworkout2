@@ -65,29 +65,65 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
     const newContext = { ...conversationContext };
     const lowerMessage = message.toLowerCase();
     
-    // Extract fitness level - more patterns
-    if (lowerMessage.includes('beginner') || lowerMessage.includes('new to') || lowerMessage.includes('just started') || lowerMessage.includes('never worked out')) {
+    // Extract fitness level - much more comprehensive patterns
+    if (lowerMessage.includes('beginner') || lowerMessage.includes('new to') || 
+        lowerMessage.includes('just started') || lowerMessage.includes('never worked out') ||
+        lowerMessage.includes('first time') || lowerMessage.includes('starting out') ||
+        lowerMessage.includes('haven\'t exercised') || lowerMessage.includes('not exercised') ||
+        lowerMessage.includes('long time since') || lowerMessage.includes('out of shape') ||
+        lowerMessage.includes('getting back into') || lowerMessage.includes('been a while')) {
       newContext.fitnessLevel = 'beginner';
-    } else if (lowerMessage.includes('intermediate') || lowerMessage.includes('some experience') || lowerMessage.includes('been working out for') || lowerMessage.includes('moderately active')) {
+    } else if (lowerMessage.includes('intermediate') || lowerMessage.includes('some experience') || 
+               lowerMessage.includes('been working out for') || lowerMessage.includes('moderately active') ||
+               lowerMessage.includes('few months') || lowerMessage.includes('couple years') ||
+               lowerMessage.includes('work out regularly') || lowerMessage.includes('exercise sometimes') ||
+               lowerMessage.includes('decent shape') || lowerMessage.includes('average fitness')) {
       newContext.fitnessLevel = 'intermediate';
-    } else if (lowerMessage.includes('advanced') || lowerMessage.includes('experienced') || lowerMessage.includes('very fit') || lowerMessage.includes('athlete')) {
+    } else if (lowerMessage.includes('advanced') || lowerMessage.includes('experienced') || 
+               lowerMessage.includes('very fit') || lowerMessage.includes('athlete') ||
+               lowerMessage.includes('years of') || lowerMessage.includes('serious training') ||
+               lowerMessage.includes('compete') || lowerMessage.includes('competitive') ||
+               lowerMessage.includes('powerlifter') || lowerMessage.includes('bodybuilder')) {
       newContext.fitnessLevel = 'advanced';
     }
     
-    // Extract goals - more comprehensive
-    if (lowerMessage.includes('lose weight') || lowerMessage.includes('weight loss') || lowerMessage.includes('fat loss') || lowerMessage.includes('cut') || lowerMessage.includes('get lean')) {
+    // Extract goals - much more comprehensive with context clues
+    if (lowerMessage.includes('lose weight') || lowerMessage.includes('weight loss') || 
+        lowerMessage.includes('fat loss') || lowerMessage.includes('cut') || 
+        lowerMessage.includes('get lean') || lowerMessage.includes('slim down') ||
+        lowerMessage.includes('drop pounds') || lowerMessage.includes('shed') ||
+        lowerMessage.includes('burn fat') || lowerMessage.includes('lose') ||
+        lowerMessage.includes('lighter') || lowerMessage.includes('trim') ||
+        lowerMessage.includes('diet') || lowerMessage.includes('cardio')) {
       newContext.goals = 'weight loss';
-    } else if (lowerMessage.includes('build muscle') || lowerMessage.includes('muscle gain') || lowerMessage.includes('bulk') || lowerMessage.includes('get bigger') || lowerMessage.includes('mass')) {
+    } else if (lowerMessage.includes('build muscle') || lowerMessage.includes('muscle gain') || 
+               lowerMessage.includes('bulk') || lowerMessage.includes('get bigger') || 
+               lowerMessage.includes('mass') || lowerMessage.includes('gain weight') ||
+               lowerMessage.includes('muscle building') || lowerMessage.includes('hypertrophy') ||
+               lowerMessage.includes('size') || lowerMessage.includes('bigger arms') ||
+               lowerMessage.includes('chest') || lowerMessage.includes('biceps')) {
       newContext.goals = 'muscle building';
-    } else if (lowerMessage.includes('strength') || lowerMessage.includes('get stronger') || lowerMessage.includes('powerlifting') || lowerMessage.includes('lift heavy')) {
+    } else if (lowerMessage.includes('strength') || lowerMessage.includes('get stronger') || 
+               lowerMessage.includes('powerlifting') || lowerMessage.includes('lift heavy') ||
+               lowerMessage.includes('strong') || lowerMessage.includes('power') ||
+               lowerMessage.includes('deadlift') || lowerMessage.includes('squat') ||
+               lowerMessage.includes('bench press') || lowerMessage.includes('pr')) {
       newContext.goals = 'strength training';
-    } else if (lowerMessage.includes('cardio') || lowerMessage.includes('endurance') || lowerMessage.includes('conditioning')) {
+    } else if (lowerMessage.includes('cardio') || lowerMessage.includes('endurance') || 
+               lowerMessage.includes('conditioning') || lowerMessage.includes('stamina') ||
+               lowerMessage.includes('running') || lowerMessage.includes('marathon') ||
+               lowerMessage.includes('heart health') || lowerMessage.includes('aerobic')) {
       newContext.goals = 'cardio fitness';
-    } else if (lowerMessage.includes('tone') || lowerMessage.includes('definition') || lowerMessage.includes('get in shape') || lowerMessage.includes('fitness') || lowerMessage.includes('workout') || lowerMessage.includes('exercise')) {
+    } else if (lowerMessage.includes('tone') || lowerMessage.includes('definition') || 
+               lowerMessage.includes('get in shape') || lowerMessage.includes('fitness') || 
+               lowerMessage.includes('workout') || lowerMessage.includes('exercise') ||
+               lowerMessage.includes('healthy') || lowerMessage.includes('active') ||
+               lowerMessage.includes('feel better') || lowerMessage.includes('energy') ||
+               lowerMessage.includes('stronger') || lowerMessage.includes('fitter')) {
       newContext.goals = 'general fitness';
     }
     
-    // Extract time - more patterns
+    // Extract time - much more flexible patterns including common phrases
     const timeMatch = message.match(/(\d+)\s*(minutes?|mins?|hours?|hrs?)/i);
     if (timeMatch) {
       let time = parseInt(timeMatch[1]);
@@ -97,31 +133,63 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
       newContext.timeAvailable = time.toString();
     }
     
-    // Quick time mentions
-    if (lowerMessage.includes('quick workout') || lowerMessage.includes('short workout')) {
+    // Common time expressions
+    if (lowerMessage.includes('quick workout') || lowerMessage.includes('short workout') ||
+        lowerMessage.includes('don\'t have much time') || lowerMessage.includes('15 min') ||
+        lowerMessage.includes('twenty min')) {
       newContext.timeAvailable = '20';
-    } else if (lowerMessage.includes('long workout') || lowerMessage.includes('extended workout')) {
+    } else if (lowerMessage.includes('half hour') || lowerMessage.includes('thirty min') ||
+               lowerMessage.includes('30 min') || lowerMessage.includes('moderate time')) {
+      newContext.timeAvailable = '30';
+    } else if (lowerMessage.includes('45 min') || lowerMessage.includes('forty') ||
+               lowerMessage.includes('decent amount') || lowerMessage.includes('good amount')) {
+      newContext.timeAvailable = '45';
+    } else if (lowerMessage.includes('hour') || lowerMessage.includes('60 min') ||
+               lowerMessage.includes('long workout') || lowerMessage.includes('extended')) {
       newContext.timeAvailable = '60';
     }
     
-    // Extract equipment - more comprehensive
-    if (lowerMessage.includes('no equipment') || lowerMessage.includes('bodyweight') || lowerMessage.includes('at home') || lowerMessage.includes('no gym')) {
+    // Extract equipment - much more comprehensive with context
+    if (lowerMessage.includes('no equipment') || lowerMessage.includes('bodyweight') || 
+        lowerMessage.includes('at home') || lowerMessage.includes('no gym') ||
+        lowerMessage.includes('apartment') || lowerMessage.includes('living room') ||
+        lowerMessage.includes('bedroom') || lowerMessage.includes('anywhere') ||
+        lowerMessage.includes('no weights') || lowerMessage.includes('just myself') ||
+        lowerMessage.includes('push ups') || lowerMessage.includes('squats') ||
+        lowerMessage.includes('home workout')) {
       newContext.equipment = 'bodyweight only';
-    } else if (lowerMessage.includes('gym') || lowerMessage.includes('full equipment') || lowerMessage.includes('everything available')) {
+    } else if (lowerMessage.includes('gym') || lowerMessage.includes('full equipment') || 
+               lowerMessage.includes('everything available') || lowerMessage.includes('membership') ||
+               lowerMessage.includes('fitness center') || lowerMessage.includes('machines') ||
+               lowerMessage.includes('barbells') || lowerMessage.includes('complete gym') ||
+               lowerMessage.includes('all equipment') || lowerMessage.includes('weight room')) {
       newContext.equipment = 'full gym';
-    } else if (lowerMessage.includes('dumbbells') || lowerMessage.includes('free weights') || lowerMessage.includes('weights at home')) {
+    } else if (lowerMessage.includes('dumbbells') || lowerMessage.includes('free weights') || 
+               lowerMessage.includes('weights at home') || lowerMessage.includes('some weights') ||
+               lowerMessage.includes('pair of') || lowerMessage.includes('adjustable') ||
+               lowerMessage.includes('10 lb') || lowerMessage.includes('20 lb') ||
+               lowerMessage.includes('weight set')) {
       newContext.equipment = 'dumbbells';
-    } else if (lowerMessage.includes('resistance bands') || lowerMessage.includes('bands')) {
+    } else if (lowerMessage.includes('resistance bands') || lowerMessage.includes('bands') ||
+               lowerMessage.includes('elastic') || lowerMessage.includes('portable') ||
+               lowerMessage.includes('travel')) {
       newContext.equipment = 'resistance bands';
     }
     
     // Check if we have enough info - be more flexible
-    // We need at least one piece of info from each category, OR if we have goals and some other info
+    // We need at least one piece of meaningful info, OR any mention of wanting a workout
     newContext.hasEnoughInfo = !!(
-      (newContext.fitnessLevel || newContext.goals) && 
-      (newContext.timeAvailable || newContext.equipment)
-    ) || !!(
-      newContext.goals && (newContext.fitnessLevel || newContext.timeAvailable || newContext.equipment)
+      newContext.fitnessLevel || 
+      newContext.goals || 
+      newContext.timeAvailable || 
+      newContext.equipment ||
+      lowerMessage.includes('workout') ||
+      lowerMessage.includes('exercise') ||
+      lowerMessage.includes('train') ||
+      lowerMessage.includes('fitness') ||
+      lowerMessage.includes('ready') ||
+      lowerMessage.includes('let\'s go') ||
+      lowerMessage.includes('start')
     );
     
     // Debug logging to see what context we're extracting
@@ -334,8 +402,8 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
 
       {/* Input */}
       <div className="p-6 border-t border-gray-700">
-        {/* Show Generate Workout button if we have some basic info */}
-        {(conversationContext.goals || conversationContext.fitnessLevel || (conversationContext.timeAvailable && conversationContext.equipment)) && (
+        {/* Show Generate Workout button if we have any meaningful info or user seems ready */}
+        {conversationContext.hasEnoughInfo && (
           <div className="mb-4">
             <button
               onClick={generateWorkout}

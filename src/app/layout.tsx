@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Wolverine Workout - AI Personal Trainer",
+  title: "Logan - AI Personal Trainer",
   description: "Your AI-powered personal trainer for customized workouts",
 };
 
