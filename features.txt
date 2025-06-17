@@ -1,4 +1,6 @@
+# Top ideas
+- Start storing basic data about a user and then using that when they return to chat
+
+# Ideas
 - Tweak the chat prompt to ask better questions, be more fun to talk to.
 - Turn the chat into a voice chat
-- Start storing basic data about a user and then using that when they return to chat
-- 

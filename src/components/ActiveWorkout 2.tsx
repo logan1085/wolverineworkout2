@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { Workout, Exercise } from '@/types/workout';
-import { DatabaseService } from '@/services/database';
 
 interface ActiveWorkoutProps {
   workout: Workout;
@@ -26,14 +25,14 @@ export default function ActiveWorkout({ workout, onComplete }: ActiveWorkoutProp
 
   // Initialize exercise states
   useEffect(() => {
-    const initialStates = workout.exercises?.map(exercise => ({
-      completed: exercise.completed || false,
-      sets: Array.from({ length: exercise.sets }, (_, index) => ({
-        reps: exercise.actual_reps?.[index] || exercise.reps,
-        weight: exercise.actual_weight_lbs || exercise.weight_lbs || 0,
+    const initialStates = workout.exercises.map(exercise => ({
+      completed: false,
+      sets: Array.from({ length: exercise.sets }, () => ({
+        reps: exercise.reps,
+        weight: exercise.weight || 0,
         completed: false
       }))
-    })) || [];
+    }));
     setExerciseStates(initialStates);
   }, [workout]);
 
@@ -60,7 +59,7 @@ export default function ActiveWorkout({ workout, onComplete }: ActiveWorkoutProp
     });
   };
 
-  const completeSet = async (exerciseIndex: number, setIndex: number) => {
+  const completeSet = (exerciseIndex: number, setIndex: number) => {
     setExerciseStates(prev => {
       const newStates = [...prev];
       newStates[exerciseIndex].sets[setIndex].completed = true;
@@ -69,52 +68,31 @@ export default function ActiveWorkout({ workout, onComplete }: ActiveWorkoutProp
       const allSetsCompleted = newStates[exerciseIndex].sets.every(set => set.completed);
       if (allSetsCompleted) {
         newStates[exerciseIndex].completed = true;
-        
-        // Save exercise progress to database
-        const exercise = workout.exercises?.[exerciseIndex];
-        if (exercise?.id) {
-          const actualReps = newStates[exerciseIndex].sets.map(s => s.reps);
-          const actualSets = newStates[exerciseIndex].sets.filter(s => s.completed).length;
-          const actualWeight = newStates[exerciseIndex].sets[0]?.weight || 0;
-          
-          DatabaseService.updateExerciseProgress(exercise.id, {
-            completed: true,
-            actual_sets: actualSets,
-            actual_reps: actualReps,
-            actual_weight_lbs: actualWeight
-          });
-        }
       }
       
       return newStates;
     });
   };
 
-  const handleCompleteWorkout = async () => {
-    // Create completed workout with actual results
+  const handleCompleteWorkout = () => {
     const completedWorkout: Workout = {
       ...workout,
-      status: 'completed' as const,
-      completed_at: new Date().toISOString(),
-      exercises: workout.exercises?.map((exercise, index) => {
-        const state = exerciseStates[index];
-        return {
-          ...exercise,
-          completed: state?.completed || false,
-          actual_sets: state?.sets.filter(s => s.completed).length || 0,
-          actual_reps: state?.sets.map(s => s.reps) || [],
-          actual_weight_lbs: state?.sets[0]?.weight || exercise.weight_lbs || 0
-        };
-      }) || []
+      completed: true,
+      exercises: workout.exercises.map((exercise, index) => ({
+        ...exercise,
+        sets: exerciseStates[index]?.sets.reduce((acc, set) => acc + (set.completed ? 1 : 0), 0) || exercise.sets,
+        reps: exerciseStates[index]?.sets[0]?.reps || exercise.reps,
+        weight: exerciseStates[index]?.sets[0]?.weight || exercise.weight
+      }))
     };
     
     onComplete(completedWorkout);
   };
 
-  const currentExercise = workout.exercises?.[currentExerciseIndex];
+  const currentExercise = workout.exercises[currentExerciseIndex];
   const currentExerciseState = exerciseStates[currentExerciseIndex];
   const completedExercises = exerciseStates.filter(state => state.completed).length;
-  const totalExercises = workout.exercises?.length || 0;
+  const totalExercises = workout.exercises.length;
 
   if (!currentExercise || !currentExerciseState) {
     return (
@@ -128,11 +106,10 @@ export default function ActiveWorkout({ workout, onComplete }: ActiveWorkoutProp
     <div className="bg-gray-800 rounded-3xl shadow-2xl p-8 border border-gray-700 max-w-4xl mx-auto">
       {/* Header */}
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-white mb-2">💪 {workout.name}</h2>
+        <h2 className="text-3xl font-bold text-white mb-2">💪 Workout in Progress</h2>
         <div className="flex justify-center space-x-8 text-gray-300">
           <div>⏱️ {formatTime(elapsedTime)}</div>
           <div>📊 {completedExercises}/{totalExercises} exercises</div>
-          <div>🎯 {workout.workout_type}</div>
         </div>
       </div>
 
@@ -141,7 +118,7 @@ export default function ActiveWorkout({ workout, onComplete }: ActiveWorkoutProp
         <div className="bg-gray-700 rounded-full h-3 mb-2">
           <div 
             className="bg-gradient-to-r from-teal-600 to-blue-700 h-3 rounded-full transition-all duration-300"
-            style={{ width: `${totalExercises > 0 ? (completedExercises / totalExercises) * 100 : 0}%` }}
+            style={{ width: `${(completedExercises / totalExercises) * 100}%` }}
           ></div>
         </div>
         <p className="text-center text-gray-400 text-sm">
@@ -153,18 +130,11 @@ export default function ActiveWorkout({ workout, onComplete }: ActiveWorkoutProp
       <div className="bg-gray-900 rounded-2xl p-6 mb-8 border border-gray-600">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-2xl font-bold text-white">{currentExercise.name}</h3>
-          <div className="flex items-center space-x-2">
-            {currentExercise.rest_seconds && (
-              <div className="bg-orange-600 text-white px-3 py-1 rounded-full text-sm">
-                {currentExercise.rest_seconds}s rest
-              </div>
-            )}
-            {currentExerciseState.completed && (
-              <div className="bg-green-600 text-white px-3 py-1 rounded-full text-sm">
-                ✓ Complete
-              </div>
-            )}
-          </div>
+          {currentExerciseState.completed && (
+            <div className="bg-green-600 text-white px-3 py-1 rounded-full text-sm">
+              ✓ Complete
+            </div>
+          )}
         </div>
         
         {currentExercise.notes && (
@@ -229,60 +199,51 @@ export default function ActiveWorkout({ workout, onComplete }: ActiveWorkoutProp
         <button
           onClick={() => setCurrentExerciseIndex(Math.max(0, currentExerciseIndex - 1))}
           disabled={currentExerciseIndex === 0}
-          className="px-6 py-3 bg-gray-700 text-white rounded-xl hover:bg-gray-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-gray-700 text-white px-6 py-3 rounded-2xl hover:bg-gray-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          ← Previous Exercise
+          ← Previous
         </button>
 
-        {completedExercises === totalExercises ? (
-          <button
-            onClick={handleCompleteWorkout}
-            className="px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-700 text-white rounded-xl hover:from-green-700 hover:to-emerald-800 transition-all duration-200 font-semibold"
-          >
-            🎉 Complete Workout!
-          </button>
-        ) : (
-          <button
-            onClick={() => setCurrentExerciseIndex(Math.min(totalExercises - 1, currentExerciseIndex + 1))}
-            disabled={currentExerciseIndex === totalExercises - 1}
-            className="px-6 py-3 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Next Exercise →
-          </button>
-        )}
+        <div className="flex space-x-4">
+          {currentExerciseIndex < totalExercises - 1 ? (
+            <button
+              onClick={() => setCurrentExerciseIndex(currentExerciseIndex + 1)}
+              className="bg-teal-600 text-white px-6 py-3 rounded-2xl hover:bg-teal-700 transition-all duration-200"
+            >
+              Next Exercise →
+            </button>
+          ) : (
+            <button
+              onClick={handleCompleteWorkout}
+              className="bg-gradient-to-r from-green-600 to-teal-700 text-white px-8 py-3 rounded-2xl hover:from-green-700 hover:to-teal-800 transition-all duration-200 font-semibold"
+            >
+              🎉 Complete Workout!
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Exercise Overview */}
-      <div className="mt-8 bg-gray-900 rounded-2xl p-6 border border-gray-600">
-        <h4 className="text-lg font-semibold text-white mb-4">All Exercises:</h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {workout.exercises?.map((exercise, index) => (
-            <div
-              key={exercise.id || index}
-              className={`p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
-                index === currentExerciseIndex
-                  ? 'bg-teal-900 border-teal-600'
-                  : exerciseStates[index]?.completed
-                  ? 'bg-green-900 border-green-600'
-                  : 'bg-gray-800 border-gray-600 hover:border-gray-500'
-              }`}
+      {/* Exercise List */}
+      <div className="mt-8 bg-gray-900 rounded-2xl p-4 border border-gray-600">
+        <h4 className="text-white font-semibold mb-4">All Exercises:</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+          {workout.exercises.map((exercise, index) => (
+            <button
+              key={index}
               onClick={() => setCurrentExerciseIndex(index)}
+              className={`p-3 rounded-lg text-left transition-all duration-200 ${
+                index === currentExerciseIndex
+                  ? 'bg-teal-600 text-white'
+                  : exerciseStates[index]?.completed
+                  ? 'bg-green-700 text-white'
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              }`}
             >
-              <div className="flex items-center justify-between">
-                <span className="text-white font-medium text-sm">{exercise.name}</span>
-                <div className="flex items-center space-x-1">
-                  {exerciseStates[index]?.completed && (
-                    <span className="text-green-400 text-xs">✓</span>
-                  )}
-                  {index === currentExerciseIndex && (
-                    <span className="text-teal-400 text-xs">●</span>
-                  )}
-                </div>
+              <div className="font-semibold text-sm">{exercise.name}</div>
+              <div className="text-xs opacity-75">
+                {exerciseStates[index]?.completed ? '✓ Complete' : `${exercise.sets} sets × ${exercise.reps} reps`}
               </div>
-              <div className="text-gray-400 text-xs mt-1">
-                {exercise.sets} sets × {exercise.reps} reps
-              </div>
-            </div>
+            </button>
           ))}
         </div>
       </div>

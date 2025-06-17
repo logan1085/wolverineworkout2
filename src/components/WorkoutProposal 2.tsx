@@ -20,49 +20,26 @@ export default function WorkoutProposal({ workout, onConfirm, onBack }: WorkoutP
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-2xl font-bold text-white">{workout.name}</h3>
           <div className="bg-teal-600 text-white px-3 py-1 rounded-full text-sm">
-            {workout.duration_minutes} min
+            {workout.duration} min
           </div>
         </div>
         
-        <div className="flex flex-wrap gap-2 mb-4">
-          {workout.difficulty_level && (
-            <span className="bg-blue-600 text-white px-2 py-1 rounded-full text-xs">
-              {workout.difficulty_level}
-            </span>
-          )}
-          {workout.workout_type && (
-            <span className="bg-purple-600 text-white px-2 py-1 rounded-full text-xs">
-              {workout.workout_type}
-            </span>
-          )}
-          {workout.equipment_used && workout.equipment_used.length > 0 && (
-            <span className="bg-orange-600 text-white px-2 py-1 rounded-full text-xs">
-              {workout.equipment_used.join(', ')}
-            </span>
-          )}
-        </div>
-        
-        {workout.description && (
+        {workout.notes && (
           <p className="text-gray-300 mb-6 bg-gray-800 p-4 rounded-lg border border-gray-600">
-            {workout.description}
+            {workout.notes}
           </p>
         )}
 
         <div className="space-y-4">
           <h4 className="text-lg font-semibold text-white mb-4">Exercises:</h4>
-          {workout.exercises && workout.exercises.map((exercise, index) => (
-            <div key={exercise.id || index} className="bg-gray-800 p-4 rounded-lg border border-gray-600">
+          {workout.exercises.map((exercise, index) => (
+            <div key={index} className="bg-gray-800 p-4 rounded-lg border border-gray-600">
               <div className="flex items-center justify-between mb-2">
                 <h5 className="font-semibold text-white">{exercise.name}</h5>
                 <div className="flex space-x-4 text-sm text-gray-300">
                   <span>{exercise.sets} sets</span>
                   <span>{exercise.reps} reps</span>
-                  {exercise.weight_lbs && exercise.weight_lbs > 0 && (
-                    <span>{exercise.weight_lbs} lbs</span>
-                  )}
-                  {exercise.rest_seconds && (
-                    <span>{exercise.rest_seconds}s rest</span>
-                  )}
+                  {exercise.weight > 0 && <span>{exercise.weight} lbs</span>}
                 </div>
               </div>
               {exercise.notes && (
@@ -71,13 +48,6 @@ export default function WorkoutProposal({ workout, onConfirm, onBack }: WorkoutP
             </div>
           ))}
         </div>
-        
-        {workout.ai_notes && (
-          <div className="mt-6 bg-teal-900 bg-opacity-30 p-4 rounded-lg border border-teal-600">
-            <h5 className="text-teal-300 font-semibold mb-2">💡 Logan's Notes:</h5>
-            <p className="text-gray-300 text-sm">{workout.ai_notes}</p>
-          </div>
-        )}
       </div>
 
       <div className="flex space-x-4">

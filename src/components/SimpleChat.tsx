@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Workout } from '@/types/workout';
+import { Workout, Chat, UserProfile } from '@/types/workout';
+import { DatabaseService } from '@/services/database';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface SimpleChatProps {
   onWorkoutProposed: (workout: Workout) => void;
@@ -15,23 +17,18 @@ interface Message {
 }
 
 export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      text: "Hey there! I'm Logan, your AI personal trainer. I'm here to create the perfect workout for you today. Let's start with the basics - what are your main fitness goals?",
-      sender: 'logan',
-      timestamp: new Date()
-    }
-  ]);
-  
+  const { user } = useAuth();
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [currentChat, setCurrentChat] = useState<Chat | null>(null);
+  const [, setUserProfile] = useState<UserProfile | null>(null);
   
   // Refs for auto-scroll and auto-focus
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   
-  // Track conversation context
+  // Track conversation context (now backed by database)
   const [conversationContext, setConversationContext] = useState({
     fitnessLevel: '',
     goals: '',
@@ -40,6 +37,96 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
     focusAreas: '',
     hasEnoughInfo: false
   });
+
+  // Initialize chat and load data
+  useEffect(() => {
+    if (user) {
+      initializeChat();
+      loadUserProfile();
+    }
+  }, [user]);
+
+  const initializeChat = async () => {
+    if (!user) return;
+
+    try {
+      // Get or create active chat
+      const chat = await DatabaseService.getOrCreateActiveChat(user.id);
+      if (chat) {
+        setCurrentChat(chat);
+        
+        // Load existing messages
+        const chatMessages = await DatabaseService.getChatMessages(chat.id);
+        
+        // Convert DB messages to component format
+        const formattedMessages: Message[] = chatMessages.map(msg => ({
+          id: msg.id,
+          text: msg.content,
+          sender: msg.sender,
+          timestamp: new Date(msg.created_at)
+        }));
+
+        // If no messages exist, add the initial Logan greeting
+        if (formattedMessages.length === 0) {
+          const initialMessage = {
+            id: '1',
+            text: "Hey there! I'm Logan, your AI personal trainer. I'm here to create the perfect workout for you today. Let's start with the basics - what are your main fitness goals?",
+            sender: 'logan' as const,
+            timestamp: new Date()
+          };
+          setMessages([initialMessage]);
+          
+          // Save initial message to database
+          try {
+            await DatabaseService.createMessage({
+              chat_id: chat.id,
+              user_id: user.id,
+              sender: 'logan',
+              content: initialMessage.text,
+              message_type: 'text'
+            });
+          } catch (msgError) {
+            console.warn('Could not save initial message to database:', msgError);
+          }
+        } else {
+          setMessages(formattedMessages);
+        }
+      }
+    } catch (error) {
+      console.error('Error initializing chat:', error);
+      // Fallback to local state with helpful message
+      setMessages([{
+        id: '1',
+        text: "Hey there! I'm Logan, your AI personal trainer. I'm here to create the perfect workout for you today. I'm having a small issue connecting to our servers, but I can still help you! Let's start with the basics - what are your main fitness goals?",
+        sender: 'logan',
+        timestamp: new Date()
+      }]);
+    }
+  };
+
+  const loadUserProfile = async () => {
+    if (!user) return;
+
+    try {
+      const profile = await DatabaseService.getUserProfile(user.id);
+      if (profile) {
+        setUserProfile(profile);
+        
+        // Update conversation context from profile
+        setConversationContext({
+          fitnessLevel: profile.fitness_level || '',
+          goals: profile.primary_goals?.[0] || '',
+          timeAvailable: profile.preferred_duration_minutes?.toString() || '',
+          equipment: profile.available_equipment?.[0] || '',
+          focusAreas: '', // This could be derived from workout history
+          hasEnoughInfo: !!(profile.fitness_level || profile.primary_goals?.length || profile.preferred_duration_minutes || profile.available_equipment?.length)
+        });
+      }
+    } catch (error) {
+      console.warn('Could not load user profile, continuing with fresh context:', error);
+      // Continue with empty context - not a critical error
+    }
+  };
 
   // Auto-scroll to bottom when messages change
   const scrollToBottom = () => {
@@ -61,7 +148,7 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
     }
   }, [isLoading]);
 
-  const extractContextFromMessage = (message: string) => {
+  const extractContextFromMessage = async (message: string) => {
     const newContext = { ...conversationContext };
     const lowerMessage = message.toLowerCase();
     
@@ -196,6 +283,20 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
     console.log('Updated conversation context:', newContext);
     
     setConversationContext(newContext);
+    
+    // Update user profile in database with new context
+    if (user && (newContext.fitnessLevel !== conversationContext.fitnessLevel ||
+                 newContext.goals !== conversationContext.goals ||
+                 newContext.timeAvailable !== conversationContext.timeAvailable ||
+                 newContext.equipment !== conversationContext.equipment)) {
+      try {
+        await DatabaseService.upsertUserProfileFromContext(user.id, newContext);
+      } catch (error) {
+        console.warn('Could not update user profile:', error);
+        // Continue without blocking the user experience
+      }
+    }
+    
     return newContext;
   };
 
@@ -242,7 +343,11 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
   };
 
   const generateWorkout = async () => {
+    if (!user || !currentChat) return;
+
     console.log('🏋️ Generating workout with context:', conversationContext);
+    setIsLoading(true);
+    
     try {
       const response = await fetch('/api/generate-simple-workout', {
         method: 'POST',
@@ -262,9 +367,59 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
         throw new Error('Failed to generate workout');
       }
 
-      const workout = await response.json();
-      console.log('✅ Workout generated successfully:', workout);
-      onWorkoutProposed(workout);
+      const generatedWorkout = await response.json();
+      
+      // Convert to database format and save
+      const workoutToSave = {
+        user_id: user.id,
+        chat_id: currentChat.id,
+        name: generatedWorkout.name,
+        description: generatedWorkout.notes,
+        scheduled_date: new Date().toISOString().split('T')[0], // Today
+        duration_minutes: parseInt(conversationContext.timeAvailable) || generatedWorkout.duration || 30,
+        difficulty_level: conversationContext.fitnessLevel as 'beginner' | 'intermediate' | 'advanced' || 'beginner',
+        workout_type: conversationContext.goals || 'general fitness',
+        equipment_used: conversationContext.equipment ? [conversationContext.equipment] : ['bodyweight only'],
+        generated_from_goals: conversationContext.goals ? [conversationContext.goals] : [],
+        exercises: generatedWorkout.exercises.map((exercise: any, index: number) => ({
+          name: exercise.name,
+          sets: exercise.sets,
+          reps: exercise.reps,
+          weight_lbs: exercise.weight || 0,
+          rest_seconds: 60,
+          notes: exercise.notes,
+          order_in_workout: index + 1
+        }))
+      };
+
+      const savedWorkout = await DatabaseService.createWorkout(workoutToSave);
+      
+      if (savedWorkout) {
+        // Link workout to chat
+        await DatabaseService.linkWorkoutToChat(currentChat.id, savedWorkout.id);
+        
+        // Add workout generation message
+        const workoutMessage: Message = {
+          id: Date.now().toString(),
+          text: `Great! I've created your personalized workout: "${savedWorkout.name}". It's designed for your ${conversationContext.fitnessLevel || 'beginner'} level and focuses on ${conversationContext.goals || 'general fitness'}. Ready to start?`,
+          sender: 'logan',
+          timestamp: new Date()
+        };
+        
+        setMessages(prev => [...prev, workoutMessage]);
+        
+        // Save message to database
+        await DatabaseService.createMessage({
+          chat_id: currentChat.id,
+          user_id: user.id,
+          sender: 'logan',
+          content: workoutMessage.text,
+          message_type: 'workout_generated'
+        });
+        
+        console.log('✅ Workout generated and saved:', savedWorkout);
+        onWorkoutProposed(savedWorkout);
+      }
     } catch (error) {
       console.error('Error generating workout:', error);
       const errorResponse: Message = {
@@ -274,11 +429,27 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
         timestamp: new Date()
       };
       setMessages(prev => [...prev, errorResponse]);
+      
+      if (currentChat) {
+        try {
+          await DatabaseService.createMessage({
+            chat_id: currentChat.id,
+            user_id: user.id,
+            sender: 'logan',
+            content: errorResponse.text,
+            message_type: 'system'
+          });
+        } catch (error) {
+          console.warn('Could not save error message to database:', error);
+        }
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleSendMessage = async () => {
-    if (!inputText.trim() || isLoading) return;
+    if (!inputText.trim() || isLoading || !user || !currentChat) return;
 
     const userMessage = inputText.trim();
     const userMsg: Message = {
@@ -292,8 +463,22 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
     setInputText('');
     setIsLoading(true);
 
+    // Save user message to database
+    try {
+      await DatabaseService.createMessage({
+        chat_id: currentChat.id,
+        user_id: user.id,
+        sender: 'user',
+        content: userMessage,
+        message_type: 'text'
+      });
+    } catch (error) {
+      console.warn('Could not save user message to database:', error);
+      // Continue without blocking the conversation
+    }
+
     // Extract context from user message
-    const newContext = extractContextFromMessage(userMessage);
+    const newContext = await extractContextFromMessage(userMessage);
 
     setTimeout(async () => {
       try {
@@ -309,8 +494,20 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
         
         setMessages(prev => [...prev, loganResponse]);
         
-        // Don't automatically generate workout - let user decide when they're ready
-        // The "Generate Workout" button will handle this instead
+        // Save Logan's response to database
+        try {
+          await DatabaseService.createMessage({
+            chat_id: currentChat.id,
+            user_id: user.id,
+            sender: 'logan',
+            content: loganResponse.text,
+            message_type: 'text'
+          });
+        } catch (error) {
+          console.warn('Could not save Logan response to database:', error);
+          // Continue without blocking the conversation
+        }
+        
       } catch (error) {
         const errorResponse: Message = {
           id: (Date.now() + 1).toString(),
@@ -319,6 +516,20 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
           timestamp: new Date()
         };
         setMessages(prev => [...prev, errorResponse]);
+        
+        if (currentChat) {
+          try {
+            await DatabaseService.createMessage({
+              chat_id: currentChat.id,
+              user_id: user.id,
+              sender: 'logan',
+              content: errorResponse.text,
+              message_type: 'system'
+            });
+          } catch (error) {
+            console.warn('Could not save error message to database:', error);
+          }
+        }
       } finally {
         setIsLoading(false);
       }
@@ -331,6 +542,10 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
       handleSendMessage();
     }
   };
+
+  if (!user) {
+    return <div>Please log in to start chatting with Logan.</div>;
+  }
 
   return (
     <div className="bg-gray-800 rounded-3xl shadow-2xl h-[600px] flex flex-col border border-gray-700">

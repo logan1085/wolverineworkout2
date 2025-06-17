@@ -8,6 +8,7 @@ import WorkoutComplete from '@/components/WorkoutComplete';
 import AuthForm from '@/components/AuthForm';
 import { Workout } from '@/types/workout';
 import { useAuth } from '@/contexts/AuthContext';
+import { DatabaseService } from '@/services/database';
 
 type AppState = 'chat' | 'proposal' | 'workout' | 'complete';
 
@@ -49,12 +50,24 @@ export default function Home() {
     setAppState('proposal');
   };
 
-  const handleWorkoutConfirmed = () => {
-    setAppState('workout');
+  const handleWorkoutConfirmed = async () => {
+    if (proposedWorkout) {
+      // Update workout status to active when user confirms
+      await DatabaseService.updateWorkoutStatus(proposedWorkout.id, 'active');
+      setAppState('workout');
+    }
   };
 
-  const handleWorkoutCompleted = (workout: Workout) => {
-    setCompletedWorkout(workout);
+  const handleWorkoutCompleted = async (workout: Workout) => {
+    // Update workout status to completed in database
+    const completedWorkoutFromDB = await DatabaseService.updateWorkoutStatus(workout.id, 'completed');
+    
+    if (completedWorkoutFromDB) {
+      setCompletedWorkout(completedWorkoutFromDB);
+    } else {
+      setCompletedWorkout(workout);
+    }
+    
     setAppState('complete');
   };
 
@@ -69,7 +82,7 @@ export default function Home() {
       <div className="container mx-auto px-4 py-8">
         <header className="text-center mb-8 relative">
           <h1 className="text-4xl font-bold text-white mb-2">
-          👋 Hi, I'm Logan
+          👋 Hi, I&apos;m Logan
           </h1>
           <p className="text-gray-300">Your AI personal trainer</p>
           
