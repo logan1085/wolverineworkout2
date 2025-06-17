@@ -1,15 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-// Check if API key is available
-if (!process.env.OPENAI_API_KEY) {
-  console.error('OPENAI_API_KEY is not set in environment variables');
-}
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 interface GenerateWorkoutPlanRequest {
   fitnessLevel: 'beginner' | 'intermediate' | 'advanced';
   goals: string;
@@ -31,6 +22,11 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    // Initialize OpenAI client inside the function
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
 
     console.log('Generating weekly workout plan with params:', {
       fitnessLevel: body.fitnessLevel,
