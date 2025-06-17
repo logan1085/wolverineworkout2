@@ -378,7 +378,7 @@ ${workoutPlan.notes}`,
               </div>
               <div>
                 <h2 className="text-2xl font-bold">Logan</h2>
-                <p className="text-sm opacity-90">Your AI Personal Trainer</p>
+                <p className="text-sm opacity-90">Certified badass</p>
               </div>
             </div>
             <button

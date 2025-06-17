@@ -267,8 +267,21 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
       {/* Header */}
       <div className="bg-gradient-to-r from-teal-600 to-blue-700 text-white p-6 rounded-t-3xl">
         <div className="flex items-center space-x-4">
-          <div className="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-            <span className="text-xl font-bold">L</span>
+          <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white border-opacity-30">
+            <img 
+              src="/logan-profile.jpg" 
+              alt="Logan - AI Personal Trainer"
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                // Fallback to letter avatar if image fails to load
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                target.nextElementSibling?.classList.remove('hidden');
+              }}
+            />
+            <div className="hidden w-full h-full bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+              <span className="text-xl font-bold">L</span>
+            </div>
           </div>
           <div>
             <h2 className="text-xl font-bold">Logan</h2>
