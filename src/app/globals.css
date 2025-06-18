@@ -47,6 +47,20 @@ body {
   input, select, textarea {
     font-size: 16px;
   }
+  
+  /* Handle mobile keyboard viewport changes */
+  body {
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for mobile keyboards */
+  }
+  
+  /* Ensure containers adapt to keyboard */
+  .mobile-chat-container {
+    height: 70vh;
+    height: 70dvh;
+    max-height: 70vh;
+    max-height: 70dvh;
+  }
 }
 
 /* Custom animations */

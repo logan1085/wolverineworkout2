@@ -549,11 +549,12 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
   }
 
   return (
-    <div className="bg-gray-800 rounded-3xl shadow-2xl h-[600px] md:h-[600px] flex flex-col border border-gray-700">
+    <div className="bg-gray-800 rounded-3xl shadow-2xl h-[70vh] max-h-[70vh] md:h-[600px] md:max-h-[600px] flex flex-col border border-gray-700">
       {/* Header */}
       <div className="bg-gradient-to-r from-teal-600 to-blue-700 text-white p-4 md:p-6 rounded-t-3xl">
         <div className="flex items-center space-x-3 md:space-x-4">
           <div className="w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden border-2 border-white border-opacity-30">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img 
               src="/logan-profile.jpg" 
               alt="Logan - AI Personal Trainer"

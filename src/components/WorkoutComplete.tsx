@@ -68,7 +68,7 @@ export default function WorkoutComplete({ workout, onStartOver }: WorkoutComplet
         <p className="text-gray-200 text-sm md:text-base">
           Outstanding work today! You showed up, put in the effort, and completed every exercise. 
           This is how progress is made - one workout at a time. Your commitment to your fitness 
-          journey is inspiring. Remember, consistency is key, and you're building stronger habits 
+          journey is inspiring. Remember, consistency is key, and you&apos;re building stronger habits 
           with each session. Keep this momentum going!
         </p>
       </div>
@@ -82,7 +82,7 @@ export default function WorkoutComplete({ workout, onStartOver }: WorkoutComplet
         </button>
         
         <div className="text-gray-400 text-xs md:text-sm">
-          Ready for another great workout? Let's chat with Logan again!
+          Ready for another great workout? Let&apos;s chat with Logan again!
         </div>
       </div>
     </div>
