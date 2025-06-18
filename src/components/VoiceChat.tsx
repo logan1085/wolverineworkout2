@@ -459,7 +459,7 @@ const VoiceChat = forwardRef<
               role: 'user',
               content: [{
                 type: 'input_text', 
-                text: `I'm now starting ${currentExercise.name}. Please give me encouragement and tips for this exercise.`
+                text: `Time for ${currentExercise.name}! Let's go coach, pump me up and give me your best form tips!`
               }]
             }
           };
@@ -539,13 +539,13 @@ const VoiceChat = forwardRef<
       {voiceState.isConnected && (
         <div className="bg-gray-800 rounded-lg p-3">
           <p className="text-gray-300 text-sm mb-2">
-            💬 Say &quot;Hey Logan&quot; to get tips, motivation, or ask questions!
+            🔥 Say &quot;Hey Logan&quot; for motivation, form tips, or coaching!
           </p>
           <div className="text-xs text-gray-400">
             Current: {currentExercise.name} - Set {(exerciseStates[currentExerciseIndex]?.sets.filter(s => s.completed).length || 0) + 1} of {currentExercise.sets}
           </div>
           <div className="text-xs text-green-400 mt-1">
-            💡 Say &quot;I finished the set&quot; or &quot;Set complete&quot; to mark it done!
+            💪 Say &quot;Set done!&quot; or &quot;Finished the set!&quot; to mark it complete!
           </div>
         </div>
       )}
@@ -553,7 +553,7 @@ const VoiceChat = forwardRef<
       {!voiceState.isConnected && !voiceState.isLoading && (
         <div className="bg-gray-800 rounded-lg p-3">
           <p className="text-gray-300 text-sm">
-            🎯 Start voice chat to get real-time coaching from Logan during your workout!
+            🔥 Start voice chat to get real-time coaching and motivation from Logan!
           </p>
         </div>
       )}
