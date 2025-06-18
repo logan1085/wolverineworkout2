@@ -74,7 +74,7 @@ export default function WorkoutProposal({ workout, onConfirm, onBack }: WorkoutP
         
         {workout.ai_notes && (
           <div className="mt-6 bg-teal-900 bg-opacity-30 p-3 md:p-4 rounded-lg border border-teal-600">
-            <h5 className="text-teal-300 font-semibold mb-2 text-sm md:text-base">💡 Logan's Notes:</h5>
+            <h5 className="text-teal-300 font-semibold mb-2 text-sm md:text-base">💡 Logan&apos;s Notes:</h5>
             <p className="text-gray-300 text-xs md:text-sm break-words">{workout.ai_notes}</p>
           </div>
         )}
