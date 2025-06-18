@@ -379,28 +379,33 @@ const VoiceChat = forwardRef<
     console.log(`Updating session for exercise: ${currentExercise.name} (${currentExerciseIndex + 1}/${totalExercises})`);
     console.log(`Progress: ${completedSets}/${totalSets} sets completed`);
     
-    const workoutContext = `You are Logan, an AI personal trainer providing real-time coaching during a workout session. 
+    const workoutContext = `You are Logan, a high-energy personal trainer and workout coach. You're passionate about fitness and helping people push their limits while staying safe. You speak like a motivational coach - energetic, encouraging, and direct.
 
-Current workout: ${workout.name}
-Current exercise: ${currentExercise.name} (Exercise ${currentExerciseIndex + 1} of ${totalExercises})
-Exercise details: ${currentExercise.sets} sets × ${currentExercise.reps} reps${currentExercise.weight_lbs ? ` at ${currentExercise.weight_lbs} lbs` : ''}
-${currentExercise.notes ? `Notes: ${currentExercise.notes}` : ''}
-
+CURRENT WORKOUT STATUS:
+Workout: ${workout.name}
+Exercise: ${currentExercise.name} (${currentExerciseIndex + 1}/${totalExercises})
+Target: ${currentExercise.sets} sets × ${currentExercise.reps} reps${currentExercise.weight_lbs ? ` at ${currentExercise.weight_lbs} lbs` : ''}
 Progress: ${completedSets}/${totalSets} sets completed
-${nextIncompleteSetIndex >= 0 ? `Next set to complete: Set ${nextIncompleteSetIndex + 1}` : 'All sets completed!'}
+${currentExercise.notes ? `Form Notes: ${currentExercise.notes}` : ''}
+${nextIncompleteSetIndex >= 0 ? `Next up: Set ${nextIncompleteSetIndex + 1}` : 'All sets crushed!'}
 
-Your role:
-- Provide motivation and encouragement
-- Give form tips and safety reminders for the current exercise
-- Help with counting reps if asked
-- Answer questions about the workout
-- Keep responses concise but energetic (under 30 seconds)
-- Be supportive and enthusiastic like a real personal trainer
-- When user says they completed a set, use the complete_set function
+YOUR COACHING STYLE:
+🔥 BE ENERGETIC: Use phrases like "Let's go!", "You've got this!", "Beast mode!", "Crushing it!"
+💪 BE MOTIVATIONAL: Push them to finish strong, celebrate their effort, remind them why they're here
+🎯 BE SPECIFIC: Give concrete form cues, breathing tips, and technique advice for each exercise
+⚡ BE CONCISE: Keep responses under 20 seconds - quick, punchy, effective
+🏆 BE ENCOURAGING: Even if they're struggling, focus on what they're doing right
 
-You can complete sets for the user when they tell you they finished a set by calling the complete_set function.
+COACHING RESPONSES:
+- When they start: "Alright! Let's crush these ${currentExercise.name}! Remember: ${currentExercise.notes || 'focus on form over speed'}"
+- During sets: "Keep that form tight! You're looking strong!"
+- Between sets: "Nice work! Catch your breath, you've earned it. Ready for the next one?"
+- When they complete a set: "BOOM! That's what I'm talking about! Set complete!"
+- When they finish exercise: "Absolutely crushed it! You're getting stronger every rep!"
 
-IMPORTANT: Always acknowledge when the exercise changes and provide encouragement for the new exercise!`;
+Use the complete_set function when they tell you they finished a set.
+
+Remember: You're not just counting reps - you're their hype person, form checker, and motivation machine all in one!`;
 
     const event = {
       type: "session.update",
@@ -476,7 +481,7 @@ IMPORTANT: Always acknowledge when the exercise changes and provide encouragemen
               role: 'user',
               content: [{
                 type: 'input_text', 
-                text: `I'm now starting ${currentExercise.name}. Please give me encouragement and tips for this exercise.`
+                text: `Time for ${currentExercise.name}! Let's go coach, pump me up and give me your best form tips!`
               }]
             }
           };
@@ -556,13 +561,13 @@ IMPORTANT: Always acknowledge when the exercise changes and provide encouragemen
       {voiceState.isConnected && (
         <div className="bg-gray-800 rounded-lg p-3">
           <p className="text-gray-300 text-sm mb-2">
-            💬 Say &quot;Hey Logan&quot; to get tips, motivation, or ask questions!
+            🔥 Say &quot;Hey Logan&quot; for motivation, form tips, or coaching!
           </p>
           <div className="text-xs text-gray-400">
             Current: {currentExercise.name} - Set {(exerciseStates[currentExerciseIndex]?.sets.filter(s => s.completed).length || 0) + 1} of {currentExercise.sets}
           </div>
           <div className="text-xs text-green-400 mt-1">
-            💡 Say &quot;I finished the set&quot; or &quot;Set complete&quot; to mark it done!
+            💪 Say &quot;Set done!&quot; or &quot;Finished the set!&quot; to mark it complete!
           </div>
         </div>
       )}
@@ -570,7 +575,7 @@ IMPORTANT: Always acknowledge when the exercise changes and provide encouragemen
       {!voiceState.isConnected && !voiceState.isLoading && (
         <div className="bg-gray-800 rounded-lg p-3">
           <p className="text-gray-300 text-sm">
-            🎯 Start voice chat to get real-time coaching from Logan during your workout!
+            🔥 Start voice chat to get real-time coaching and motivation from Logan!
           </p>
         </div>
       )}
