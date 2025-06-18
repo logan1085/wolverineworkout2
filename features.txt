@@ -5,6 +5,7 @@
 - use predefined set of exercises rather than creating new exercises on the fly
 - debug the way it saves user's data/preferences to Supabase (seems to be a little too trigger happy in overwriting info)
 - add an onboarding flow where Logan collects basic info explicitly rather than randomly like today
+    - separate out user info that is everlasting (fitness level) and user info for today's workout
 - tweak the chat prompt to ask better questions, be more fun to talk to.
 - turn the chat into a voice chat
 - support timed workouts (like planks) instead of just reps
@@ -14,6 +15,7 @@
     - context Extraction: Extract key fitness info and discard old chat
     - conversation Chunking: Break into sessions when context grows too large
     - token Counting: Add token counting to monitor and truncate before limits
+- ^use mem0.ai as a memory layer for this
 
 # Completed
 - start storing basic data about a user and then using that when they return to chat
