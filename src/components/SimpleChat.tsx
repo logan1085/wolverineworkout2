@@ -21,6 +21,7 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isGeneratingWorkout, setIsGeneratingWorkout] = useState(false);
   const [currentChat, setCurrentChat] = useState<Chat | null>(null);
   const [, setUserProfile] = useState<UserProfile | null>(null);
   
@@ -346,7 +347,7 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
     if (!user || !currentChat) return;
 
     console.log('🏋️ Generating workout with context:', conversationContext);
-    setIsLoading(true);
+    setIsGeneratingWorkout(true);
     
     try {
       const response = await fetch('/api/generate-simple-workout', {
@@ -444,12 +445,12 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
         }
       }
     } finally {
-      setIsLoading(false);
+      setIsGeneratingWorkout(false);
     }
   };
 
   const handleSendMessage = async () => {
-    if (!inputText.trim() || isLoading || !user || !currentChat) return;
+    if (!inputText.trim() || isLoading || isGeneratingWorkout || !user || !currentChat) return;
 
     const userMessage = inputText.trim();
     const userMsg: Message = {
@@ -622,13 +623,25 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
           <div className="mb-4">
             <button
               onClick={generateWorkout}
-              disabled={isLoading}
+              disabled={isLoading || isGeneratingWorkout}
               className="w-full bg-gradient-to-r from-green-600 to-emerald-700 text-white px-4 md:px-6 py-3 rounded-xl hover:from-green-700 hover:to-emerald-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 text-sm md:text-base"
             >
-              <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-              <span>Generate My Workout</span>
+              {isGeneratingWorkout ? (
+                <>
+                  <svg className="w-4 h-4 md:w-5 md:h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <span>Generating Workout...</span>
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  <span>Generate My Workout</span>
+                </>
+              )}
             </button>
           </div>
         )}
@@ -640,13 +653,13 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Type your message..."
+            placeholder={isGeneratingWorkout ? "Generating workout..." : "Type your message..."}
             className="flex-1 bg-gray-700 text-white rounded-xl px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 border border-gray-600 text-sm md:text-base"
-            disabled={isLoading}
+            disabled={isLoading || isGeneratingWorkout}
           />
           <button
             onClick={handleSendMessage}
-            disabled={!inputText.trim() || isLoading}
+            disabled={!inputText.trim() || isLoading || isGeneratingWorkout}
             className="bg-gradient-to-r from-teal-600 to-blue-700 text-white px-4 md:px-6 py-2 md:py-3 rounded-xl hover:from-teal-700 hover:to-blue-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
           >
             <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
