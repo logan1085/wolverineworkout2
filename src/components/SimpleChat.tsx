@@ -314,6 +314,16 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
         content: userMessage
       });
 
+      // Ensure conversationContext has all required fields
+      const conversationContext = {
+        fitnessLevel: context.fitnessLevel || '',
+        goals: context.goals || '',
+        timeAvailable: context.timeAvailable || '',
+        equipment: context.equipment || '',
+        focusAreas: context.focusAreas || '',
+        hasEnoughInfo: context.hasEnoughInfo || false
+      };
+
       const response = await fetch('/api/chat-with-logan', {
         method: 'POST',
         headers: {
@@ -321,7 +331,7 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
         },
         body: JSON.stringify({
           messages: chatMessages,
-          conversationContext: context
+          conversationContext
         }),
       });
 
@@ -525,6 +535,62 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
     }
   };
 
+  const handleReset = async () => {
+    if (!user || !currentChat) return;
+    
+    const confirmReset = window.confirm('This will clear all your chat data and user profile to test the onboarding flow. Are you sure?');
+    if (!confirmReset) return;
+
+    try {
+      // Clear conversation context
+      setConversationContext({
+        fitnessLevel: '',
+        goals: '',
+        timeAvailable: '',
+        equipment: '',
+        focusAreas: '',
+        hasEnoughInfo: false
+      });
+
+      // Reset messages to initial state
+      const initialMessage = {
+        id: '1',
+        text: "Hey there! I'm Logan, your AI personal trainer. I'm here to create the perfect workout for you today. Let's start with the basics - what are your main fitness goals?",
+        sender: 'logan' as const,
+        timestamp: new Date()
+      };
+      setMessages([initialMessage]);
+
+      // Reset user profile to initial state
+      await DatabaseService.resetUserProfile(user.id);
+
+      // Clear any existing chat messages by marking chat as archived and creating a new one
+      if (currentChat) {
+        await DatabaseService.updateChat(currentChat.id, { status: 'archived' });
+      }
+      
+      // Create a new active chat
+      const newChat = await DatabaseService.getOrCreateActiveChat(user.id);
+      if (newChat) {
+        setCurrentChat(newChat);
+        
+        // Save the initial message to the new chat
+        await DatabaseService.createMessage({
+          chat_id: newChat.id,
+          user_id: user.id,
+          sender: 'logan',
+          content: initialMessage.text,
+          message_type: 'text'
+        });
+      }
+
+      console.log('Dev reset completed - user data cleared for onboarding flow testing');
+    } catch (error) {
+      console.error('Error during dev reset:', error);
+      alert('Reset failed. Check console for details.');
+    }
+  };
+
   if (!user) {
     return <div>Please log in to start chatting with Logan.</div>;
   }
@@ -533,28 +599,39 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
     <div className="bg-gray-800 md:rounded-3xl shadow-2xl h-full md:h-[600px] md:max-h-[600px] flex flex-col border-0 md:border md:border-gray-700">
       {/* Header - only show on desktop since mobile has main header */}
       <div className="hidden md:block bg-gradient-to-r from-teal-600 to-blue-700 text-white p-4 md:p-6 rounded-t-3xl">
-        <div className="flex items-center space-x-3 md:space-x-4">
-          <div className="w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden border-2 border-white border-opacity-30">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img 
-              src="/logan-profile.jpg" 
-              alt="Logan - AI Personal Trainer"
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                // Fallback to letter avatar if image fails to load
-                const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
-                target.nextElementSibling?.classList.remove('hidden');
-              }}
-            />
-            <div className="hidden w-full h-full bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-              <span className="text-lg md:text-xl font-bold">L</span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3 md:space-x-4">
+            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden border-2 border-white border-opacity-30">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img 
+                src="/logan-profile.jpg" 
+                alt="Logan - AI Personal Trainer"
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  // Fallback to letter avatar if image fails to load
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  target.nextElementSibling?.classList.remove('hidden');
+                }}
+              />
+              <div className="hidden w-full h-full bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                <span className="text-lg md:text-xl font-bold">L</span>
+              </div>
+            </div>
+            <div>
+              <h2 className="text-lg md:text-xl font-bold">Logan</h2>
+              <p className="text-xs md:text-sm opacity-90">Your AI Personal Trainer</p>
             </div>
           </div>
-          <div>
-            <h2 className="text-lg md:text-xl font-bold">Logan</h2>
-            <p className="text-xs md:text-sm opacity-90">Your AI Personal Trainer</p>
-          </div>
+          
+          {/* Dev Tools - Reset Button */}
+          <button
+            onClick={handleReset}
+            className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm font-medium transition-colors duration-200 opacity-75 hover:opacity-100"
+            title="Dev Tool: Reset user data to test onboarding"
+          >
+            Reset
+          </button>
         </div>
       </div>
 

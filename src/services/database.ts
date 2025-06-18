@@ -83,6 +83,36 @@ export class DatabaseService {
     return data;
   }
 
+  static async resetUserProfile(userId: string): Promise<UserProfile | null> {
+    // Reset user profile to initial state by setting optional fields to null
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .update({
+        fitness_level: null,
+        primary_goals: null,
+        preferred_duration_minutes: null,
+        available_equipment: null,
+        workout_frequency_per_week: null,
+        injuries_or_limitations: null,
+        preferred_workout_types: null,
+        ai_notes: null,
+        last_chat_at: null,
+        total_workouts_completed: 0,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', userId)
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error resetting user profile:', error);
+      return null;
+    }
+    
+    console.log('Successfully reset user profile for:', userId);
+    return data;
+  }
+
   static async upsertUserProfileFromContext(userId: string, context: {
     fitnessLevel?: string;
     goals?: string;
