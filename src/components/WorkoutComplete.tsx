@@ -8,8 +8,10 @@ interface WorkoutCompleteProps {
 }
 
 export default function WorkoutComplete({ workout, onStartOver }: WorkoutCompleteProps) {
-  const completedExercises = workout.exercises.length;
-  const totalSets = workout.exercises.reduce((total, exercise) => total + exercise.sets, 0);
+  // Add safety checks for exercises array
+  const exercises = workout.exercises || [];
+  const completedExercises = exercises.length;
+  const totalSets = exercises.reduce((total, exercise) => total + exercise.sets, 0);
 
   return (
     <div className="bg-gray-800 rounded-3xl shadow-2xl p-8 border border-gray-700 text-center">
@@ -32,7 +34,7 @@ export default function WorkoutComplete({ workout, onStartOver }: WorkoutComplet
             <div className="text-sm text-green-100">Total Sets</div>
           </div>
           <div className="bg-gradient-to-r from-purple-600 to-pink-700 p-4 rounded-lg">
-            <div className="text-2xl font-bold text-white">{workout.duration}</div>
+            <div className="text-2xl font-bold text-white">{workout.duration_minutes}</div>
             <div className="text-sm text-purple-100">Minutes Planned</div>
           </div>
         </div>
@@ -40,17 +42,23 @@ export default function WorkoutComplete({ workout, onStartOver }: WorkoutComplet
         <div className="text-left">
           <h4 className="text-lg font-semibold text-white mb-4">Exercises Completed:</h4>
           <div className="space-y-2">
-            {workout.exercises.map((exercise, index) => (
-              <div key={index} className="bg-gray-800 p-3 rounded-lg border border-gray-600 flex items-center justify-between">
-                <div>
-                  <span className="text-white font-medium">{exercise.name}</span>
+            {exercises.length > 0 ? (
+              exercises.map((exercise, index) => (
+                <div key={index} className="bg-gray-800 p-3 rounded-lg border border-gray-600 flex items-center justify-between">
+                  <div>
+                    <span className="text-white font-medium">{exercise.name}</span>
+                  </div>
+                  <div className="text-green-400 text-sm">
+                    ✓ {exercise.sets} sets × {exercise.reps} reps
+                    {exercise.weight_lbs && exercise.weight_lbs > 0 && ` @ ${exercise.weight_lbs} lbs`}
+                  </div>
                 </div>
-                <div className="text-green-400 text-sm">
-                  ✓ {exercise.sets} sets × {exercise.reps} reps
-                  {exercise.weight > 0 && ` @ ${exercise.weight} lbs`}
-                </div>
+              ))
+            ) : (
+              <div className="bg-gray-800 p-3 rounded-lg border border-gray-600 text-gray-400 text-center">
+                No exercise details available
               </div>
-            ))}
+            )}
           </div>
         </div>
       </div>
