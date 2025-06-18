@@ -125,11 +125,11 @@ export default function ActiveWorkout({ workout, onComplete }: ActiveWorkoutProp
   }
 
   return (
-    <div className="bg-gray-800 rounded-3xl shadow-2xl p-8 border border-gray-700 max-w-4xl mx-auto">
+    <div className="bg-gray-800 rounded-3xl shadow-2xl p-4 md:p-8 border border-gray-700 max-w-4xl mx-auto">
       {/* Header */}
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-white mb-2">💪 {workout.name}</h2>
-        <div className="flex justify-center space-x-8 text-gray-300">
+      <div className="text-center mb-6 md:mb-8">
+        <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">💪 {workout.name}</h2>
+        <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-8 text-gray-300 text-sm md:text-base">
           <div>⏱️ {formatTime(elapsedTime)}</div>
           <div>📊 {completedExercises}/{totalExercises} exercises</div>
           <div>🎯 {workout.workout_type}</div>
@@ -137,30 +137,30 @@ export default function ActiveWorkout({ workout, onComplete }: ActiveWorkoutProp
       </div>
 
       {/* Progress Bar */}
-      <div className="mb-8">
+      <div className="mb-6 md:mb-8">
         <div className="bg-gray-700 rounded-full h-3 mb-2">
           <div 
             className="bg-gradient-to-r from-teal-600 to-blue-700 h-3 rounded-full transition-all duration-300"
             style={{ width: `${totalExercises > 0 ? (completedExercises / totalExercises) * 100 : 0}%` }}
           ></div>
         </div>
-        <p className="text-center text-gray-400 text-sm">
+        <p className="text-center text-gray-400 text-xs md:text-sm">
           {completedExercises === totalExercises ? 'All exercises completed!' : `Exercise ${currentExerciseIndex + 1} of ${totalExercises}`}
         </p>
       </div>
 
       {/* Current Exercise */}
-      <div className="bg-gray-900 rounded-2xl p-6 mb-8 border border-gray-600">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-2xl font-bold text-white">{currentExercise.name}</h3>
+      <div className="bg-gray-900 rounded-2xl p-4 md:p-6 mb-6 md:mb-8 border border-gray-600">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
+          <h3 className="text-xl md:text-2xl font-bold text-white">{currentExercise.name}</h3>
           <div className="flex items-center space-x-2">
             {currentExercise.rest_seconds && (
-              <div className="bg-orange-600 text-white px-3 py-1 rounded-full text-sm">
+              <div className="bg-orange-600 text-white px-2 md:px-3 py-1 rounded-full text-xs md:text-sm">
                 {currentExercise.rest_seconds}s rest
               </div>
             )}
             {currentExerciseState.completed && (
-              <div className="bg-green-600 text-white px-3 py-1 rounded-full text-sm">
+              <div className="bg-green-600 text-white px-2 md:px-3 py-1 rounded-full text-xs md:text-sm">
                 ✓ Complete
               </div>
             )}
@@ -168,48 +168,48 @@ export default function ActiveWorkout({ workout, onComplete }: ActiveWorkoutProp
         </div>
         
         {currentExercise.notes && (
-          <p className="text-gray-300 mb-6 bg-gray-800 p-4 rounded-lg">
+          <p className="text-gray-300 mb-4 md:mb-6 bg-gray-800 p-3 md:p-4 rounded-lg text-sm break-words">
             {currentExercise.notes}
           </p>
         )}
 
         {/* Sets */}
-        <div className="space-y-4">
-          <h4 className="text-lg font-semibold text-white">Sets:</h4>
+        <div className="space-y-3 md:space-y-4">
+          <h4 className="text-base md:text-lg font-semibold text-white">Sets:</h4>
           {currentExerciseState.sets.map((set, setIndex) => (
-            <div key={setIndex} className={`p-4 rounded-lg border ${
+            <div key={setIndex} className={`p-3 md:p-4 rounded-lg border ${
               set.completed 
                 ? 'bg-green-900 border-green-600' 
                 : 'bg-gray-800 border-gray-600'
             }`}>
-              <div className="flex items-center justify-between">
-                <span className="text-white font-semibold">Set {setIndex + 1}</span>
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-2">
-                    <label className="text-gray-300 text-sm">Reps:</label>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <span className="text-white font-semibold text-sm md:text-base">Set {setIndex + 1}</span>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                  <div className="flex items-center gap-2">
+                    <label className="text-gray-300 text-xs md:text-sm min-w-0">Reps:</label>
                     <input
                       type="number"
                       value={set.reps}
                       onChange={(e) => updateSet(currentExerciseIndex, setIndex, 'reps', parseInt(e.target.value) || 0)}
-                      className="w-16 bg-gray-700 text-white rounded px-2 py-1 text-center"
+                      className="w-14 md:w-16 bg-gray-700 text-white rounded px-2 py-1 text-center text-sm"
                       disabled={set.completed}
                     />
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <label className="text-gray-300 text-sm">Weight:</label>
+                  <div className="flex items-center gap-2">
+                    <label className="text-gray-300 text-xs md:text-sm">Weight:</label>
                     <input
                       type="number"
                       value={set.weight}
                       onChange={(e) => updateSet(currentExerciseIndex, setIndex, 'weight', parseFloat(e.target.value) || 0)}
-                      className="w-20 bg-gray-700 text-white rounded px-2 py-1 text-center"
+                      className="w-16 md:w-20 bg-gray-700 text-white rounded px-2 py-1 text-center text-sm"
                       disabled={set.completed}
                     />
-                    <span className="text-gray-400 text-sm">lbs</span>
+                    <span className="text-gray-400 text-xs md:text-sm">lbs</span>
                   </div>
                   <button
                     onClick={() => completeSet(currentExerciseIndex, setIndex)}
                     disabled={set.completed}
-                    className={`px-4 py-2 rounded-lg font-semibold transition-all duration-200 ${
+                    className={`px-3 md:px-4 py-2 rounded-lg font-semibold transition-all duration-200 text-xs md:text-sm whitespace-nowrap ${
                       set.completed
                         ? 'bg-green-600 text-white cursor-not-allowed'
                         : 'bg-teal-600 text-white hover:bg-teal-700'
@@ -225,11 +225,11 @@ export default function ActiveWorkout({ workout, onComplete }: ActiveWorkoutProp
       </div>
 
       {/* Navigation */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-0">
         <button
           onClick={() => setCurrentExerciseIndex(Math.max(0, currentExerciseIndex - 1))}
           disabled={currentExerciseIndex === 0}
-          className="px-6 py-3 bg-gray-700 text-white rounded-xl hover:bg-gray-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full sm:w-auto px-4 md:px-6 py-2 md:py-3 bg-gray-700 text-white rounded-xl hover:bg-gray-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
         >
           ← Previous Exercise
         </button>
@@ -237,7 +237,7 @@ export default function ActiveWorkout({ workout, onComplete }: ActiveWorkoutProp
         {completedExercises === totalExercises ? (
           <button
             onClick={handleCompleteWorkout}
-            className="px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-700 text-white rounded-xl hover:from-green-700 hover:to-emerald-800 transition-all duration-200 font-semibold"
+            className="w-full sm:w-auto px-6 md:px-8 py-2 md:py-3 bg-gradient-to-r from-green-600 to-emerald-700 text-white rounded-xl hover:from-green-700 hover:to-emerald-800 transition-all duration-200 font-semibold text-sm md:text-base"
           >
             🎉 Complete Workout!
           </button>
@@ -245,7 +245,7 @@ export default function ActiveWorkout({ workout, onComplete }: ActiveWorkoutProp
           <button
             onClick={() => setCurrentExerciseIndex(Math.min(totalExercises - 1, currentExerciseIndex + 1))}
             disabled={currentExerciseIndex === totalExercises - 1}
-            className="px-6 py-3 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full sm:w-auto px-4 md:px-6 py-2 md:py-3 bg-teal-600 text-white rounded-xl hover:bg-teal-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
           >
             Next Exercise →
           </button>
@@ -253,9 +253,9 @@ export default function ActiveWorkout({ workout, onComplete }: ActiveWorkoutProp
       </div>
 
       {/* Exercise Overview */}
-      <div className="mt-8 bg-gray-900 rounded-2xl p-6 border border-gray-600">
-        <h4 className="text-lg font-semibold text-white mb-4">All Exercises:</h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="mt-6 md:mt-8 bg-gray-900 rounded-2xl p-4 md:p-6 border border-gray-600">
+        <h4 className="text-base md:text-lg font-semibold text-white mb-4">All Exercises:</h4>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
           {workout.exercises?.map((exercise, index) => (
             <div
               key={exercise.id || index}
@@ -269,8 +269,8 @@ export default function ActiveWorkout({ workout, onComplete }: ActiveWorkoutProp
               onClick={() => setCurrentExerciseIndex(index)}
             >
               <div className="flex items-center justify-between">
-                <span className="text-white font-medium text-sm">{exercise.name}</span>
-                <div className="flex items-center space-x-1">
+                <span className="text-white font-medium text-xs md:text-sm break-words pr-2">{exercise.name}</span>
+                <div className="flex items-center space-x-1 flex-shrink-0">
                   {exerciseStates[index]?.completed && (
                     <span className="text-green-400 text-xs">✓</span>
                   )}

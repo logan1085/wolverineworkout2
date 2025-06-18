@@ -548,11 +548,11 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
   }
 
   return (
-    <div className="bg-gray-800 rounded-3xl shadow-2xl h-[600px] flex flex-col border border-gray-700">
+    <div className="bg-gray-800 rounded-3xl shadow-2xl h-[600px] md:h-[600px] flex flex-col border border-gray-700">
       {/* Header */}
-      <div className="bg-gradient-to-r from-teal-600 to-blue-700 text-white p-6 rounded-t-3xl">
-        <div className="flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white border-opacity-30">
+      <div className="bg-gradient-to-r from-teal-600 to-blue-700 text-white p-4 md:p-6 rounded-t-3xl">
+        <div className="flex items-center space-x-3 md:space-x-4">
+          <div className="w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden border-2 border-white border-opacity-30">
             <img 
               src="/logan-profile.jpg" 
               alt="Logan - AI Personal Trainer"
@@ -565,31 +565,31 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
               }}
             />
             <div className="hidden w-full h-full bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-              <span className="text-xl font-bold">L</span>
+              <span className="text-lg md:text-xl font-bold">L</span>
             </div>
           </div>
           <div>
-            <h2 className="text-xl font-bold">Logan</h2>
-            <p className="text-sm opacity-90">Your AI Personal Trainer</p>
+            <h2 className="text-lg md:text-xl font-bold">Logan</h2>
+            <p className="text-xs md:text-sm opacity-90">Your AI Personal Trainer</p>
           </div>
         </div>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
         {messages.map((message) => (
           <div
             key={message.id}
             className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
+              className={`max-w-[85%] sm:max-w-xs lg:max-w-md px-3 md:px-4 py-2 md:py-3 rounded-2xl ${
                 message.sender === 'user'
                   ? 'bg-gradient-to-r from-teal-600 to-blue-700 text-white'
                   : 'bg-gray-700 text-white border border-gray-600'
               }`}
             >
-              <p className="text-sm">{message.text}</p>
+              <p className="text-sm break-words">{message.text}</p>
               <p className={`text-xs mt-1 ${
                 message.sender === 'user' ? 'text-blue-100' : 'text-gray-400'
               }`}>
@@ -601,7 +601,7 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
         
         {isLoading && (
           <div className="flex justify-start">
-            <div className="bg-gray-700 text-white px-4 py-3 rounded-2xl border border-gray-600">
+            <div className="bg-gray-700 text-white px-3 md:px-4 py-2 md:py-3 rounded-2xl border border-gray-600">
               <div className="flex space-x-1">
                 <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                 <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
@@ -616,16 +616,16 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
       </div>
 
       {/* Input */}
-      <div className="p-6 border-t border-gray-700">
+      <div className="p-4 md:p-6 border-t border-gray-700">
         {/* Show Generate Workout button if we have any meaningful info or user seems ready */}
         {conversationContext.hasEnoughInfo && (
           <div className="mb-4">
             <button
               onClick={generateWorkout}
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-green-600 to-emerald-700 text-white px-6 py-3 rounded-xl hover:from-green-700 hover:to-emerald-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+              className="w-full bg-gradient-to-r from-green-600 to-emerald-700 text-white px-4 md:px-6 py-3 rounded-xl hover:from-green-700 hover:to-emerald-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 text-sm md:text-base"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
               <span>Generate My Workout</span>
@@ -633,7 +633,7 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
           </div>
         )}
         
-        <div className="flex space-x-4">
+        <div className="flex space-x-2 md:space-x-4">
           <input
             ref={inputRef}
             type="text"
@@ -641,15 +641,15 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
             onChange={(e) => setInputText(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Type your message..."
-            className="flex-1 bg-gray-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 border border-gray-600"
+            className="flex-1 bg-gray-700 text-white rounded-xl px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 border border-gray-600 text-sm md:text-base"
             disabled={isLoading}
           />
           <button
             onClick={handleSendMessage}
             disabled={!inputText.trim() || isLoading}
-            className="bg-gradient-to-r from-teal-600 to-blue-700 text-white px-6 py-3 rounded-xl hover:from-teal-700 hover:to-blue-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+            className="bg-gradient-to-r from-teal-600 to-blue-700 text-white px-4 md:px-6 py-2 md:py-3 rounded-xl hover:from-teal-700 hover:to-blue-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
             </svg>
           </button>

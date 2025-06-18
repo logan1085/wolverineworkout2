@@ -10,16 +10,16 @@ interface WorkoutProposalProps {
 
 export default function WorkoutProposal({ workout, onConfirm, onBack }: WorkoutProposalProps) {
   return (
-    <div className="bg-gray-800 rounded-3xl shadow-2xl p-8 border border-gray-700">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-white mb-2">🏋️‍♂️ Your Workout is Ready!</h2>
-        <p className="text-gray-300">Logan has created a personalized workout just for you</p>
+    <div className="bg-gray-800 rounded-3xl shadow-2xl p-4 md:p-8 border border-gray-700">
+      <div className="text-center mb-6 md:mb-8">
+        <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">🏋️‍♂️ Your Workout is Ready!</h2>
+        <p className="text-gray-300 text-sm md:text-base">Logan has created a personalized workout just for you</p>
       </div>
 
-      <div className="bg-gray-900 rounded-2xl p-6 mb-8 border border-gray-600">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-2xl font-bold text-white">{workout.name}</h3>
-          <div className="bg-teal-600 text-white px-3 py-1 rounded-full text-sm">
+      <div className="bg-gray-900 rounded-2xl p-4 md:p-6 mb-6 md:mb-8 border border-gray-600">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
+          <h3 className="text-xl md:text-2xl font-bold text-white">{workout.name}</h3>
+          <div className="bg-teal-600 text-white px-3 py-1 rounded-full text-sm self-start sm:self-auto">
             {workout.duration_minutes} min
           </div>
         </div>
@@ -51,10 +51,10 @@ export default function WorkoutProposal({ workout, onConfirm, onBack }: WorkoutP
         <div className="space-y-4">
           <h4 className="text-lg font-semibold text-white mb-4">Exercises:</h4>
           {workout.exercises && workout.exercises.map((exercise, index) => (
-            <div key={exercise.id || index} className="bg-gray-800 p-4 rounded-lg border border-gray-600">
-              <div className="flex items-center justify-between mb-2">
-                <h5 className="font-semibold text-white">{exercise.name}</h5>
-                <div className="flex space-x-4 text-sm text-gray-300">
+            <div key={exercise.id || index} className="bg-gray-800 p-3 md:p-4 rounded-lg border border-gray-600">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-2">
+                <h5 className="font-semibold text-white text-sm md:text-base">{exercise.name}</h5>
+                <div className="flex flex-wrap gap-2 sm:gap-4 text-xs md:text-sm text-gray-300">
                   <span>{exercise.sets} sets</span>
                   <span>{exercise.reps} reps</span>
                   {exercise.weight_lbs && exercise.weight_lbs > 0 && (
@@ -66,30 +66,30 @@ export default function WorkoutProposal({ workout, onConfirm, onBack }: WorkoutP
                 </div>
               </div>
               {exercise.notes && (
-                <p className="text-gray-400 text-sm">{exercise.notes}</p>
+                <p className="text-gray-400 text-xs md:text-sm break-words">{exercise.notes}</p>
               )}
             </div>
           ))}
         </div>
         
         {workout.ai_notes && (
-          <div className="mt-6 bg-teal-900 bg-opacity-30 p-4 rounded-lg border border-teal-600">
-            <h5 className="text-teal-300 font-semibold mb-2">💡 Logan's Notes:</h5>
-            <p className="text-gray-300 text-sm">{workout.ai_notes}</p>
+          <div className="mt-6 bg-teal-900 bg-opacity-30 p-3 md:p-4 rounded-lg border border-teal-600">
+            <h5 className="text-teal-300 font-semibold mb-2 text-sm md:text-base">💡 Logan's Notes:</h5>
+            <p className="text-gray-300 text-xs md:text-sm break-words">{workout.ai_notes}</p>
           </div>
         )}
       </div>
 
-      <div className="flex space-x-4">
+      <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
         <button
           onClick={onBack}
-          className="flex-1 bg-gray-700 text-white py-4 px-6 rounded-2xl hover:bg-gray-600 transition-all duration-200 font-semibold"
+          className="flex-1 bg-gray-700 text-white py-3 md:py-4 px-4 md:px-6 rounded-2xl hover:bg-gray-600 transition-all duration-200 font-semibold text-sm md:text-base"
         >
           ← Back to Chat
         </button>
         <button
           onClick={onConfirm}
-          className="flex-1 bg-gradient-to-r from-teal-600 to-blue-700 text-white py-4 px-6 rounded-2xl hover:from-teal-700 hover:to-blue-800 transition-all duration-200 font-semibold"
+          className="flex-1 bg-gradient-to-r from-teal-600 to-blue-700 text-white py-3 md:py-4 px-4 md:px-6 rounded-2xl hover:from-teal-700 hover:to-blue-800 transition-all duration-200 font-semibold text-sm md:text-base"
         >
           Start Workout! 💪
         </button>

@@ -27,6 +27,26 @@ body {
   margin: 0;
   padding: 0;
   font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Mobile-specific improvements */
+@media (max-width: 640px) {
+  * {
+    /* Prevent horizontal scrolling on mobile */
+    max-width: 100%;
+  }
+  
+  /* Better touch targets for mobile */
+  button, input, select, textarea {
+    min-height: 44px;
+  }
+  
+  /* Prevent zoom on inputs */
+  input, select, textarea {
+    font-size: 16px;
+  }
 }
 
 /* Custom animations */

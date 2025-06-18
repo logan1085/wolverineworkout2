@@ -79,16 +79,16 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-4 md:py-8">
         <header className="text-center mb-8 relative">
-          <h1 className="text-4xl font-bold text-white mb-2">
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
           👋 Hi, I&apos;m Logan
           </h1>
           <p className="text-gray-300">Your AI personal trainer</p>
           
           {/* User info and logout */}
-          <div className="absolute top-0 right-0 flex items-center space-x-4">
-            <span className="text-gray-300 text-sm">
+          <div className="absolute top-0 right-0 flex flex-col md:flex-row items-end md:items-center space-y-2 md:space-y-0 md:space-x-4">
+            <span className="hidden md:block text-gray-300 text-sm">
               Welcome, {user.email}
             </span>
             <LogoutButton />

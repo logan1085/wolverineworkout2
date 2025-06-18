@@ -1,5 +1,5 @@
 # Top ideas
-- 
+- Fix up the UI on mobile
 
 # Ideas
 - Use predefined set of exercises rather than creating new exercises on the fly
@@ -7,7 +7,6 @@
 - Tweak the chat prompt to ask better questions, be more fun to talk to.
 - Turn the chat into a voice chat
 - Support timed workouts (like planks) instead of just reps
-- Fix up the UI on mobile
 
 # Completed
 - Start storing basic data about a user and then using that when they return to chat
