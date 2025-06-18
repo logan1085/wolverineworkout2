@@ -10,12 +10,7 @@ interface WorkoutProposalProps {
 
 export default function WorkoutProposal({ workout, onConfirm, onBack }: WorkoutProposalProps) {
   return (
-    <div className="bg-gray-800 rounded-3xl shadow-2xl p-4 md:p-8 border border-gray-700">
-      <div className="text-center mb-6 md:mb-8">
-        <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">🏋️‍♂️ Your workout is ready!</h2>
-        <p className="text-gray-300 text-sm md:text-base">Logan has created a personalized workout just for you</p>
-      </div>
-
+    <div className="bg-gray-800 rounded-3xl shadow-2xl p-4 md:p-8 border border-gray-700 mt-4 md:mt-0">
       <div className="bg-gray-900 rounded-2xl p-4 md:p-6 mb-6 md:mb-8 border border-gray-600">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
           <h3 className="text-xl md:text-2xl font-bold text-white">{workout.name}</h3>
@@ -41,12 +36,6 @@ export default function WorkoutProposal({ workout, onConfirm, onBack }: WorkoutP
             </span>
           )}
         </div>
-        
-        {workout.description && (
-          <p className="text-gray-300 mb-6 bg-gray-800 p-4 rounded-lg border border-gray-600">
-            {workout.description}
-          </p>
-        )}
 
         <div className="space-y-4">
           <h4 className="text-lg font-semibold text-white mb-4">Exercises:</h4>
