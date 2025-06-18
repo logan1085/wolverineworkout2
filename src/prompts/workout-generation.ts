@@ -39,14 +39,13 @@ Format the response as JSON with this EXACT structure:
 }
 
 Rules:
-- Create 4-8 exercises appropriate for the fitness level
+- Create 1-10 exercises appropriate for the fitness level - the number of exercises should be based on the time available
 - "reps" must be a number (not "30 seconds" or any text)
 - "weight" must be a number (0 for bodyweight exercises)
 - "sets" must be a number
 - All values must be valid JSON (no quotes around numbers)
 - Make the workout achievable within ${params.timeAvailable} minutes
-- Focus on the user's specific goals: ${params.goals}
-- Include motivational notes`;
+- Focus on the user's specific goals: ${params.goals}`;
 
   if (params.conversation) {
     return `Based on this conversation with a user about their fitness goals:
