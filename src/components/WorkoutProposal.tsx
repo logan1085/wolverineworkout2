@@ -85,13 +85,13 @@ export default function WorkoutProposal({ workout, onConfirm, onBack }: WorkoutP
           onClick={onBack}
           className="flex-1 bg-gray-700 text-white py-3 md:py-4 px-4 md:px-6 rounded-2xl hover:bg-gray-600 transition-all duration-200 font-semibold text-sm md:text-base"
         >
-          ← Back to Chat
+          ← Back to chat
         </button>
         <button
           onClick={onConfirm}
           className="flex-1 bg-gradient-to-r from-teal-600 to-blue-700 text-white py-3 md:py-4 px-4 md:px-6 rounded-2xl hover:from-teal-700 hover:to-blue-800 transition-all duration-200 font-semibold text-sm md:text-base"
         >
-          Start Workout! 💪
+          Start workout! 💪
         </button>
       </div>
     </div>
