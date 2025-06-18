@@ -549,9 +549,9 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
   }
 
   return (
-    <div className="bg-gray-800 rounded-3xl shadow-2xl h-[70vh] max-h-[70vh] md:h-[600px] md:max-h-[600px] flex flex-col border border-gray-700">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-teal-600 to-blue-700 text-white p-4 md:p-6 rounded-t-3xl">
+    <div className="bg-gray-800 md:rounded-3xl shadow-2xl h-full md:h-[600px] md:max-h-[600px] flex flex-col border-0 md:border md:border-gray-700">
+      {/* Header - only show on desktop since mobile has main header */}
+      <div className="hidden md:block bg-gradient-to-r from-teal-600 to-blue-700 text-white p-4 md:p-6 rounded-t-3xl">
         <div className="flex items-center space-x-3 md:space-x-4">
           <div className="w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden border-2 border-white border-opacity-30">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -578,7 +578,7 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 bg-gray-900 md:bg-transparent">
         {messages.map((message) => (
           <div
             key={message.id}
@@ -618,7 +618,7 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
       </div>
 
       {/* Input */}
-      <div className="p-4 md:p-6 border-t border-gray-700">
+      <div className="p-4 md:p-6 border-t border-gray-700 bg-gray-800">
         {/* Show Generate Workout button if we have any meaningful info or user seems ready */}
         {conversationContext.hasEnoughInfo && (
           <div className="mb-4">
