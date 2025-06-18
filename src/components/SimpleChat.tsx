@@ -399,25 +399,6 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
         // Link workout to chat
         await DatabaseService.linkWorkoutToChat(currentChat.id, savedWorkout.id);
         
-        // Add workout generation message
-        const workoutMessage: Message = {
-          id: Date.now().toString(),
-          text: `Great! I've created your personalized workout: "${savedWorkout.name}". It's designed for your ${conversationContext.fitnessLevel || 'beginner'} level and focuses on ${conversationContext.goals || 'general fitness'}. Ready to start?`,
-          sender: 'logan',
-          timestamp: new Date()
-        };
-        
-        setMessages(prev => [...prev, workoutMessage]);
-        
-        // Save message to database
-        await DatabaseService.createMessage({
-          chat_id: currentChat.id,
-          user_id: user.id,
-          sender: 'logan',
-          content: workoutMessage.text,
-          message_type: 'workout_generated'
-        });
-        
         console.log('✅ Workout generated and saved:', savedWorkout);
         onWorkoutProposed(savedWorkout);
       }
