@@ -12,7 +12,7 @@ export default function WorkoutProposal({ workout, onConfirm, onBack }: WorkoutP
   return (
     <div className="bg-gray-800 rounded-3xl shadow-2xl p-4 md:p-8 border border-gray-700">
       <div className="text-center mb-6 md:mb-8">
-        <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">🏋️‍♂️ Your Workout is Ready!</h2>
+        <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">🏋️‍♂️ Your workout is ready!</h2>
         <p className="text-gray-300 text-sm md:text-base">Logan has created a personalized workout just for you</p>
       </div>
 
@@ -65,9 +65,6 @@ export default function WorkoutProposal({ workout, onConfirm, onBack }: WorkoutP
                   )}
                 </div>
               </div>
-              {exercise.notes && (
-                <p className="text-gray-400 text-xs md:text-sm break-words">{exercise.notes}</p>
-              )}
             </div>
           ))}
         </div>
