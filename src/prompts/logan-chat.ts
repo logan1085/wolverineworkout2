@@ -5,6 +5,8 @@ export interface ConversationContext {
   equipment: string;
   focusAreas: string;
   hasEnoughInfo: boolean;
+  userMemories?: any[];
+  userProfile?: any;
 }
 
 export function getLoganChatPrompt(context: ConversationContext): string {
@@ -27,6 +29,17 @@ Current context you know:
 - Goals: ${context.goals || 'unknown'}
 - Time Available: ${context.timeAvailable || 'unknown'}
 - Equipment: ${context.equipment || 'unknown'}
+
+${context.userProfile && Object.keys(context.userProfile).length > 0 ? `
+What I remember about this user from previous conversations:
+${context.userProfile.fitnessLevel ? `- Previous fitness level: ${context.userProfile.fitnessLevel}` : ''}
+${context.userProfile.goals ? `- Previous goals: ${context.userProfile.goals}` : ''}
+${context.userProfile.timeAvailable ? `- Usual workout time: ${context.userProfile.timeAvailable} minutes` : ''}
+${context.userProfile.equipment ? `- Equipment access: ${context.userProfile.equipment}` : ''}
+${context.userProfile.focusAreas ? `- Focus areas: ${context.userProfile.focusAreas}` : ''}
+${context.userProfile.workoutFrequency ? `- Workout frequency: ${context.userProfile.workoutFrequency} days per week` : ''}
+
+Use this information to personalize the conversation, but still focus on TODAY'S workout needs.` : ''}
 
 Guidelines for your responses:
 1. Be conversational, friendly, and encouraging like a real trainer

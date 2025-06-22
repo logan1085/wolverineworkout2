@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { getLoganChatPrompt, type ConversationContext } from '@/prompts';
+import { memoryService } from '@/lib/memory';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -10,6 +11,7 @@ interface ChatMessage {
 interface ChatRequest {
   messages: ChatMessage[];
   conversationContext: ConversationContext;
+  userId?: string;
 }
 
 export async function POST(request: NextRequest) {
@@ -28,8 +30,42 @@ export async function POST(request: NextRequest) {
       apiKey: process.env.OPENAI_API_KEY,
     });
 
+    // Get user ID (use a default for now, in real app this would come from auth)
+    const userId = body.userId || 'default_user';
+    
+    // Get the latest user message for memory processing
+    const latestMessage = body.messages[body.messages.length - 1];
+    
+    // Store user preferences in memory (non-blocking)
+    if (latestMessage?.role === 'user') {
+      memoryService.storeUserPreferences(
+        userId, 
+        body.conversationContext, 
+        latestMessage.content
+      );
+    }
+    
+    // Retrieve user memories to enhance the conversation context (with timeout)
+    const [userMemories, userProfile] = await Promise.all([
+      Promise.race([
+        memoryService.getUserMemories(userId),
+        new Promise(resolve => setTimeout(() => resolve([]), 2000)) // 2s timeout
+      ]),
+      Promise.race([
+        memoryService.getUserProfile(userId),
+        new Promise(resolve => setTimeout(() => resolve({}), 2000)) // 2s timeout
+      ])
+    ]);
+    
+    // Enhance conversation context with memories
+    const enhancedContext = {
+      ...body.conversationContext,
+      userMemories: userMemories.slice(0, 5), // Limit to 5 most relevant memories
+      userProfile
+    };
+
     // Get the system prompt from our organized prompts
-    const systemPrompt = getLoganChatPrompt(body.conversationContext);
+    const systemPrompt = getLoganChatPrompt(enhancedContext);
 
     console.log('Sending chat request to OpenAI...');
     

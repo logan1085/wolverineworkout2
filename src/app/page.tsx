@@ -6,6 +6,7 @@ import WorkoutProposal from '@/components/WorkoutProposal';
 import ActiveWorkout from '@/components/ActiveWorkout';
 import WorkoutComplete from '@/components/WorkoutComplete';
 import AuthForm from '@/components/AuthForm';
+import MemoryTestChat from '@/components/MemoryTestChat';
 import { Workout } from '@/types/workout';
 import { useAuth } from '@/contexts/AuthContext';
 import { DatabaseService } from '@/services/database';
@@ -133,6 +134,7 @@ export default function Home() {
   const [proposedWorkout, setProposedWorkout] = useState<Workout | null>(null);
   const [completedWorkout, setCompletedWorkout] = useState<Workout | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showMemoryTest, setShowMemoryTest] = useState(false);
 
   // Show loading spinner while checking auth
   if (loading) {
@@ -206,6 +208,12 @@ export default function Home() {
             <span className="hidden md:block text-gray-300 text-sm">
               Welcome, {user.email}
             </span>
+            <button
+              onClick={() => setShowMemoryTest(!showMemoryTest)}
+              className="bg-teal-600 hover:bg-teal-700 text-white px-3 py-1 rounded-lg text-sm transition-colors"
+            >
+              🧠 {showMemoryTest ? 'Hide Memory Test' : 'Test Memory'}
+            </button>
             <LogoutButton />
           </div>
         </header>
@@ -214,6 +222,13 @@ export default function Home() {
       {/* Content area */}
       <div className="pt-[73px] md:pt-0 h-screen md:h-auto md:container md:mx-auto md:px-4">
         <div className="h-[calc(100vh-73px)] md:h-auto md:max-w-4xl md:mx-auto">
+          {/* Memory Test Component */}
+          {showMemoryTest && (
+            <div className="mb-6">
+              <MemoryTestChat />
+            </div>
+          )}
+          
           {appState === 'chat' && (
             <SimpleChat onWorkoutProposed={handleWorkoutProposed} />
           )}
