@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Workout } from '@/types/workout';
+import { CreateWorkoutRequest } from '@/types/workout';
+import { StoredWorkout, workouts } from '@/lib/workout-store';
+import { parseJsonBody } from '@/lib/api-validation';
 
-// In-memory storage (replace with database later)
-let workouts: Workout[] = [];
+// Next.js 15 hands route handlers their params as a promise.
+type RouteContext = { params: Promise<{ id: string }> };
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, { params }: RouteContext) {
   try {
-    const workout = workouts.find(w => w.id === params.id);
-    
+    const { id } = await params;
+    const workout = workouts.find(w => w.id === id);
+
     if (!workout) {
       return NextResponse.json(
         { error: 'Workout not found' },
@@ -27,15 +27,18 @@ export async function GET(
   }
 }
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, { params }: RouteContext) {
   try {
-    const body = await request.json();
-    
-    const workoutIndex = workouts.findIndex(w => w.id === params.id);
-    
+    const { id } = await params;
+
+    const parsed = await parseJsonBody<Partial<CreateWorkoutRequest>>(request);
+    if (!parsed.ok) {
+      return parsed.response;
+    }
+    const body = parsed.data;
+
+    const workoutIndex = workouts.findIndex(w => w.id === id);
+
     if (workoutIndex === -1) {
       return NextResponse.json(
         { error: 'Workout not found' },
@@ -43,14 +46,21 @@ export async function PUT(
       );
     }
 
-    const updatedWorkout: Workout = {
+    if (body.exercises !== undefined && !Array.isArray(body.exercises)) {
+      return NextResponse.json(
+        { error: 'Field "exercises" must be an array' },
+        { status: 400 }
+      );
+    }
+
+    const updatedWorkout: StoredWorkout = {
       ...workouts[workoutIndex],
       ...body,
-      id: params.id, // Ensure ID doesn't change
+      id, // Ensure ID doesn't change
     };
 
     workouts[workoutIndex] = updatedWorkout;
-    
+
     return NextResponse.json(updatedWorkout);
   } catch (error) {
     return NextResponse.json(
@@ -60,13 +70,11 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, { params }: RouteContext) {
   try {
-    const workoutIndex = workouts.findIndex(w => w.id === params.id);
-    
+    const { id } = await params;
+    const workoutIndex = workouts.findIndex(w => w.id === id);
+
     if (workoutIndex === -1) {
       return NextResponse.json(
         { error: 'Workout not found' },
@@ -75,7 +83,7 @@ export async function DELETE(
     }
 
     const deletedWorkout = workouts.splice(workoutIndex, 1)[0];
-    
+
     return NextResponse.json({
       message: `Workout ${deletedWorkout.name} deleted successfully`
     });
@@ -85,4 +93,4 @@ export async function DELETE(
       { status: 500 }
     );
   }
-} 
+}

@@ -1,15 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
-import { Exercise } from '@/types/workout';
-
-// Check if API key is available
-if (!process.env.OPENAI_API_KEY) {
-  console.error('OPENAI_API_KEY is not set in environment variables');
-}
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+import { missingFields, missingFieldsResponse, parseJsonBody } from '@/lib/api-validation';
 
 interface GenerateWorkoutRequest {
   fitnessLevel: 'beginner' | 'intermediate' | 'advanced';
@@ -22,8 +13,12 @@ interface GenerateWorkoutRequest {
 
 export async function POST(request: NextRequest) {
   try {
-    const body: GenerateWorkoutRequest = await request.json();
-    
+    const parsed = await parseJsonBody<GenerateWorkoutRequest>(request);
+    if (!parsed.ok) {
+      return parsed.response;
+    }
+    const body = parsed.data;
+
     if (!process.env.OPENAI_API_KEY) {
       console.error('OPENAI_API_KEY is missing');
       return NextResponse.json(
@@ -31,6 +26,30 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    const missing = missingFields(body as unknown as Record<string, unknown>, [
+      'fitnessLevel',
+      'workoutType',
+      'focusArea',
+      'duration',
+      'equipment',
+    ]);
+    if (missing.length > 0) {
+      return missingFieldsResponse(missing);
+    }
+
+    if (!Array.isArray(body.equipment)) {
+      return NextResponse.json(
+        { error: 'Field "equipment" must be an array' },
+        { status: 400 }
+      );
+    }
+
+    // Initialize OpenAI client inside the function so a missing key surfaces as
+    // the JSON error above rather than crashing the module at import time.
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
 
     console.log('Generating workout with params:', {
       fitnessLevel: body.fitnessLevel,

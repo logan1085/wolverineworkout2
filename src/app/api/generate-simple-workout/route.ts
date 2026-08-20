@@ -1,13 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { getWorkoutGenerationPrompt, WORKOUT_SYSTEM_PROMPT, type WorkoutGenerationParams } from '@/prompts';
+import { missingFields, missingFieldsResponse, parseJsonBody } from '@/lib/api-validation';
 
 interface GenerateSimpleWorkoutRequest extends WorkoutGenerationParams {}
 
 export async function POST(request: NextRequest) {
   try {
-    const body: GenerateSimpleWorkoutRequest = await request.json();
-    
+    const parsed = await parseJsonBody<GenerateSimpleWorkoutRequest>(request);
+    if (!parsed.ok) {
+      return parsed.response;
+    }
+    const body = parsed.data;
+
+    const missing = missingFields(body as unknown as Record<string, unknown>, [
+      'fitnessLevel',
+      'goals',
+      'timeAvailable',
+      'equipment',
+    ]);
+    if (missing.length > 0) {
+      return missingFieldsResponse(missing);
+    }
+
     if (!process.env.OPENAI_API_KEY) {
       console.error('OPENAI_API_KEY is missing');
       return NextResponse.json(

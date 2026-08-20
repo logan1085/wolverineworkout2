@@ -1,4 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { parseJsonBody } from '@/lib/api-validation';
+
+interface RealtimeSessionRequest {
+  model?: string;
+  voice?: string;
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,8 +15,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body = await request.json();
-    const { model = 'gpt-4o-realtime-preview-2024-12-17', voice = 'echo' } = body;
+    const parsed = await parseJsonBody<RealtimeSessionRequest>(request);
+    if (!parsed.ok) {
+      return parsed.response;
+    }
+    const { model = 'gpt-4o-realtime-preview-2024-12-17', voice = 'echo' } = parsed.data;
 
     const response = await fetch('https://api.openai.com/v1/realtime/sessions', {
       method: 'POST',
@@ -27,9 +36,11 @@ export async function POST(request: NextRequest) {
     if (!response.ok) {
       const errorData = await response.text();
       console.error('OpenAI API error:', errorData);
+      // Report as a gateway failure - forwarding OpenAI's status would tell the
+      // caller *they* were unauthorized when it is our server key that failed.
       return NextResponse.json(
-        { error: 'Failed to create realtime session' },
-        { status: response.status }
+        { error: 'Failed to create realtime session', upstreamStatus: response.status },
+        { status: 502 }
       );
     }
 

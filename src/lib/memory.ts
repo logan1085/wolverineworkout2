@@ -12,40 +12,48 @@ export interface UserFitnessProfile {
 }
 
 class MemoryService {
-  private memory: MemoryClient;
+  private memory: MemoryClient | null = null;
   private initialized = false;
   private enabled = true; // Toggle to disable memory for testing
-
-  constructor() {
-    this.memory = new MemoryClient({
-      apiKey: process.env.MEM0_API_KEY || '',
-    });
-  }
 
   setEnabled(enabled: boolean) {
     this.enabled = enabled;
   }
 
-  async init() {
-    if (!this.initialized) {
-      // Check if API key is configured
-      if (!process.env.MEM0_API_KEY) {
+  /**
+   * Build the Mem0 client on first use, or return null when memory is turned
+   * off or unconfigured. MemoryClient throws without an API key, so it must
+   * never be constructed at module scope - that would take down every route
+   * that imports this module rather than just disabling memory.
+   */
+  private getClient(): MemoryClient | null {
+    if (!this.enabled) return null;
+
+    if (!process.env.MEM0_API_KEY) {
+      if (!this.initialized) {
         console.warn('MEM0_API_KEY not found in environment variables. Memory features will be disabled.');
-        this.enabled = false;
-        return;
+        this.initialized = true;
       }
-      
+      this.enabled = false;
+      return null;
+    }
+
+    if (!this.memory) {
       console.log('Initializing cloud Mem0 with API key...');
+      this.memory = new MemoryClient({ apiKey: process.env.MEM0_API_KEY });
       this.initialized = true;
     }
+
+    return this.memory;
   }
 
   async storeUserPreferences(userId: string, context: any, message: string) {
     // Run memory storage in background to not slow down chat
     setTimeout(async () => {
       try {
-        await this.init();
-        
+        const client = this.getClient();
+        if (!client) return;
+
         // Store conversation context as memories
         const memories = [];
         
@@ -69,8 +77,8 @@ class MemoryService {
         }
 
         // Store memories in parallel for better performance
-        const storePromises = memories.map(memoryText => 
-          this.memory.add([{ role: 'user', content: memoryText }], { 
+        const storePromises = memories.map(memoryText =>
+          client.add([{ role: 'user', content: memoryText }], {
             user_id: userId, 
             metadata: { 
               type: 'fitness_preference',
@@ -81,7 +89,7 @@ class MemoryService {
 
         // Also store the raw conversation for context
         storePromises.push(
-          this.memory.add([{ role: 'user', content: `User said: "${message}"` }], {
+          client.add([{ role: 'user', content: `User said: "${message}"` }], {
             user_id: userId,
             metadata: {
               type: 'conversation',
@@ -99,14 +107,13 @@ class MemoryService {
   }
 
   async getUserMemories(userId: string, query: string = ''): Promise<any[]> {
-    if (!this.enabled) return [];
-    
     try {
-      await this.init();
-      
+      const client = this.getClient();
+      if (!client) return [];
+
       // Search for relevant memories
       const searchQuery = query || 'fitness preferences workout goals equipment time';
-      const memories = await this.memory.search(searchQuery, { user_id: userId });
+      const memories = await client.search(searchQuery, { user_id: userId });
       
       console.log('Retrieved memories for user:', userId, memories);
       

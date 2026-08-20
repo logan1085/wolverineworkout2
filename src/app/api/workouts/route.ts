@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Workout, Exercise } from '@/types/workout';
-
-// In-memory storage (replace with database later)
-let workouts: Workout[] = [];
+import { CreateWorkoutRequest } from '@/types/workout';
+import { StoredWorkout, workouts } from '@/lib/workout-store';
+import { missingFields, missingFieldsResponse, parseJsonBody } from '@/lib/api-validation';
 
 export async function GET() {
   try {
@@ -17,20 +16,33 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    
+    const parsed = await parseJsonBody<CreateWorkoutRequest>(request);
+    if (!parsed.ok) {
+      return parsed.response;
+    }
+    const body = parsed.data;
+
     // Validate required fields
-    if (!body.name || !body.date || !body.exercises) {
+    const missing = missingFields(body as unknown as Record<string, unknown>, [
+      'name',
+      'date',
+      'exercises',
+    ]);
+    if (missing.length > 0) {
+      return missingFieldsResponse(missing);
+    }
+
+    if (!Array.isArray(body.exercises)) {
       return NextResponse.json(
-        { error: 'Missing required fields: name, date, exercises' },
+        { error: 'Field "exercises" must be an array' },
         { status: 400 }
       );
     }
 
     // Generate unique ID
     const id = crypto.randomUUID();
-    
-    const newWorkout: Workout = {
+
+    const newWorkout: StoredWorkout = {
       id,
       name: body.name,
       date: body.date,
@@ -40,7 +52,7 @@ export async function POST(request: NextRequest) {
     };
 
     workouts.push(newWorkout);
-    
+
     return NextResponse.json(newWorkout, { status: 201 });
   } catch (error) {
     return NextResponse.json(
@@ -48,4 +60,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}
