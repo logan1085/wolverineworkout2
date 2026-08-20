@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback, forwardRef, useImperativeHandle } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Workout, Exercise } from '@/types/workout';
 import { getVoiceCoachPrompt } from '@/prompts';
 import { log } from '@/lib/logger';
@@ -40,18 +40,61 @@ interface VoiceChatState {
   error: string | null;
 }
 
-const VoiceChat = forwardRef<
-  { restartVoiceChat: () => void },
-  VoiceChatProps
->(({ 
-  workout, 
-  currentExercise, 
-  currentExerciseIndex, 
+/**
+ * One "Connected"/"Listening"/"Logan Speaking" pill.
+ *
+ * Whether each one is on used to be carried entirely by colour, so a screen
+ * reader read the same three labels no matter what the session was doing, and
+ * so did anyone who cannot separate the grey from the green. The sr-only yes/no
+ * states it outright.
+ */
+function StatusDot({
+  label,
+  active,
+  activeClassName,
+  dotClassName,
+}: {
+  label: string;
+  active: boolean;
+  activeClassName: string;
+  dotClassName: string;
+}) {
+  return (
+    <div className={`flex items-center space-x-2 ${active ? activeClassName : 'text-gray-400'}`}>
+      <div aria-hidden="true" className={`w-2 h-2 rounded-full ${active ? dotClassName : 'bg-gray-500'}`} />
+      <span className="text-sm">
+        {label}
+        <span className="sr-only">: {active ? 'yes' : 'no'}</span>
+      </span>
+    </div>
+  );
+}
+
+/** Turns a getUserMedia rejection into something a user can act on. */
+function describeMicrophoneError(error: unknown): string {
+  const name = error instanceof Error ? error.name : '';
+
+  if (name === 'NotAllowedError' || name === 'SecurityError') {
+    return 'Microphone access is blocked. Allow it for this site in your browser settings, then start the voice coach again.';
+  }
+  if (name === 'NotFoundError' || name === 'OverconstrainedError') {
+    return "We couldn't find a microphone. Connect one and try again.";
+  }
+  if (name === 'NotReadableError') {
+    return 'Your microphone is in use by another app. Close it and try again.';
+  }
+  return 'We could not access your microphone. Please try again.';
+}
+
+export default function VoiceChat({
+  workout,
+  currentExercise,
+  currentExerciseIndex,
   exerciseStates,
   onCompleteSet,
   isActive = false,
-  onToggle
-}, ref) => {
+  onToggle,
+}: VoiceChatProps) {
   const [voiceState, setVoiceState] = useState<VoiceChatState>({
     isConnected: false,
     isListening: false,
@@ -73,16 +116,6 @@ const VoiceChat = forwardRef<
       audioElementRef.current.autoplay = true;
     }
   }, []);
-
-  // Expose methods to parent component
-  useImperativeHandle(ref, () => ({
-    restartVoiceChat: () => {
-      log.debug('🔄 Stopping voice chat for exercise change...');
-      if (voiceState.isConnected) {
-        stopVoiceChat();
-      }
-    }
-  }), [voiceState.isConnected]);
 
   // Get ephemeral key from our server
   const getEphemeralKey = async (): Promise<string> => {
@@ -192,10 +225,16 @@ const VoiceChat = forwardRef<
         }
       };
 
-      // Get user media (microphone)
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        audio: true
-      });
+      // Get user media (microphone). Denying the permission prompt is the most
+      // likely way this call fails and by far the most likely failure overall,
+      // so it gets its own message instead of surfacing the browser's raw
+      // "Permission denied" DOMException text.
+      let mediaStream: MediaStream;
+      try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      } catch (mediaError) {
+        throw new Error(describeMicrophoneError(mediaError));
+      }
       mediaStreamRef.current = mediaStream;
 
       const audioTrack = mediaStream.getAudioTracks()[0];
@@ -458,36 +497,60 @@ const VoiceChat = forwardRef<
     }
   }, [voiceState.isConnected, updateSession]);
 
-  // Announce exercise changes and update session
+  // Read through a ref so the announce effect below does not have to list
+  // `updateSession` as a dependency. That callback is rebuilt every time
+  // `exerciseStates` changes - i.e. on every completed set - which re-ran the
+  // effect and had Logan launch into "Time for Squats! pump me up!" again in
+  // the middle of an exercise you were already halfway through.
+  const updateSessionRef = useRef(updateSession);
   useEffect(() => {
-    if (voiceState.isConnected && dataChannelRef.current && dataChannelRef.current.readyState === 'open') {
-      log.debug(`🔄 Exercise changed to: ${currentExercise.name} (index: ${currentExerciseIndex})`);
-      
-      // Update the session with new exercise context first
-      updateSession();
-      
-      // Send a message to trigger Logan to acknowledge the exercise change
-      setTimeout(() => {
-        if (dataChannelRef.current && dataChannelRef.current.readyState === 'open') {
-          const announceEvent = {
-            type: 'conversation.item.create',
-            item: {
-              type: 'message',
-              role: 'user',
-              content: [{
-                type: 'input_text', 
-                text: `Time for ${currentExercise.name}! Let's go coach, pump me up and give me your best form tips!`
-              }]
-            }
-          };
-          
-          log.debug('📢 Sending exercise change notification to Logan');
-          dataChannelRef.current.send(JSON.stringify(announceEvent));
-          dataChannelRef.current.send(JSON.stringify({ type: 'response.create' }));
-        }
-      }, 1000); // Longer delay to ensure session update is processed
+    updateSessionRef.current = updateSession;
+  }, [updateSession]);
+
+  // Announce exercise changes and update session
+  const announcedExerciseRef = useRef<number | null>(null);
+  useEffect(() => {
+    if (!voiceState.isConnected || dataChannelRef.current?.readyState !== 'open') {
+      // Reconnecting should reintroduce the current exercise, so forget what
+      // was announced on the previous session.
+      announcedExerciseRef.current = null;
+      return;
     }
-  }, [currentExerciseIndex, voiceState.isConnected, currentExercise.name, updateSession]);
+
+    if (announcedExerciseRef.current === currentExerciseIndex) return;
+    announcedExerciseRef.current = currentExerciseIndex;
+
+    log.debug(`🔄 Exercise changed to: ${currentExercise.name} (index: ${currentExerciseIndex})`);
+
+    // Update the session with new exercise context first
+    updateSessionRef.current();
+
+    // Send a message to trigger Logan to acknowledge the exercise change
+    const timer = setTimeout(() => {
+      if (dataChannelRef.current && dataChannelRef.current.readyState === 'open') {
+        const announceEvent = {
+          type: 'conversation.item.create',
+          item: {
+            type: 'message',
+            role: 'user',
+            content: [{
+              type: 'input_text',
+              text: `Time for ${currentExercise.name}! Let's go coach, pump me up and give me your best form tips!`
+            }]
+          }
+        };
+
+        log.debug('📢 Sending exercise change notification to Logan');
+        dataChannelRef.current.send(JSON.stringify(announceEvent));
+        dataChannelRef.current.send(JSON.stringify({ type: 'response.create' }));
+      }
+    }, 1000); // Longer delay to ensure session update is processed
+
+    return () => clearTimeout(timer);
+  }, [currentExerciseIndex, voiceState.isConnected, currentExercise.name]);
+
+  const completedSetCount =
+    exerciseStates[currentExerciseIndex]?.sets.filter(set => set.completed).length ?? 0;
 
   return (
     <div className={`bg-gray-900 rounded-2xl p-4 border border-gray-600 transition-all duration-300 ${
@@ -517,38 +580,22 @@ const VoiceChat = forwardRef<
 
       {/* Status indicators */}
       <div className="flex items-center space-x-4 mb-4">
-        <div className={`flex items-center space-x-2 ${
-          voiceState.isConnected ? 'text-green-400' : 'text-gray-400'
-        }`}>
-          <div className={`w-2 h-2 rounded-full ${
-            voiceState.isConnected ? 'bg-green-400' : 'bg-gray-500'
-          }`}></div>
-          <span className="text-sm">Connected</span>
-        </div>
-
-        <div className={`flex items-center space-x-2 ${
-          voiceState.isListening ? 'text-blue-400' : 'text-gray-400'
-        }`}>
-          <div className={`w-2 h-2 rounded-full ${
-            voiceState.isListening ? 'bg-blue-400 animate-pulse' : 'bg-gray-500'
-          }`}></div>
-          <span className="text-sm">Listening</span>
-        </div>
-
-        <div className={`flex items-center space-x-2 ${
-          voiceState.isSpeaking ? 'text-purple-400' : 'text-gray-400'
-        }`}>
-          <div className={`w-2 h-2 rounded-full ${
-            voiceState.isSpeaking ? 'bg-purple-400 animate-pulse' : 'bg-gray-500'
-          }`}></div>
-          <span className="text-sm">Logan Speaking</span>
-        </div>
+        <StatusDot label="Connected" active={voiceState.isConnected} activeClassName="text-green-400" dotClassName="bg-green-400" />
+        <StatusDot label="Listening" active={voiceState.isListening} activeClassName="text-blue-400" dotClassName="bg-blue-400 animate-pulse" />
+        <StatusDot label="Logan Speaking" active={voiceState.isSpeaking} activeClassName="text-purple-400" dotClassName="bg-purple-400 animate-pulse" />
       </div>
 
       {/* Error display */}
       {voiceState.error && (
-        <div className="bg-red-900 border border-red-600 rounded-lg p-3 mb-4">
+        <div role="alert" className="bg-red-900 border border-red-600 rounded-lg p-3 mb-4 flex items-start justify-between gap-3">
           <p className="text-red-200 text-sm">{voiceState.error}</p>
+          <button
+            onClick={() => setVoiceState(prev => ({ ...prev, error: null }))}
+            aria-label="Dismiss voice coach error"
+            className="shrink-0 px-2 text-red-300 hover:text-white text-sm leading-none"
+          >
+            ✕
+          </button>
         </div>
       )}
 
@@ -558,8 +605,13 @@ const VoiceChat = forwardRef<
           <p className="text-gray-300 text-sm mb-2">
             🔥 Say &quot;Hey Logan&quot; for motivation, form tips, or coaching!
           </p>
+          {/* Once every set was ticked off this counted past the end and read
+              "Set 4 of 3". */}
           <div className="text-xs text-gray-400">
-            Current: {currentExercise.name} - Set {(exerciseStates[currentExerciseIndex]?.sets.filter(s => s.completed).length || 0) + 1} of {currentExercise.sets}
+            Current: {currentExercise.name} —{' '}
+            {completedSetCount >= currentExercise.sets
+              ? 'all sets complete'
+              : `set ${completedSetCount + 1} of ${currentExercise.sets}`}
           </div>
           <div className="text-xs text-green-400 mt-1">
             💪 Say &quot;Set done!&quot; or &quot;Finished the set!&quot; to mark it complete!
@@ -576,8 +628,4 @@ const VoiceChat = forwardRef<
       )}
     </div>
   );
-});
-
-VoiceChat.displayName = 'VoiceChat';
-
-export default VoiceChat;
+}

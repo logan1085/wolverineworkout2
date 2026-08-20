@@ -25,6 +25,21 @@ export default function WorkoutComplete({ workout, onStartOver }: WorkoutComplet
   // The message is chosen from what actually happened. It previously always
   // read "you completed every exercise", which was plainly wrong for anyone who
   // stopped early - and undercuts the encouragement when it is wrong.
+  // The banner is chosen the same way as Logan's message below it. It was
+  // fixed at "🎉 Workout Complete! / Amazing job! You crushed it today!", which
+  // contradicted the message directly underneath it when someone had logged
+  // half the session or none of it - the screen congratulated you on a workout
+  // and then, two panels down, acknowledged you had not done it.
+  const banner = finishedEverything
+    ? { emoji: '🎉', heading: 'Workout complete!', subheading: 'Amazing job! You crushed it today! 💪' }
+    : completedSets > 0
+    ? {
+        emoji: '💪',
+        heading: 'Session logged',
+        subheading: `You got through ${completedSets} of ${plannedSets} sets.`,
+      }
+    : { emoji: '📋', heading: 'Session ended', subheading: 'Nothing logged this time - the plan is saved.' };
+
   const loganMessage = finishedEverything
     ? 'Outstanding work today. You showed up, put in the effort, and finished every ' +
       'exercise on the list. That is how progress gets made - one session at a time. ' +
@@ -39,9 +54,9 @@ export default function WorkoutComplete({ workout, onStartOver }: WorkoutComplet
   return (
     <div className="bg-gray-800 rounded-3xl shadow-2xl p-4 md:p-8 border border-gray-700 text-center">
       <div className="mb-6 md:mb-8">
-        <div className="text-4xl md:text-6xl mb-4">🎉</div>
-        <h2 className="text-2xl md:text-4xl font-bold text-white mb-2">Workout Complete!</h2>
-        <p className="text-lg md:text-xl text-gray-300">Amazing job! You crushed it today! 💪</p>
+        <div className="text-4xl md:text-6xl mb-4" aria-hidden="true">{banner.emoji}</div>
+        <h2 className="text-2xl md:text-4xl font-bold text-white mb-2">{banner.heading}</h2>
+        <p className="text-lg md:text-xl text-gray-300">{banner.subheading}</p>
       </div>
 
       <div className="bg-gray-900 rounded-2xl p-4 md:p-6 mb-6 md:mb-8 border border-gray-600">

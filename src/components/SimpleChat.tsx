@@ -10,6 +10,7 @@ import {
   type ConversationContext,
 } from '@/lib/conversation-context';
 import { DEV_TOOLS_ENABLED } from '@/lib/dev-tools';
+import LoganAvatar from './LoganAvatar';
 
 interface SimpleChatProps {
   onWorkoutProposed: (workout: Workout) => void;
@@ -100,18 +101,26 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
         // A missing profile is not fatal - the conversation just starts blank.
       }
 
+      // Held outside the try so the catch below can tell "we never got a chat"
+      // (the input is dead) from "we got one but couldn't read its history"
+      // (the input works fine). The two need different copy.
+      let activeChat: Chat | null = null;
+
       try {
         const chat = await DatabaseService.getOrCreateActiveChat(userId);
         if (cancelled) return;
 
         if (!chat) {
-          // No chat means nothing can be persisted, so say so rather than
-          // letting the user type into a dead input.
+          // No chat means nothing can be sent or persisted. The old wording -
+          // "this session won't be remembered" - implied the conversation could
+          // continue unsaved, but `sendMessage` bails without a chat and the
+          // input is disabled, so the user was told to carry on into a dead end.
           setMessages([{ id: 'greeting', text: GREETING, sender: 'logan', timestamp: new Date() }]);
-          setError("We couldn't reach your saved chats, so this session won't be remembered.");
+          setError("We couldn't start your chat session. Please reload the page to try again.");
           return;
         }
 
+        activeChat = chat;
         setCurrentChat(chat);
 
         const chatMessages = await DatabaseService.getChatMessages(chat.id);
@@ -140,7 +149,11 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
       } catch {
         if (cancelled) return;
         setMessages([{ id: 'greeting', text: GREETING, sender: 'logan', timestamp: new Date() }]);
-        setError("We couldn't load your chat history. You can still talk to Logan.");
+        setError(
+          activeChat
+            ? "We couldn't load your earlier messages, but you can still talk to Logan."
+            : "We couldn't start your chat session. Please reload the page to try again."
+        );
       } finally {
         if (!cancelled) setIsInitializing(false);
       }
@@ -153,9 +166,19 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
     };
   }, [userId]);
 
-  // Auto-scroll to the latest message.
+  // Auto-scroll to the latest message. The first pass jumps rather than
+  // animates: restoring a long history used to smooth-scroll the whole
+  // transcript past you on load, which read as the page running away.
+  // `block: 'end'` keeps it to the scroll container instead of also nudging
+  // the window.
+  const hasAutoScrolledRef = useRef(false);
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messages.length === 0) return;
+    messagesEndRef.current?.scrollIntoView({
+      behavior: hasAutoScrolledRef.current ? 'smooth' : 'auto',
+      block: 'end',
+    });
+    hasAutoScrolledRef.current = true;
   }, [messages]);
 
   // Return focus to the input once Logan has replied.
@@ -394,22 +417,10 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
       <div className="hidden md:block bg-gradient-to-r from-teal-600 to-blue-700 text-white p-4 md:p-6 rounded-t-3xl">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3 md:space-x-4">
-            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden border-2 border-white/30">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/logan-profile.jpg"
-                alt="Logan - AI Personal Trainer"
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                  target.nextElementSibling?.classList.remove('hidden');
-                }}
-              />
-              <div className="hidden w-full h-full bg-white/20 rounded-full flex items-center justify-center">
-                <span className="text-lg md:text-xl font-bold">L</span>
-              </div>
-            </div>
+            <LoganAvatar
+              className="w-10 h-10 md:w-12 md:h-12 border-2 border-white/30"
+              fallbackClassName="bg-white/20 text-lg md:text-xl"
+            />
             <div>
               <h2 className="text-lg md:text-xl font-bold">Logan</h2>
               <p className="text-xs md:text-sm opacity-90">Your AI Personal Trainer</p>
@@ -462,7 +473,9 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
         ))}
 
         {isLoading && (
-          <div className="flex justify-start">
+          // role="status" so the sr-only text is actually announced. Without a
+          // live region it was rendered for screen readers and then never read.
+          <div className="flex justify-start" role="status">
             <div className="bg-gray-700 text-white px-3 md:px-4 py-2 md:py-3 rounded-2xl border border-gray-600">
               <span className="sr-only">Logan is typing</span>
               <div className="flex space-x-1" aria-hidden="true">
@@ -488,7 +501,7 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
             <button
               onClick={() => setError(null)}
               aria-label="Dismiss error"
-              className="text-red-300 hover:text-white text-sm leading-none"
+              className="shrink-0 px-2 text-red-300 hover:text-white text-sm leading-none"
             >
               ✕
             </button>
@@ -502,7 +515,7 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
                 key={starter}
                 onClick={() => sendMessage(starter)}
                 disabled={inputDisabled}
-                className="rounded-full border border-gray-600 bg-gray-700/60 px-3 py-1.5 text-xs text-gray-200 transition-colors hover:bg-gray-600 disabled:opacity-50"
+                className="rounded-full border border-gray-600 bg-gray-700/60 px-3 py-1.5 text-xs text-gray-200 transition-colors hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {starter}
               </button>
@@ -549,7 +562,12 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
             onChange={(e) => setInputText(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={isGeneratingWorkout ? 'Building your workout…' : 'Type your message…'}
-            className="flex-1 bg-gray-700 text-white rounded-xl px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 border border-gray-600 text-sm md:text-base"
+            // Free text, not a form field: autofill has nothing useful to offer
+            // and its dropdown covers the transcript. enterKeyHint labels the
+            // mobile return key "send", which is what it does here.
+            autoComplete="off"
+            enterKeyHint="send"
+            className="flex-1 min-w-0 bg-gray-700 text-white rounded-xl px-3 md:px-4 py-2 md:py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 border border-gray-600 text-sm md:text-base disabled:cursor-not-allowed"
             disabled={inputDisabled}
           />
           <button

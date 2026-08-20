@@ -26,7 +26,6 @@ export default function ActiveWorkout({ workout, onComplete, onExit }: ActiveWor
   // state re-ran `new Date()` on every render while `setStartTime` went unused.
   const startTimeRef = useRef<number>(Date.now());
   const [elapsedTime, setElapsedTime] = useState(0);
-  const voiceChatRef = useRef<{ restartVoiceChat: () => void } | null>(null);
 
   // Initialize exercise states
   useEffect(() => {
@@ -78,22 +77,33 @@ export default function ActiveWorkout({ workout, onComplete, onExit }: ActiveWor
     );
   };
 
-  const completeSet = (exerciseIndex: number, setIndex: number) => {
+  // Takes the target state rather than always completing, so a set can be
+  // un-ticked. There was no way back before: a mis-tap, or the voice coach
+  // mishearing a "set done", permanently locked that set's reps and weight and
+  // counted it toward the summary.
+  const setSetCompletion = (exerciseIndex: number, setIndex: number, completed: boolean) => {
     setExerciseStates(prev =>
       prev.map((exerciseState, i) => {
         if (i !== exerciseIndex) return exerciseState;
 
         const sets = exerciseState.sets.map((set, j) =>
-          j !== setIndex ? set : { ...set, completed: true }
+          j !== setIndex ? set : { ...set, completed }
         );
 
         return {
           ...exerciseState,
           sets,
-          completed: sets.every(set => set.completed),
+          // `every` is vacuously true on an empty array, which marked an
+          // exercise the model gave zero sets as done before it was touched.
+          completed: sets.length > 0 && sets.every(set => set.completed),
         };
       })
     );
+  };
+
+  // The voice coach only ever completes a set, never reopens one.
+  const completeSet = (exerciseIndex: number, setIndex: number) => {
+    setSetCompletion(exerciseIndex, setIndex, true);
   };
 
   const currentExercise = workout.exercises?.[currentExerciseIndex];
@@ -140,17 +150,21 @@ export default function ActiveWorkout({ workout, onComplete, onExit }: ActiveWor
     handleCompleteWorkout();
   };
 
+  // Moving between exercises no longer tears down the voice session. The method
+  // this called was named `restartVoiceChat` but only ever stopped the call, so
+  // tapping "Next Exercise" hung up on the coach and you had to press "Start
+  // Voice" again for every exercise. It also made VoiceChat's announce-the-new-
+  // exercise effect unreachable, since that effect only runs while connected.
+  // VoiceChat already re-sends its session instructions when the index changes.
   const handleExerciseChange = (newIndex: number) => {
-    // Restart voice chat when changing exercises
-    if (voiceChatRef.current) {
-      voiceChatRef.current.restartVoiceChat();
-    }
     setCurrentExerciseIndex(newIndex);
   };
 
   const handleExit = () => {
+    // This returns to the workout preview, not the chat, and the previous
+    // wording said otherwise.
     const confirmed = window.confirm(
-      'Leave this workout and go back to the chat? Your progress in this session will not be saved.'
+      'Leave this workout and go back to the preview? Nothing you logged in this session will be saved.'
     );
     if (confirmed) onExit();
   };
@@ -202,8 +216,7 @@ export default function ActiveWorkout({ workout, onComplete, onExit }: ActiveWor
 
       {/* Voice Chat */}
       <div className="mb-6 md:mb-8">
-        <VoiceChat 
-          ref={voiceChatRef}
+        <VoiceChat
           workout={workout}
           currentExercise={currentExercise}
           currentExerciseIndex={currentExerciseIndex}
@@ -242,39 +255,62 @@ export default function ActiveWorkout({ workout, onComplete, onExit }: ActiveWor
                 <span className="text-white font-semibold">Set {setIndex + 1}</span>
                 <div className="flex flex-col space-y-3 md:flex-row md:items-center md:space-y-0 md:space-x-4">
                   <div className="flex items-center space-x-2">
-                    <label className="text-gray-300 text-sm min-w-[40px]">Reps:</label>
+                    <label className="text-gray-300 text-sm min-w-[40px]" htmlFor={`reps-${currentExerciseIndex}-${setIndex}`}>
+                      Reps:
+                    </label>
                     <input
+                      id={`reps-${currentExerciseIndex}-${setIndex}`}
                       type="number"
+                      // min/inputMode: nothing stopped a negative rep count
+                      // being typed or spun into the log, and the plain numeric
+                      // keypad is the right one for whole reps.
+                      min={0}
+                      inputMode="numeric"
                       value={set.reps}
                       onChange={(e) => updateSet(currentExerciseIndex, setIndex, 'reps', parseInt(e.target.value) || 0)}
-                      className="w-16 bg-gray-700 text-white rounded px-2 py-1 text-center text-base"
+                      className="w-16 bg-gray-700 text-white rounded px-2 py-1 text-center text-base disabled:opacity-60"
                       disabled={set.completed}
                       style={{ fontSize: '16px' }}
                     />
                   </div>
                   <div className="flex items-center space-x-2">
-                    <label className="text-gray-300 text-sm min-w-[50px]">Weight:</label>
+                    <label className="text-gray-300 text-sm min-w-[50px]" htmlFor={`weight-${currentExerciseIndex}-${setIndex}`}>
+                      Weight:
+                    </label>
                     <input
+                      id={`weight-${currentExerciseIndex}-${setIndex}`}
                       type="number"
+                      min={0}
+                      step="any"
+                      inputMode="decimal"
                       value={set.weight}
                       onChange={(e) => updateSet(currentExerciseIndex, setIndex, 'weight', parseFloat(e.target.value) || 0)}
-                      className="w-20 bg-gray-700 text-white rounded px-2 py-1 text-center text-base"
+                      className="w-20 bg-gray-700 text-white rounded px-2 py-1 text-center text-base disabled:opacity-60"
                       disabled={set.completed}
                       style={{ fontSize: '16px' }}
                     />
                     <span className="text-gray-400 text-sm">lbs</span>
                   </div>
-                  <button
-                    onClick={() => completeSet(currentExerciseIndex, setIndex)}
-                    disabled={set.completed}
-                    className={`px-4 py-2 rounded-lg font-semibold transition-all duration-200 w-full md:w-auto text-sm md:text-base ${
-                      set.completed
-                        ? 'bg-green-600 text-white cursor-not-allowed'
-                        : 'bg-teal-600 text-white hover:bg-teal-700'
-                    }`}
-                  >
-                    {set.completed ? '✓ Done' : 'Complete Set'}
-                  </button>
+                  {set.completed ? (
+                    <div className="flex items-center gap-2 w-full md:w-auto">
+                      <span className="flex-1 md:flex-none px-4 py-2 rounded-lg font-semibold bg-green-600 text-white text-center text-sm md:text-base">
+                        ✓ Done
+                      </span>
+                      <button
+                        onClick={() => setSetCompletion(currentExerciseIndex, setIndex, false)}
+                        className="px-3 py-2 rounded-lg text-sm text-gray-300 border border-gray-600 hover:bg-gray-700 hover:text-white transition-colors"
+                      >
+                        Undo
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => completeSet(currentExerciseIndex, setIndex)}
+                      className="px-4 py-2 rounded-lg font-semibold transition-all duration-200 w-full md:w-auto text-sm md:text-base bg-teal-600 text-white hover:bg-teal-700"
+                    >
+                      Complete Set
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
