@@ -53,7 +53,7 @@ export default function AuthForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full bg-gray-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 border border-gray-600"
+              className="w-full bg-gray-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 border border-gray-600 hover:border-gray-500 transition-colors duration-200"
               placeholder="Enter your email"
             />
           </div>
@@ -68,7 +68,7 @@ export default function AuthForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full bg-gray-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 border border-gray-600"
+              className="w-full bg-gray-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-500 border border-gray-600 hover:border-gray-500 transition-colors duration-200"
               placeholder="Enter your password"
             />
           </div>
@@ -95,7 +95,7 @@ export default function AuthForm() {
             <button
               type="button"
               onClick={() => setIsLogin(!isLogin)}
-              className="text-teal-400 hover:text-teal-300 text-sm"
+              className="text-teal-400 hover:text-teal-300 text-sm transition-colors duration-200"
             >
               {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
             </button>
