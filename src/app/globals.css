@@ -11,6 +11,11 @@
 :root {
   --background: #0a0a0a;
   --foreground: #ededed;
+
+  /* Height of the fixed mobile header, including its 1px bottom border. The
+     header sets its own box to this, and the content area offsets and subtracts
+     it, so the three stay in step. */
+  --header-h: 73px;
 }
 
 @theme inline {

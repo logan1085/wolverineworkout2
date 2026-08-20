@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { User } from '@supabase/supabase-js';
 import SimpleChat from '@/components/SimpleChat';
+import LoganAvatar from '@/components/LoganAvatar';
 import WorkoutProposal from '@/components/WorkoutProposal';
 import ActiveWorkout from '@/components/ActiveWorkout';
 import WorkoutComplete from '@/components/WorkoutComplete';
@@ -21,7 +22,7 @@ function LogoutButton() {
   return (
     <button
       onClick={signOut}
-      className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded-lg text-sm transition-colors"
+      className="shrink-0 bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded-lg text-sm transition-colors"
     >
       Sign Out
     </button>
@@ -34,6 +35,9 @@ function MobileHeader({ user, onMenuToggle, isMenuOpen }: {
   isMenuOpen: boolean;
 }) {
   const { signOut } = useAuth();
+  const menuRef = useRef<HTMLDivElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const wasOpenRef = useRef(false);
 
   // Escape closes the slide-out menu, so keyboard users aren't trapped behind
   // an overlay that previously only responded to a click on the backdrop.
@@ -48,12 +52,30 @@ function MobileHeader({ user, onMenuToggle, isMenuOpen }: {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isMenuOpen, onMenuToggle]);
 
+  // Move focus into the panel when it opens and hand it back to the hamburger
+  // when it closes. Without this the panel announced itself as a modal while
+  // focus stayed on the page behind it, so a keyboard or screen-reader user
+  // opened the menu and then tabbed through content they could not see.
+  useEffect(() => {
+    if (isMenuOpen) {
+      wasOpenRef.current = true;
+      menuRef.current?.focus();
+    } else if (wasOpenRef.current) {
+      wasOpenRef.current = false;
+      toggleRef.current?.focus();
+    }
+  }, [isMenuOpen]);
+
   return (
     <div className="md:hidden">
-      {/* Mobile header */}
-      <div className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between p-4 bg-gray-900 border-b border-gray-700">
+      {/* Mobile header. The height is pinned to --header-h rather than derived
+          from padding: below 640px globals.css gives every button a 44px
+          minimum, which made this bar 4px taller than the offset the content
+          area subtracts, so the top of the chat sat under it. */}
+      <div className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 h-[calc(var(--header-h)-1px)] bg-gray-900 border-b border-gray-700">
         {/* Hamburger menu */}
         <button
+          ref={toggleRef}
           onClick={onMenuToggle}
           aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={isMenuOpen}
@@ -64,28 +86,12 @@ function MobileHeader({ user, onMenuToggle, isMenuOpen }: {
           </svg>
         </button>
 
-        {/* Center title with Logan */}
+        {/* Center title with Logan. The chevron that used to sit after the name
+            was decorative but read as a "tap for more" affordance on a label
+            that goes nowhere, so it is gone. */}
         <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 rounded-full overflow-hidden border border-gray-600">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img 
-              src="/logan-profile.jpg" 
-              alt="Logan"
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
-                target.nextElementSibling?.classList.remove('hidden');
-              }}
-            />
-            <div className="hidden w-full h-full bg-gray-600 rounded-full flex items-center justify-center">
-              <span className="text-sm font-bold text-white">L</span>
-            </div>
-          </div>
+          <LoganAvatar className="w-8 h-8 border border-gray-600" fallbackClassName="bg-gray-600 text-sm" />
           <span className="text-white font-medium">Logan</span>
-          <svg aria-hidden="true" className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
         </div>
 
         {/* Right side spacer for balance */}
@@ -96,30 +102,17 @@ function MobileHeader({ user, onMenuToggle, isMenuOpen }: {
       {isMenuOpen && (
         <div className="fixed inset-0 z-50 bg-black/50" onClick={onMenuToggle}>
           <div
+            ref={menuRef}
+            tabIndex={-1}
             role="dialog"
             aria-modal="true"
             aria-label="Account menu"
-            className="w-64 h-full bg-gray-800 shadow-lg"
+            className="w-64 h-full bg-gray-800 shadow-lg focus:outline-none"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-4 border-b border-gray-700">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-600">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img 
-                    src="/logan-profile.jpg" 
-                    alt="Logan"
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
-                      target.nextElementSibling?.classList.remove('hidden');
-                    }}
-                  />
-                  <div className="hidden w-full h-full bg-gray-600 rounded-full flex items-center justify-center">
-                    <span className="text-lg font-bold text-white">L</span>
-                  </div>
-                </div>
+                <LoganAvatar className="w-10 h-10 border border-gray-600" />
                 <div>
                   <h3 className="text-white font-medium">Logan</h3>
                   <p className="text-gray-400 text-sm">AI Personal Trainer</p>
@@ -129,8 +122,10 @@ function MobileHeader({ user, onMenuToggle, isMenuOpen }: {
             
             <div className="p-4">
               <div className="text-gray-400 text-sm mb-2">Signed in as:</div>
-              <div className="text-white text-sm mb-4">{user.email}</div>
-              
+              {/* break-all: the panel is only 16rem wide and a long address
+                  otherwise ran off the edge of it. */}
+              <div className="text-white text-sm mb-4 break-all">{user.email}</div>
+
               <button
                 onClick={() => {
                   onMenuToggle();
@@ -261,21 +256,35 @@ export default function Home() {
 
       {/* Desktop header - hidden on mobile */}
       <div className="hidden md:block container mx-auto px-4 py-4 md:py-8">
-        <header className="text-center mb-8 relative">
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-          👋 Hi, I&apos;m Logan
-          </h1>
-          <p className="text-gray-300">Your AI personal trainer</p>
-          
+        {/* The account controls used to be `absolute top-0 right-0` over a
+            full-width centred title. At the md breakpoint the two overlapped:
+            the greeting ran underneath "Welcome, <email>" and the Sign Out
+            button. Equal flex-1 rails on either side keep the title optically
+            centred while reserving real space for the controls. The responsive
+            variants that were on that block are gone too - this whole header is
+            already md-and-up, so they never applied. */}
+        <header className="mb-8 flex items-center justify-between gap-4">
+          <div className="flex-1" aria-hidden="true" />
+
+          <div className="text-center">
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+              👋 Hi, I&apos;m Logan
+            </h1>
+            <p className="text-gray-300">Your AI personal trainer</p>
+          </div>
+
           {/* User info and logout */}
-          <div className="absolute top-0 right-0 flex flex-col md:flex-row items-end md:items-center space-y-2 md:space-y-0 md:space-x-4">
-            <span className="hidden md:block text-gray-300 text-sm">
+          <div className="flex-1 min-w-0 flex items-center justify-end gap-4">
+            <span
+              className="text-gray-300 text-sm truncate"
+              title={user.email}
+            >
               Welcome, {user.email}
             </span>
             {DEV_TOOLS_ENABLED && (
               <button
                 onClick={() => setShowMemoryTest(!showMemoryTest)}
-                className="bg-teal-600 hover:bg-teal-700 text-white px-3 py-1 rounded-lg text-sm transition-colors"
+                className="shrink-0 bg-teal-600 hover:bg-teal-700 text-white px-3 py-1 rounded-lg text-sm transition-colors"
               >
                 🧠 {showMemoryTest ? 'Hide Memory Test' : 'Test Memory'}
               </button>
@@ -285,9 +294,13 @@ export default function Home() {
         </header>
       </div>
 
-      {/* Content area */}
-      <div className="pt-[73px] md:pt-0 h-screen md:h-auto md:container md:mx-auto md:px-4">
-        <div className="h-[calc(100vh-73px)] md:h-auto md:max-w-4xl md:mx-auto">
+      {/* Content area. dvh, not vh: on mobile browsers 100vh is the height with
+          the address bar retracted, so the chat's send button and input sat
+          below the fold behind the browser chrome until you scrolled. The
+          header offset is a shared token instead of a magic 73 in three
+          places. */}
+      <div className="pt-[var(--header-h)] md:pt-0 h-dvh md:h-auto md:container md:mx-auto md:px-4">
+        <div className="h-[calc(100dvh-var(--header-h))] md:h-auto md:max-w-4xl md:mx-auto">
           {/* Memory Test Component - developer tool, never in production */}
           {DEV_TOOLS_ENABLED && showMemoryTest && (
             <div className="mb-6">
