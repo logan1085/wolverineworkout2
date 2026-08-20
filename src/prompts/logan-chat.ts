@@ -1,12 +1,13 @@
-export interface ConversationContext {
-  fitnessLevel: string;
-  goals: string;
-  timeAvailable: string;
-  equipment: string;
-  focusAreas: string;
-  hasEnoughInfo: boolean;
-  userMemories?: any[];
-  userProfile?: any;
+import type { ConversationContext as BaseContext } from '@/lib/conversation-context';
+import type { StoredMemory, UserFitnessProfile } from '@/lib/memory';
+
+/**
+ * What the chat prompt needs: the context extracted from this conversation,
+ * plus anything recalled from previous ones.
+ */
+export interface ConversationContext extends BaseContext {
+  userMemories?: StoredMemory[];
+  userProfile?: UserFitnessProfile;
 }
 
 export function getLoganChatPrompt(context: ConversationContext): string {

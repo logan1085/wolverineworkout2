@@ -1,4 +1,5 @@
 import { MemoryClient } from 'mem0ai';
+import { log, redact } from '@/lib/logger';
 
 export interface UserFitnessProfile {
   fitnessLevel?: string;
@@ -9,6 +10,28 @@ export interface UserFitnessProfile {
   workoutFrequency?: string;
   preferences?: string[];
   pastWorkouts?: string[];
+}
+
+/** The subset of conversation context that gets persisted as memories. */
+export interface MemorableContext {
+  fitnessLevel?: string;
+  goals?: string;
+  timeAvailable?: string;
+  equipment?: string;
+  focusAreas?: string;
+  workoutFrequency?: string;
+}
+
+/**
+ * A single memory as returned by Mem0's search API.
+ *
+ * Deliberately structural rather than Mem0's own `Memory` type: the cloud API
+ * has returned bare arrays, `{results}` and `{memories}` shapes across
+ * versions, and `text` appears in some of them but not the published type.
+ */
+export interface StoredMemory {
+  memory?: string;
+  text?: string;
 }
 
 class MemoryService {
@@ -31,7 +54,7 @@ class MemoryService {
 
     if (!process.env.MEM0_API_KEY) {
       if (!this.initialized) {
-        console.warn('MEM0_API_KEY not found in environment variables. Memory features will be disabled.');
+        log.warn('MEM0_API_KEY not set. Memory features are disabled.');
         this.initialized = true;
       }
       this.enabled = false;
@@ -39,7 +62,7 @@ class MemoryService {
     }
 
     if (!this.memory) {
-      console.log('Initializing cloud Mem0 with API key...');
+      log.debug('Initializing cloud Mem0 client');
       this.memory = new MemoryClient({ apiKey: process.env.MEM0_API_KEY });
       this.initialized = true;
     }
@@ -47,7 +70,7 @@ class MemoryService {
     return this.memory;
   }
 
-  async storeUserPreferences(userId: string, context: any, message: string) {
+  async storeUserPreferences(userId: string, context: MemorableContext, message: string) {
     // Run memory storage in background to not slow down chat
     setTimeout(async () => {
       try {
@@ -55,7 +78,7 @@ class MemoryService {
         if (!client) return;
 
         // Store conversation context as memories
-        const memories = [];
+        const memories: string[] = [];
         
         if (context.fitnessLevel) {
           memories.push(`User's fitness level is ${context.fitnessLevel}`);
@@ -99,14 +122,16 @@ class MemoryService {
         );
 
         await Promise.all(storePromises);
-        console.log('Stored memories for user:', userId, memories);
+        // Count only - the memory strings themselves describe the user's body
+        // and goals and must not reach the log sink.
+        log.debug(`Stored ${memories.length} memories for user`, redact(userId));
       } catch (error) {
-        console.error('Error storing memories:', error);
+        log.error('Error storing memories:', error instanceof Error ? error.message : error);
       }
     }, 0);
   }
 
-  async getUserMemories(userId: string, query: string = ''): Promise<any[]> {
+  async getUserMemories(userId: string, query: string = ''): Promise<StoredMemory[]> {
     try {
       const client = this.getClient();
       if (!client) return [];
@@ -114,28 +139,28 @@ class MemoryService {
       // Search for relevant memories
       const searchQuery = query || 'fitness preferences workout goals equipment time';
       const memories = await client.search(searchQuery, { user_id: userId });
-      
-      console.log('Retrieved memories for user:', userId, memories);
-      
+
+      log.debug('Retrieved memories for user', redact(userId));
+
       // Handle the cloud Mem0 response format
       if (memories && typeof memories === 'object') {
         // Cloud API returns an array directly or has a results property
         if (Array.isArray(memories)) {
           return memories;
         }
-        const memoryObj = memories as any;
-        if (memoryObj.results && Array.isArray(memoryObj.results)) {
-          return memoryObj.results;
+        const memoryObj = memories as { results?: unknown; memories?: unknown };
+        if (Array.isArray(memoryObj.results)) {
+          return memoryObj.results as StoredMemory[];
         }
-        if (memoryObj.memories && Array.isArray(memoryObj.memories)) {
-          return memoryObj.memories;
+        if (Array.isArray(memoryObj.memories)) {
+          return memoryObj.memories as StoredMemory[];
         }
       }
       
       // Fallback to empty array
       return [];
     } catch (error) {
-      console.error('Error retrieving memories:', error);
+      log.error('Error retrieving memories:', error instanceof Error ? error.message : error);
       return [];
     }
   }
@@ -152,9 +177,9 @@ class MemoryService {
 
       // Ensure memories is an array before processing
       if (Array.isArray(memories)) {
-        memories.forEach((memory: any) => {
+        memories.forEach((memory: StoredMemory) => {
           const text = memory.memory || memory.text || '';
-          
+
           if (text.includes('fitness level is')) {
             profile.fitnessLevel = text.match(/fitness level is (\w+)/)?.[1];
           }
@@ -180,7 +205,7 @@ class MemoryService {
 
       return profile;
     } catch (error) {
-      console.error('Error getting user profile:', error);
+      log.error('Error getting user profile:', error instanceof Error ? error.message : error);
       return {
         preferences: [],
         pastWorkouts: []

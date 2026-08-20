@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase';
+import { log, redact } from '@/lib/logger';
 import { 
   UserProfile, 
   Chat, 
@@ -27,17 +28,17 @@ export class DatabaseService {
       if (error) {
         // If user profile doesn't exist, create one
         if (error.code === 'PGRST116') { // No rows returned
-          console.log('User profile not found, creating new profile for user:', userId);
+          log.debug('User profile not found, creating one for', redact(userId));
           return this.createUserProfile(userId);
         }
         
-        console.error('Error fetching user profile:', error);
+        log.error('Error fetching user profile:', error?.message ?? error);
         return null;
       }
       
       return data;
     } catch (error) {
-      console.error('Unexpected error fetching user profile:', error);
+      log.error('Unexpected error fetching user profile:', error instanceof Error ? error.message : error);
       return null;
     }
   }
@@ -55,14 +56,14 @@ export class DatabaseService {
         .single();
       
       if (error) {
-        console.error('Error creating user profile:', error);
+        log.error('Error creating user profile:', error?.message ?? error);
         return null;
       }
       
-      console.log('Successfully created user profile for:', userId);
+      log.debug('Created user profile for', redact(userId));
       return data;
     } catch (error) {
-      console.error('Unexpected error creating user profile:', error);
+      log.error('Unexpected error creating user profile:', error instanceof Error ? error.message : error);
       return null;
     }
   }
@@ -76,7 +77,7 @@ export class DatabaseService {
       .single();
     
     if (error) {
-      console.error('Error updating user profile:', error);
+      log.error('Error updating user profile:', error?.message ?? error);
       return null;
     }
     
@@ -105,11 +106,11 @@ export class DatabaseService {
       .single();
     
     if (error) {
-      console.error('Error resetting user profile:', error);
+      log.error('Error resetting user profile:', error?.message ?? error);
       return null;
     }
     
-    console.log('Successfully reset user profile for:', userId);
+    log.debug('Reset user profile for', redact(userId));
     return data;
   }
 
@@ -173,7 +174,7 @@ export class DatabaseService {
       .single();
     
     if (error) {
-      console.error('Error creating chat:', error);
+      log.error('Error creating chat:', error?.message ?? error);
       return null;
     }
     
@@ -188,7 +189,7 @@ export class DatabaseService {
       .single();
     
     if (error) {
-      console.error('Error fetching chat:', error);
+      log.error('Error fetching chat:', error?.message ?? error);
       return null;
     }
     
@@ -203,7 +204,7 @@ export class DatabaseService {
       .order('updated_at', { ascending: false });
     
     if (error) {
-      console.error('Error fetching user chats:', error);
+      log.error('Error fetching user chats:', error?.message ?? error);
       return [];
     }
     
@@ -237,7 +238,7 @@ export class DatabaseService {
       .single();
     
     if (error) {
-      console.error('Error updating chat:', error);
+      log.error('Error updating chat:', error?.message ?? error);
       return null;
     }
     
@@ -254,7 +255,7 @@ export class DatabaseService {
       .single();
     
     if (error) {
-      console.error('Error creating message:', error);
+      log.error('Error creating message:', error?.message ?? error);
       return null;
     }
     
@@ -269,7 +270,7 @@ export class DatabaseService {
       .order('created_at', { ascending: true });
     
     if (error) {
-      console.error('Error fetching chat messages:', error);
+      log.error('Error fetching chat messages:', error?.message ?? error);
       return [];
     }
     
@@ -300,7 +301,7 @@ export class DatabaseService {
       .single();
     
     if (workoutError) {
-      console.error('Error creating workout:', workoutError);
+      log.error('Error creating workout:', workoutError?.message ?? workoutError);
       return null;
     }
 
@@ -322,7 +323,7 @@ export class DatabaseService {
         .insert(exercisesToInsert);
 
       if (exercisesError) {
-        console.error('Error creating exercises:', exercisesError);
+        log.error('Error creating exercises:', exercisesError?.message ?? exercisesError);
         // Consider rolling back the workout creation here
       }
     }
@@ -341,13 +342,13 @@ export class DatabaseService {
       .single();
     
     if (error) {
-      console.error('Error fetching workout:', error);
+      log.error('Error fetching workout:', error?.message ?? error);
       return null;
     }
 
     // Sort exercises by order
     if (data.exercises) {
-      data.exercises.sort((a: any, b: any) => a.order_in_workout - b.order_in_workout);
+      data.exercises.sort((a: Exercise, b: Exercise) => a.order_in_workout - b.order_in_workout);
     }
     
     return data;
@@ -364,38 +365,49 @@ export class DatabaseService {
       .order('created_at', { ascending: false });
     
     if (error) {
-      console.error('Error fetching user workouts:', error);
+      log.error('Error fetching user workouts:', error?.message ?? error);
       return [];
     }
 
     // Sort exercises within each workout
     return (data || []).map(workout => ({
       ...workout,
-      exercises: workout.exercises?.sort((a: any, b: any) => a.order_in_workout - b.order_in_workout) || []
+      exercises: workout.exercises?.sort((a: Exercise, b: Exercise) => a.order_in_workout - b.order_in_workout) || []
     }));
   }
 
   static async updateWorkoutStatus(workoutId: string, status: 'proposed' | 'active' | 'completed' | 'skipped'): Promise<Workout | null> {
-    const updates: any = { status };
-    
+    const updates: Partial<Workout> = { status };
+
     if (status === 'active') {
       updates.started_at = new Date().toISOString();
     } else if (status === 'completed') {
       updates.completed_at = new Date().toISOString();
     }
 
+    // The exercises join matters: this returns the workout the caller then
+    // renders. Selecting the bare row left `exercises` undefined, which is why
+    // the "Workout Complete" screen reported no exercise details and a total of
+    // zero sets after every session.
     const { data, error } = await supabase
       .from('workouts')
       .update(updates)
       .eq('id', workoutId)
-      .select()
+      .select(`
+        *,
+        exercises (*)
+      `)
       .single();
-    
+
     if (error) {
-      console.error('Error updating workout status:', error);
+      log.error('Error updating workout status:', error?.message ?? error);
       return null;
     }
-    
+
+    if (data?.exercises) {
+      data.exercises.sort((a: Exercise, b: Exercise) => a.order_in_workout - b.order_in_workout);
+    }
+
     return data;
   }
 
@@ -415,15 +427,41 @@ export class DatabaseService {
       .single();
     
     if (error) {
-      console.error('Error updating exercise progress:', error);
+      log.error('Error updating exercise progress:', error?.message ?? error);
       return null;
     }
     
     return data;
   }
 
+  /**
+   * Persist what the user actually performed for each exercise in a session.
+   *
+   * Without this, the `actual_*` columns were never written by anything: the
+   * active-workout screen tracked reps, weights and completed sets purely in
+   * component state, and all of it was discarded when the session ended. The
+   * summary screen and any future history view had nothing to read.
+   *
+   * Failures are logged and swallowed - a finished workout should still be
+   * recorded as finished even if the per-exercise detail does not save.
+   */
+  static async saveExerciseProgress(exercises: Exercise[]): Promise<void> {
+    const withIds = exercises.filter(exercise => exercise.id);
+
+    await Promise.all(
+      withIds.map(exercise =>
+        this.updateExerciseProgress(exercise.id!, {
+          completed: exercise.completed ?? false,
+          actual_sets: exercise.actual_sets ?? 0,
+          actual_reps: exercise.actual_reps ?? [],
+          actual_weight_lbs: exercise.actual_weight_lbs,
+        })
+      )
+    );
+  }
+
   // ===== UTILITY FUNCTIONS =====
-  
+
   static async linkWorkoutToChat(chatId: string, workoutId: string): Promise<boolean> {
     const { error } = await supabase
       .from('chats')
@@ -434,7 +472,7 @@ export class DatabaseService {
       .eq('id', chatId);
     
     if (error) {
-      console.error('Error linking workout to chat:', error);
+      log.error('Error linking workout to chat:', error?.message ?? error);
       return false;
     }
     

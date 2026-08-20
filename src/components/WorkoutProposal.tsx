@@ -6,9 +6,17 @@ interface WorkoutProposalProps {
   workout: Workout;
   onConfirm: () => void;
   onBack: () => void;
+  isConfirming?: boolean;
 }
 
-export default function WorkoutProposal({ workout, onConfirm, onBack }: WorkoutProposalProps) {
+export default function WorkoutProposal({
+  workout,
+  onConfirm,
+  onBack,
+  isConfirming = false,
+}: WorkoutProposalProps) {
+  const exercises = workout.exercises ?? [];
+  const totalSets = exercises.reduce((total, exercise) => total + exercise.sets, 0);
   return (
     <div className="bg-gray-800 rounded-3xl shadow-2xl p-4 md:p-8 border border-gray-700 mt-4 md:mt-0">
       <div className="bg-gray-900 rounded-2xl p-4 md:p-6 mb-6 md:mb-8 border border-gray-600">
@@ -38,8 +46,10 @@ export default function WorkoutProposal({ workout, onConfirm, onBack }: WorkoutP
         </div>
 
         <div className="space-y-4">
-          <h4 className="text-lg font-semibold text-white mb-4">Exercises:</h4>
-          {workout.exercises && workout.exercises.map((exercise, index) => (
+          <h4 className="text-lg font-semibold text-white mb-4">
+            {exercises.length} exercises · {totalSets} sets
+          </h4>
+          {exercises.map((exercise, index) => (
             <div key={exercise.id || index} className="bg-gray-800 p-3 md:p-4 rounded-lg border border-gray-600">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-2">
                 <h5 className="font-semibold text-white text-sm md:text-base">{exercise.name}</h5>
@@ -69,15 +79,17 @@ export default function WorkoutProposal({ workout, onConfirm, onBack }: WorkoutP
       <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
         <button
           onClick={onBack}
-          className="flex-1 bg-gray-700 text-white py-3 md:py-4 px-4 md:px-6 rounded-2xl hover:bg-gray-600 transition-all duration-200 font-semibold text-sm md:text-base"
+          disabled={isConfirming}
+          className="flex-1 bg-gray-700 text-white py-3 md:py-4 px-4 md:px-6 rounded-2xl hover:bg-gray-600 transition-all duration-200 font-semibold text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
         >
           ← Back to chat
         </button>
         <button
           onClick={onConfirm}
-          className="flex-1 bg-gradient-to-r from-teal-600 to-blue-700 text-white py-3 md:py-4 px-4 md:px-6 rounded-2xl hover:from-teal-700 hover:to-blue-800 transition-all duration-200 font-semibold text-sm md:text-base"
+          disabled={isConfirming}
+          className="flex-1 bg-gradient-to-r from-teal-600 to-blue-700 text-white py-3 md:py-4 px-4 md:px-6 rounded-2xl hover:from-teal-700 hover:to-blue-800 transition-all duration-200 font-semibold text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Start workout! 💪
+          {isConfirming ? 'Starting…' : 'Start workout! 💪'}
         </button>
       </div>
     </div>

@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Workout, Exercise } from '@/types/workout';
+import { Workout } from '@/types/workout';
 import VoiceChat from './VoiceChat';
 
 interface ActiveWorkoutProps {
   workout: Workout;
   onComplete: (completedWorkout: Workout) => void;
+  onExit: () => void;
 }
 
 interface ExerciseState {
@@ -18,10 +19,12 @@ interface ExerciseState {
   }[];
 }
 
-export default function ActiveWorkout({ workout, onComplete }: ActiveWorkoutProps) {
+export default function ActiveWorkout({ workout, onComplete, onExit }: ActiveWorkoutProps) {
   const [exerciseStates, setExerciseStates] = useState<ExerciseState[]>([]);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
-  const [startTime, setStartTime] = useState<Date>(new Date());
+  // A ref, not state: the start of the session never changes, and holding it in
+  // state re-ran `new Date()` on every render while `setStartTime` went unused.
+  const startTimeRef = useRef<number>(Date.now());
   const [elapsedTime, setElapsedTime] = useState(0);
   const voiceChatRef = useRef<{ restartVoiceChat: () => void } | null>(null);
 
@@ -43,11 +46,11 @@ export default function ActiveWorkout({ workout, onComplete }: ActiveWorkoutProp
   // Timer
   useEffect(() => {
     const interval = setInterval(() => {
-      setElapsedTime(Math.floor((new Date().getTime() - startTime.getTime()) / 1000));
+      setElapsedTime(Math.floor((Date.now() - startTimeRef.current) / 1000));
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [startTime]);
+  }, []);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -55,42 +58,86 @@ export default function ActiveWorkout({ workout, onComplete }: ActiveWorkoutProp
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  // Both updaters rebuild the exercise and set objects they touch instead of
+  // assigning through the shallow copy. The previous version mutated the
+  // objects held by the previous state, so React saw no change in the nested
+  // values, and under StrictMode's double-invoked updaters the same edit could
+  // be applied twice to shared objects.
   const updateSet = (exerciseIndex: number, setIndex: number, field: 'reps' | 'weight', value: number) => {
-    setExerciseStates(prev => {
-      const newStates = [...prev];
-      newStates[exerciseIndex].sets[setIndex][field] = value;
-      return newStates;
-    });
+    setExerciseStates(prev =>
+      prev.map((exerciseState, i) =>
+        i !== exerciseIndex
+          ? exerciseState
+          : {
+              ...exerciseState,
+              sets: exerciseState.sets.map((set, j) =>
+                j !== setIndex ? set : { ...set, [field]: value }
+              ),
+            }
+      )
+    );
   };
 
   const completeSet = (exerciseIndex: number, setIndex: number) => {
-    setExerciseStates(prev => {
-      const newStates = [...prev];
-      newStates[exerciseIndex].sets[setIndex].completed = true;
-      
-      // Check if all sets are completed for this exercise
-      const allSetsCompleted = newStates[exerciseIndex].sets.every(set => set.completed);
-      if (allSetsCompleted) {
-        newStates[exerciseIndex].completed = true;
-      }
-      
-      return newStates;
-    });
+    setExerciseStates(prev =>
+      prev.map((exerciseState, i) => {
+        if (i !== exerciseIndex) return exerciseState;
+
+        const sets = exerciseState.sets.map((set, j) =>
+          j !== setIndex ? set : { ...set, completed: true }
+        );
+
+        return {
+          ...exerciseState,
+          sets,
+          completed: sets.every(set => set.completed),
+        };
+      })
+    );
   };
 
+  const currentExercise = workout.exercises?.[currentExerciseIndex];
+  const currentExerciseState = exerciseStates[currentExerciseIndex];
+  const completedExercises = exerciseStates.filter(state => state.completed).length;
+  const totalExercises = workout.exercises?.length || 0;
+  const progressPercent = totalExercises > 0 ? (completedExercises / totalExercises) * 100 : 0;
+
   const handleCompleteWorkout = () => {
+    // What was planned stays on `sets`/`reps`/`weight_lbs`; what was actually
+    // performed goes to the `actual_*` fields. Overwriting the planned numbers
+    // with completed counts (as this used to) lost both: a skipped exercise
+    // reported its planned sets back, because `0 || exercise.sets` falls
+    // through to the plan.
     const completedWorkout: Workout = {
       ...workout,
       status: 'completed',
-      exercises: workout.exercises?.map((exercise, index) => ({
-        ...exercise,
-        sets: exerciseStates[index]?.sets.reduce((acc, set) => acc + (set.completed ? 1 : 0), 0) || exercise.sets,
-        reps: exerciseStates[index]?.sets[0]?.reps || exercise.reps,
-        weight_lbs: exerciseStates[index]?.sets[0]?.weight || exercise.weight_lbs
-      }))
+      exercises: workout.exercises?.map((exercise, index) => {
+        const state = exerciseStates[index];
+        const completedSets = state?.sets.filter(set => set.completed) ?? [];
+
+        return {
+          ...exercise,
+          completed: state?.completed ?? false,
+          actual_sets: completedSets.length,
+          actual_reps: completedSets.map(set => set.reps),
+          actual_weight_lbs: completedSets[0]?.weight ?? exercise.weight_lbs,
+        };
+      }),
     };
-    
+
     onComplete(completedWorkout);
+  };
+
+  const handleFinishEarly = () => {
+    const remaining = totalExercises - completedExercises;
+    if (remaining > 0) {
+      const confirmed = window.confirm(
+        `You have ${remaining} exercise${remaining === 1 ? '' : 's'} left. ` +
+          `Finish the workout here anyway?`
+      );
+      if (!confirmed) return;
+    }
+    handleCompleteWorkout();
   };
 
   const handleExerciseChange = (newIndex: number) => {
@@ -101,10 +148,12 @@ export default function ActiveWorkout({ workout, onComplete }: ActiveWorkoutProp
     setCurrentExerciseIndex(newIndex);
   };
 
-  const currentExercise = workout.exercises?.[currentExerciseIndex];
-  const currentExerciseState = exerciseStates[currentExerciseIndex];
-  const completedExercises = exerciseStates.filter(state => state.completed).length;
-  const totalExercises = workout.exercises?.length || 0;
+  const handleExit = () => {
+    const confirmed = window.confirm(
+      'Leave this workout and go back to the chat? Your progress in this session will not be saved.'
+    );
+    if (confirmed) onExit();
+  };
 
   if (!currentExercise || !currentExerciseState) {
     return (
@@ -117,7 +166,13 @@ export default function ActiveWorkout({ workout, onComplete }: ActiveWorkoutProp
   return (
     <div className="bg-gray-800 rounded-3xl shadow-2xl p-4 md:p-8 border border-gray-700 max-w-4xl mx-auto">
       {/* Header */}
-      <div className="text-center mb-6 md:mb-8">
+      <div className="relative text-center mb-6 md:mb-8">
+        <button
+          onClick={handleExit}
+          className="absolute left-0 top-0 text-gray-400 hover:text-white text-sm transition-colors"
+        >
+          ← Exit
+        </button>
         <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">💪 Workout in Progress</h2>
         <div className="flex flex-col sm:flex-row justify-center sm:space-x-8 space-y-2 sm:space-y-0 text-gray-300">
           <div>⏱️ {formatTime(elapsedTime)}</div>
@@ -127,10 +182,17 @@ export default function ActiveWorkout({ workout, onComplete }: ActiveWorkoutProp
 
       {/* Progress Bar */}
       <div className="mb-6 md:mb-8">
-        <div className="bg-gray-700 rounded-full h-3 mb-2">
-          <div 
+        <div
+          className="bg-gray-700 rounded-full h-3 mb-2"
+          role="progressbar"
+          aria-valuenow={completedExercises}
+          aria-valuemin={0}
+          aria-valuemax={totalExercises}
+          aria-label="Exercises completed"
+        >
+          <div
             className="bg-gradient-to-r from-teal-600 to-blue-700 h-3 rounded-full transition-all duration-300"
-            style={{ width: `${(completedExercises / totalExercises) * 100}%` }}
+            style={{ width: `${progressPercent}%` }}
           ></div>
         </div>
         <p className="text-center text-gray-400 text-sm">
@@ -147,7 +209,6 @@ export default function ActiveWorkout({ workout, onComplete }: ActiveWorkoutProp
           currentExerciseIndex={currentExerciseIndex}
           exerciseStates={exerciseStates}
           onCompleteSet={completeSet}
-          onUpdateSet={updateSet}
         />
       </div>
 
@@ -231,22 +292,24 @@ export default function ActiveWorkout({ workout, onComplete }: ActiveWorkoutProp
           ← Previous
         </button>
 
+        {/* "Finish" is always reachable. It used to appear only on the last
+            exercise, so anyone who had done enough for the day had to click
+            through every remaining exercise to record the session. */}
         <div className="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4">
-          {currentExerciseIndex < totalExercises - 1 ? (
+          {currentExerciseIndex < totalExercises - 1 && (
             <button
               onClick={() => handleExerciseChange(currentExerciseIndex + 1)}
               className="bg-teal-600 text-white px-6 py-3 rounded-2xl hover:bg-teal-700 transition-all duration-200 w-full md:w-auto"
             >
               Next Exercise →
             </button>
-          ) : (
-            <button
-              onClick={handleCompleteWorkout}
-              className="bg-gradient-to-r from-green-600 to-teal-700 text-white px-6 md:px-8 py-3 rounded-2xl hover:from-green-700 hover:to-teal-800 transition-all duration-200 font-semibold w-full md:w-auto"
-            >
-              🎉 Complete Workout!
-            </button>
           )}
+          <button
+            onClick={handleFinishEarly}
+            className="bg-gradient-to-r from-green-600 to-teal-700 text-white px-6 md:px-8 py-3 rounded-2xl hover:from-green-700 hover:to-teal-800 transition-all duration-200 font-semibold w-full md:w-auto"
+          >
+            {completedExercises === totalExercises ? '🎉 Complete Workout!' : 'Finish workout'}
+          </button>
         </div>
       </div>
 

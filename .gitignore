@@ -24,14 +24,22 @@
 .DS_Store
 *.pem
 
+# local mem0 stores - these accumulate real user conversation data and must
+# never be committed
+*.db
+memory.db
+vector_store.db
+
 # debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files - real secrets never get committed, but the template must be, so it
+# is explicitly re-included (bare `.env*` would swallow it too)
 .env*
+!.env.example
 
 # vercel
 .vercel

@@ -11,6 +11,7 @@ import MemoryTestChat from '@/components/MemoryTestChat';
 import { Workout } from '@/types/workout';
 import { useAuth } from '@/contexts/AuthContext';
 import { DatabaseService } from '@/services/database';
+import { DEV_TOOLS_ENABLED } from '@/lib/dev-tools';
 
 type AppState = 'chat' | 'proposal' | 'workout' | 'complete';
 
@@ -157,6 +158,8 @@ export default function Home() {
   const [completedWorkout, setCompletedWorkout] = useState<Workout | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showMemoryTest, setShowMemoryTest] = useState(false);
+  // Guards the async status writes so a double-tap cannot fire two transitions.
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   // Show loading spinner while checking auth
   if (loading) {
@@ -178,23 +181,58 @@ export default function Home() {
   };
 
   const handleWorkoutConfirmed = async () => {
-    if (proposedWorkout) {
-      // Update workout status to active when user confirms
+    if (!proposedWorkout || isTransitioning) return;
+
+    setIsTransitioning(true);
+    try {
+      // Marking the workout active is bookkeeping. If it fails there is no
+      // reason to block someone from exercising, so the session starts either
+      // way and the status is reconciled when the workout is completed.
       await DatabaseService.updateWorkoutStatus(proposedWorkout.id, 'active');
-      setAppState('workout');
+    } catch {
+      // Deliberately ignored - see above.
+    } finally {
+      // In a `finally` so a thrown network error cannot leave the flag stuck on
+      // and permanently disable the button.
+      setIsTransitioning(false);
     }
+    setAppState('workout');
   };
 
   const handleWorkoutCompleted = async (workout: Workout) => {
-    // Update workout status to completed in database
-    const completedWorkoutFromDB = await DatabaseService.updateWorkoutStatus(workout.id, 'completed');
-    
-    if (completedWorkoutFromDB) {
-      setCompletedWorkout(completedWorkoutFromDB);
-    } else {
-      setCompletedWorkout(workout);
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+
+    let completedWorkoutFromDB: Workout | null = null;
+    try {
+      // Save what was actually performed before flipping the status, so the
+      // per-exercise detail survives the session rather than living only in
+      // component state.
+      if (workout.exercises?.length) {
+        await DatabaseService.saveExerciseProgress(workout.exercises);
+      }
+
+      completedWorkoutFromDB = await DatabaseService.updateWorkoutStatus(
+        workout.id,
+        'completed'
+      );
+    } catch {
+      // Never block the summary on a failed write - the user finished the
+      // workout either way, and the in-memory copy below has everything the
+      // summary needs.
+    } finally {
+      setIsTransitioning(false);
     }
-    
+
+    // Row-level fields (completed_at, status) come from the database, but the
+    // exercises come from this session. The in-memory copy is authoritative for
+    // what was just done, and it stays correct even if the writes above failed.
+    setCompletedWorkout({
+      ...workout,
+      ...(completedWorkoutFromDB ?? {}),
+      exercises: workout.exercises,
+    });
+
     setAppState('complete');
   };
 
@@ -202,6 +240,10 @@ export default function Home() {
     setProposedWorkout(null);
     setCompletedWorkout(null);
     setAppState('chat');
+  };
+
+  const handleExitWorkout = () => {
+    setAppState('proposal');
   };
 
   const handleMenuToggle = () => {
@@ -230,12 +272,14 @@ export default function Home() {
             <span className="hidden md:block text-gray-300 text-sm">
               Welcome, {user.email}
             </span>
-            <button
-              onClick={() => setShowMemoryTest(!showMemoryTest)}
-              className="bg-teal-600 hover:bg-teal-700 text-white px-3 py-1 rounded-lg text-sm transition-colors"
-            >
-              🧠 {showMemoryTest ? 'Hide Memory Test' : 'Test Memory'}
-            </button>
+            {DEV_TOOLS_ENABLED && (
+              <button
+                onClick={() => setShowMemoryTest(!showMemoryTest)}
+                className="bg-teal-600 hover:bg-teal-700 text-white px-3 py-1 rounded-lg text-sm transition-colors"
+              >
+                🧠 {showMemoryTest ? 'Hide Memory Test' : 'Test Memory'}
+              </button>
+            )}
             <LogoutButton />
           </div>
         </header>
@@ -244,8 +288,8 @@ export default function Home() {
       {/* Content area */}
       <div className="pt-[73px] md:pt-0 h-screen md:h-auto md:container md:mx-auto md:px-4">
         <div className="h-[calc(100vh-73px)] md:h-auto md:max-w-4xl md:mx-auto">
-          {/* Memory Test Component */}
-          {showMemoryTest && (
+          {/* Memory Test Component - developer tool, never in production */}
+          {DEV_TOOLS_ENABLED && showMemoryTest && (
             <div className="mb-6">
               <MemoryTestChat />
             </div>
@@ -256,17 +300,19 @@ export default function Home() {
           )}
           
           {appState === 'proposal' && proposedWorkout && (
-            <WorkoutProposal 
+            <WorkoutProposal
               workout={proposedWorkout}
               onConfirm={handleWorkoutConfirmed}
               onBack={() => setAppState('chat')}
+              isConfirming={isTransitioning}
             />
           )}
-          
+
           {appState === 'workout' && proposedWorkout && (
-            <ActiveWorkout 
+            <ActiveWorkout
               workout={proposedWorkout}
               onComplete={handleWorkoutCompleted}
+              onExit={handleExitWorkout}
             />
           )}
           
