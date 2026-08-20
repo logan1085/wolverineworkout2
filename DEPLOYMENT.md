@@ -1,59 +1,71 @@
-# Vercel Deployment Guide
+# Deployment Guide
 
-## Environment Variables Required
+## Environment variables
 
-Before deploying to Vercel, you need to set these environment variables in your Vercel dashboard:
+Set these in your host's dashboard (Vercel: Settings → Environment Variables)
+before the first deploy. `.env.example` is the authoritative list.
 
-### Required Environment Variables:
+### Required
 
-1. **NEXT_PUBLIC_SUPABASE_URL**
-   - Your Supabase project URL
-   - Found in: Supabase Dashboard → Settings → API
+| Variable | Where to find it |
+| --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase Dashboard → Settings → API → Project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase Dashboard → Settings → API → anon public |
+| `OPENAI_API_KEY` | https://platform.openai.com/api-keys |
 
-2. **NEXT_PUBLIC_SUPABASE_ANON_KEY**
-   - Your Supabase anonymous/public key
-   - Found in: Supabase Dashboard → Settings → API
+`NEXT_PUBLIC_*` values are inlined into the client bundle **at build time**.
+Adding or changing one requires a rebuild, not just a restart.
 
-3. **OPENAI_API_KEY**
-   - Your OpenAI API key for workout generation
-   - Get from: https://platform.openai.com/api-keys
+### Optional
 
-## Deployment Steps
+| Variable | Effect |
+| --- | --- |
+| `MEM0_API_KEY` | Enables long-term memory. Without it Logan starts fresh each session. |
+| `ENABLE_MEMORY` | Set to `false` to disable memory even when the key is present. |
+| `NEXT_PUBLIC_ENABLE_DEV_TOOLS` | Set to `true` to expose in-app dev tools. **Leave unset in production** — the reset tool destroys user profile data. |
 
-1. **Connect to Vercel**
-   - Go to https://vercel.com
-   - Import your GitHub repository
+## Deploying
 
-2. **Set Environment Variables**
-   - In Vercel dashboard: Settings → Environment Variables
-   - Add all three variables listed above
+1. Import the repository into your host.
+2. Add the environment variables above.
+3. Deploy. Build command is `npm run build`.
 
-3. **Deploy**
-   - Vercel will automatically build and deploy
-   - The build has been configured to ignore ESLint and TypeScript errors during builds
+## Build configuration
 
-## Build Configuration
+The build runs a real TypeScript and ESLint check and **will fail on errors**.
 
-The `next.config.ts` has been configured to:
-- Ignore ESLint errors during build (`ignoreDuringBuilds: true`)
-- Ignore TypeScript errors during build (`ignoreBuildErrors: true`)
+This is deliberate. Both checks were previously suppressed in `next.config.ts`
+(`ignoreBuildErrors` / `ignoreDuringBuilds`) so deploys could never fail; that
+hid around fifty genuine type errors. If a deploy fails now, fix the error
+rather than reinstating the suppression — the check is doing its job.
 
-This ensures the deployment won't fail due to linting issues.
+Run the same checks locally before pushing:
 
-## Local Development
-
-For local development, create a `.env.local` file with:
-
+```bash
+npm run typecheck
+npm run lint
+npm run build
 ```
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-OPENAI_API_KEY=your_openai_api_key
-```
+
+## Secrets
+
+- Never commit `.env.local`, and never paste a key into a log, issue, or chat.
+- Do not embed credentials in the git remote URL. Use a credential helper or
+  SSH; a token in `.git/config` is echoed by any `git remote -v` and ends up in
+  CI logs.
+- If a key is ever exposed, revoke it at the provider first, then replace it.
+  Removing it from a file is not sufficient once it has been printed.
 
 ## Troubleshooting
 
-If deployment fails:
-1. Check that all environment variables are set correctly
-2. Ensure your Supabase project is active
-3. Verify your OpenAI API key has sufficient credits
-4. Check the Vercel build logs for specific errors 
+**Blank page / "Missing required environment variable"** — a Supabase variable
+is unset. Add it and rebuild.
+
+**All API calls return 401** — the request has no valid Supabase session. Every
+AI route requires a signed-in user by design. Check that auth is configured and
+cookies reach the server.
+
+**Chat works but Logan never remembers anything** — `MEM0_API_KEY` is unset or
+`ENABLE_MEMORY=false`. This degrades cleanly and is not an error.
+
+**Deploy fails on a type or lint error** — see "Build configuration" above.

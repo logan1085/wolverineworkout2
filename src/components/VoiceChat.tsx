@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback, forwardRef, useImperativeHandle } from 'react';
 import { Workout, Exercise } from '@/types/workout';
 import { getVoiceCoachPrompt } from '@/prompts';
+import { log } from '@/lib/logger';
 
 interface VoiceChatProps {
   workout: Workout;
@@ -17,9 +18,18 @@ interface VoiceChatProps {
     }[];
   }[];
   onCompleteSet: (exerciseIndex: number, setIndex: number) => void;
-  onUpdateSet: (exerciseIndex: number, setIndex: number, field: 'reps' | 'weight', value: number) => void;
   isActive?: boolean;
   onToggle?: () => void;
+}
+
+/**
+ * A `function_call` output item from the realtime API. `arguments` arrives as a
+ * JSON string, not an object.
+ */
+interface RealtimeFunctionCall {
+  name?: string;
+  arguments?: string;
+  call_id?: string;
 }
 
 interface VoiceChatState {
@@ -39,9 +49,8 @@ const VoiceChat = forwardRef<
   currentExerciseIndex, 
   exerciseStates,
   onCompleteSet,
-  onUpdateSet,
   isActive = false,
-  onToggle 
+  onToggle
 }, ref) => {
   const [voiceState, setVoiceState] = useState<VoiceChatState>({
     isConnected: false,
@@ -68,7 +77,7 @@ const VoiceChat = forwardRef<
   // Expose methods to parent component
   useImperativeHandle(ref, () => ({
     restartVoiceChat: () => {
-      console.log('🔄 Stopping voice chat for exercise change...');
+      log.debug('🔄 Stopping voice chat for exercise change...');
       if (voiceState.isConnected) {
         stopVoiceChat();
       }
@@ -90,13 +99,28 @@ const VoiceChat = forwardRef<
       });
 
       if (!response.ok) {
-        throw new Error('Failed to get ephemeral key');
+        // Surface the server's message so an expired session reads as "sign in
+        // again" rather than a generic failure.
+        let message = 'Could not start the voice coach. Please try again.';
+        try {
+          const errorBody = await response.json();
+          if (typeof errorBody?.error === 'string') message = errorBody.error;
+        } catch {
+          // Keep the default when the body is not JSON.
+        }
+        throw new Error(message);
       }
 
       const data = await response.json();
-      return data.client_secret.value;
+      const key = data?.client_secret?.value;
+      if (typeof key !== 'string') {
+        // Guards against a shape change upstream, which would otherwise throw a
+        // bare "cannot read property of undefined" at the caller.
+        throw new Error('Could not start the voice coach. Please try again.');
+      }
+      return key;
     } catch (error) {
-      console.error('Error getting ephemeral key:', error);
+      log.error('Error getting ephemeral key:', error instanceof Error ? error.message : error);
       throw error;
     }
   };
@@ -120,15 +144,17 @@ const VoiceChat = forwardRef<
 
       // Data channel event handlers
       dataChannel.addEventListener('open', () => {
-        console.log('Data channel is open');
+        log.debug('Data channel is open');
         updateSession();
         setVoiceState(prev => ({ ...prev, isConnected: true, isLoading: false }));
       });
 
       dataChannel.addEventListener('message', (event) => {
         const response = JSON.parse(event.data);
-        console.log('AI Response:', response.type, response);
-        
+        // Type only: the full event carries audio transcripts of what the user
+        // said out loud.
+        log.debug('Realtime event:', response.type);
+
         // Handle different response types
         if (response.type === 'response.audio_transcript.delta') {
           // Handle streaming text if needed
@@ -140,22 +166,17 @@ const VoiceChat = forwardRef<
           setVoiceState(prev => ({ ...prev, isSpeaking: true }));
         } else if (response.type === 'response.done') {
           setVoiceState(prev => ({ ...prev, isSpeaking: false }));
-        } else if (response.type === 'response.function_call_arguments.done') {
-          // Handle function call completion
-          console.log('Function call arguments done:', response);
-          handleFunctionCall(response);
-        } else if (response.type === 'conversation.item.created' && response.item?.type === 'function_call') {
-          // Handle function call created - we'll handle it when arguments are done
-          console.log('Function call created:', response.item);
         } else if (response.type === 'response.output_item.done' && response.item?.type === 'function_call') {
-          // Handle function call completion - this is the correct event type
-          console.log('Function call completed:', response.item);
+          // The event that actually carries a complete function call. The
+          // `function_call_arguments.done` and `conversation.item.created`
+          // branches that used to sit here only logged - one called a stub with
+          // an empty body - so this is the single place a call is acted on.
           handleFunctionCallComplete(response.item);
         }
       });
 
       dataChannel.addEventListener('close', () => {
-        console.log('Data channel is closed');
+        log.debug('Data channel is closed');
         setVoiceState(prev => ({ 
           ...prev, 
           isConnected: false, 
@@ -208,7 +229,7 @@ const VoiceChat = forwardRef<
       await peerConnection.setRemoteDescription(answer);
 
     } catch (error) {
-      console.error('Error starting voice chat:', error);
+      log.error('Error starting voice chat:', error);
       setVoiceState(prev => ({ 
         ...prev, 
         error: error instanceof Error ? error.message : 'Failed to start voice chat',
@@ -251,22 +272,18 @@ const VoiceChat = forwardRef<
     });
   };
 
-  // Handle function calls from the AI (when arguments are done)
-  const handleFunctionCall = (response: any) => {
-    console.log('Handling function call from arguments.done:', response);
-    // This might not be the right place for function calls, keeping for debugging
-  };
-
   // Handle completed function calls from the AI - memoized to ensure fresh values
-  const handleFunctionCallComplete = useCallback((item: any) => {
-    console.log('Handling completed function call:', item);
-    
+  const handleFunctionCallComplete = useCallback((item: RealtimeFunctionCall) => {
+    log.debug('Handling completed function call:', item.name);
+
     if (item.name === 'complete_set') {
       try {
-        const args = JSON.parse(item.arguments);
-        const setNumber = args.setNumber;
-        
-        console.log(`Function call to complete set ${setNumber} for exercise ${currentExercise.name} (index ${currentExerciseIndex})`);
+        // `arguments` is optional on the event, and JSON.parse(undefined) throws
+        // a SyntaxError that the catch below would report as a malformed call.
+        const args = JSON.parse(item.arguments ?? '{}');
+        const setNumber = Number(args.setNumber);
+
+        log.debug(`Function call to complete set ${setNumber} for exercise ${currentExercise.name} (index ${currentExerciseIndex})`);
         
         // Convert 1-based to 0-based index
         const setIndex = setNumber - 1;
@@ -275,12 +292,12 @@ const VoiceChat = forwardRef<
         const currentExerciseState = exerciseStates[currentExerciseIndex];
         const totalSets = currentExercise.sets;
         
-        console.log(`Validating set ${setNumber} (index ${setIndex}) for exercise with ${totalSets} total sets`);
-        console.log(`Current exercise state:`, currentExerciseState);
+        log.debug(`Validating set ${setNumber} (index ${setIndex}) for exercise with ${totalSets} total sets`);
+        log.debug(`Current exercise state:`, currentExerciseState);
         
         // Validate the set index and check if set is not already completed
         if (setIndex >= 0 && setIndex < totalSets && currentExerciseState?.sets[setIndex] && !currentExerciseState.sets[setIndex].completed) {
-          console.log(`Completing set ${setNumber} for exercise ${currentExerciseIndex}`);
+          log.debug(`Completing set ${setNumber} for exercise ${currentExerciseIndex}`);
           onCompleteSet(currentExerciseIndex, setIndex);
           
           // Send function call output back to the AI
@@ -302,7 +319,7 @@ const VoiceChat = forwardRef<
           }
         } else if (currentExerciseState?.sets[setIndex]?.completed) {
           // Set already completed
-          console.log(`Set ${setNumber} is already completed`);
+          log.debug(`Set ${setNumber} is already completed`);
           const outputEvent = {
             type: 'conversation.item.create',
             item: {
@@ -321,7 +338,7 @@ const VoiceChat = forwardRef<
           }
         } else {
           // Invalid set number
-          console.log(`Invalid set number ${setNumber} for exercise with ${totalSets} sets`);
+          log.debug(`Invalid set number ${setNumber} for exercise with ${totalSets} sets`);
           const outputEvent = {
             type: 'conversation.item.create',
             item: {
@@ -340,7 +357,7 @@ const VoiceChat = forwardRef<
           }
         }
       } catch (error) {
-        console.error('Error handling function call:', error);
+        log.error('Error handling function call:', error);
         
         // Send error response back to AI
         const errorEvent = {
@@ -366,7 +383,7 @@ const VoiceChat = forwardRef<
   // Update session with workout context - memoized to prevent unnecessary re-renders
   const updateSession = useCallback(() => {
     if (!dataChannelRef.current || dataChannelRef.current.readyState !== 'open') {
-      console.log('Data channel not ready for session update');
+      log.debug('Data channel not ready for session update');
       return;
     }
 
@@ -375,8 +392,8 @@ const VoiceChat = forwardRef<
     const totalSets = currentExercise.sets;
     const totalExercises = workout.exercises?.length || 0;
     
-    console.log(`Updating session for exercise: ${currentExercise.name} (${currentExerciseIndex + 1}/${totalExercises})`);
-    console.log(`Progress: ${completedSets}/${totalSets} sets completed`);
+    log.debug(`Updating session for exercise: ${currentExercise.name} (${currentExerciseIndex + 1}/${totalExercises})`);
+    log.debug(`Progress: ${completedSets}/${totalSets} sets completed`);
     
     const workoutContext = getVoiceCoachPrompt({
       workout,
@@ -412,7 +429,7 @@ const VoiceChat = forwardRef<
       }
     };
 
-    console.log('Sending session update event');
+    log.debug('Sending session update event');
     dataChannelRef.current.send(JSON.stringify(event));
   }, [currentExercise, currentExerciseIndex, exerciseStates, workout]);
 
@@ -436,7 +453,7 @@ const VoiceChat = forwardRef<
   // Update session when connected
   useEffect(() => {
     if (voiceState.isConnected) {
-      console.log('Voice chat connected, updating session...');
+      log.debug('Voice chat connected, updating session...');
       updateSession();
     }
   }, [voiceState.isConnected, updateSession]);
@@ -444,7 +461,7 @@ const VoiceChat = forwardRef<
   // Announce exercise changes and update session
   useEffect(() => {
     if (voiceState.isConnected && dataChannelRef.current && dataChannelRef.current.readyState === 'open') {
-      console.log(`🔄 Exercise changed to: ${currentExercise.name} (index: ${currentExerciseIndex})`);
+      log.debug(`🔄 Exercise changed to: ${currentExercise.name} (index: ${currentExerciseIndex})`);
       
       // Update the session with new exercise context first
       updateSession();
@@ -464,7 +481,7 @@ const VoiceChat = forwardRef<
             }
           };
           
-          console.log('📢 Sending exercise change notification to Logan');
+          log.debug('📢 Sending exercise change notification to Logan');
           dataChannelRef.current.send(JSON.stringify(announceEvent));
           dataChannelRef.current.send(JSON.stringify({ type: 'response.create' }));
         }

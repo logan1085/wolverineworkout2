@@ -20,7 +20,6 @@ export default function MemoryTestChat() {
   ]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [userId] = useState(() => 'user_' + Math.random().toString(36).substr(2, 9));
 
   const handleSendMessage = async () => {
     if (!inputText.trim() || isLoading) return;
@@ -58,8 +57,7 @@ export default function MemoryTestChat() {
             equipment: '',
             focusAreas: '',
             hasEnoughInfo: false
-          },
-          userId
+          }
         }),
       });
 
@@ -78,7 +76,7 @@ export default function MemoryTestChat() {
 
       setMessages(prev => [...prev, loganResponse]);
 
-    } catch (error) {
+    } catch {
       const errorResponse: Message = {
         id: (Date.now() + 1).toString(),
         text: "Sorry, I'm having trouble right now. Please try again!",
@@ -91,7 +89,7 @@ export default function MemoryTestChat() {
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
@@ -100,7 +98,11 @@ export default function MemoryTestChat() {
 
   return (
     <div className="bg-gray-900 rounded-xl p-6 h-96 flex flex-col">
-      <h3 className="text-white text-lg font-bold mb-4">🧠 Memory Test Chat (User ID: {userId.slice(-6)})</h3>
+      <h3 className="text-white text-lg font-bold mb-4">🧠 Memory Test Chat</h3>
+      <p className="text-gray-400 text-xs mb-4">
+        Developer tool. Talks to the same endpoint as the main chat, against your
+        own signed-in account, so anything you say here is stored as your memory.
+      </p>
       
       {/* Messages */}
       <div className="flex-1 overflow-y-auto space-y-3 mb-4">
@@ -140,7 +142,7 @@ export default function MemoryTestChat() {
           type="text"
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
-          onKeyPress={handleKeyPress}
+          onKeyDown={handleKeyDown}
           placeholder="Tell Logan about your fitness goals..."
           className="flex-1 bg-gray-800 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
           disabled={isLoading}

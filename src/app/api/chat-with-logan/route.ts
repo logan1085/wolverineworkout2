@@ -3,6 +3,8 @@ import OpenAI from 'openai';
 import { getLoganChatPrompt, type ConversationContext } from '@/prompts';
 import { memoryService } from '@/lib/memory';
 import { parseJsonBody } from '@/lib/api-validation';
+import { getAuthenticatedUser } from '@/lib/supabase-server';
+import { log, redact } from '@/lib/logger';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -12,8 +14,18 @@ interface ChatMessage {
 interface ChatRequest {
   messages: ChatMessage[];
   conversationContext: ConversationContext;
-  userId?: string;
 }
+
+/**
+ * Cap on history sent upstream. Chat history grows without bound as a
+ * conversation goes on, and the whole array is re-sent every turn, so a long
+ * session would eventually overflow the model's context window and start
+ * failing. Keeping only recent turns bounds both that failure and the cost.
+ */
+const MAX_HISTORY_MESSAGES = 20;
+
+/** Guard against a client posting a huge string to run up the token bill. */
+const MAX_MESSAGE_CHARS = 4000;
 
 /** Resolve to `fallback` if the lookup has not finished in time. */
 function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
@@ -25,6 +37,19 @@ function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T
 
 export async function POST(request: NextRequest) {
   try {
+    // Identity comes from the session cookie, never from the request body. This
+    // route used to read `body.userId` and fall back to a shared 'default_user',
+    // so the signed-in app funnelled every user's memories into one namespace
+    // and any caller could read someone else's by passing their id.
+    const user = await getAuthenticatedUser();
+    if (!user) {
+      return NextResponse.json(
+        { error: 'You must be signed in to chat with Logan.' },
+        { status: 401 }
+      );
+    }
+    const userId = user.id;
+
     const parsed = await parseJsonBody<ChatRequest>(request);
     if (!parsed.ok) {
       return parsed.response;
@@ -38,11 +63,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!process.env.OPENAI_API_KEY) {
-      console.error('OPENAI_API_KEY is missing');
+    const messages = body.messages
+      .filter(
+        (message): message is ChatMessage =>
+          !!message &&
+          typeof message.content === 'string' &&
+          (message.role === 'user' || message.role === 'assistant')
+      )
+      .slice(-MAX_HISTORY_MESSAGES)
+      .map(message => ({
+        role: message.role,
+        content: message.content.slice(0, MAX_MESSAGE_CHARS),
+      }));
+
+    if (messages.length === 0) {
       return NextResponse.json(
-        { error: 'OpenAI API key not configured. Please check your .env.local file.' },
-        { status: 500 }
+        { error: 'Field "messages" contained no valid messages' },
+        { status: 400 }
+      );
+    }
+
+    if (!process.env.OPENAI_API_KEY) {
+      log.error('OPENAI_API_KEY is missing');
+      return NextResponse.json(
+        { error: 'The AI service is not configured. Please contact support.' },
+        { status: 503 }
       );
     }
 
@@ -50,15 +95,10 @@ export async function POST(request: NextRequest) {
       apiKey: process.env.OPENAI_API_KEY,
     });
 
-    // Get user ID (use a default for now, in real app this would come from auth)
-    const userId = body.userId || 'default_user';
-
     const conversationContext = body.conversationContext ?? ({} as ConversationContext);
 
-    // Get the latest user message for memory processing
-    const latestMessage = body.messages[body.messages.length - 1];
-
     // Store user preferences in memory (non-blocking)
+    const latestMessage = messages[messages.length - 1];
     if (latestMessage?.role === 'user') {
       memoryService.storeUserPreferences(
         userId,
@@ -73,69 +113,67 @@ export async function POST(request: NextRequest) {
       withTimeout(memoryService.getUserProfile(userId), 2000, {}),
     ]);
 
-    // Enhance conversation context with memories
     const enhancedContext = {
       ...conversationContext,
       userMemories: userMemories.slice(0, 5), // Limit to 5 most relevant memories
-      userProfile
+      userProfile,
     };
 
-    // Get the system prompt from our organized prompts
     const systemPrompt = getLoganChatPrompt(enhancedContext);
 
-    console.log('Sending chat request to OpenAI...');
-    
+    log.debug('Sending chat request to OpenAI for user', redact(userId));
+
     const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: 'gpt-3.5-turbo',
       messages: [
         {
-          role: "system",
-          content: systemPrompt
+          role: 'system',
+          content: systemPrompt,
         },
-        ...body.messages
+        ...messages,
       ],
       temperature: 0.8,
       max_tokens: 200,
     });
 
     const response = completion.choices[0]?.message?.content;
-    
+
     if (!response) {
-      console.error('No response content from OpenAI');
+      log.error('No response content from OpenAI');
       return NextResponse.json(
         { error: 'Failed to generate response' },
-        { status: 500 }
+        { status: 502 }
       );
     }
 
-    console.log('Logan response generated:', response);
-
     return NextResponse.json({
       message: response,
-      readyForWorkout: conversationContext.hasEnoughInfo
+      readyForWorkout: conversationContext.hasEnoughInfo,
     });
-
   } catch (error) {
-    console.error('Error in chat with Logan:', error);
-    
+    log.error('Error in chat with Logan:', error instanceof Error ? error.message : error);
+
     if (error instanceof Error) {
+      // The caller is not the one who is unauthorized - our server key is - so
+      // these surface as dependency failures rather than a 401/429 that would
+      // tell the user to go fix their own credentials.
       if (error.message.includes('401')) {
         return NextResponse.json(
-          { error: 'Invalid OpenAI API key. Please check your API key.' },
-          { status: 500 }
+          { error: 'The AI service rejected our credentials. Please contact support.' },
+          { status: 502 }
         );
       }
       if (error.message.includes('429')) {
         return NextResponse.json(
-          { error: 'Rate limit exceeded. Please wait a moment and try again.' },
-          { status: 500 }
+          { error: 'Logan is a bit busy right now. Please wait a moment and try again.' },
+          { status: 503 }
         );
       }
     }
-    
+
     return NextResponse.json(
       { error: 'Failed to generate response. Please try again.' },
       { status: 500 }
     );
   }
-} 
+}

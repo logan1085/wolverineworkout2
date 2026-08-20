@@ -1,89 +1,101 @@
-# Wolverine Workout Frontend
+# Logan — AI Personal Trainer
 
-A Next.js-based frontend for the Wolverine Workout tracking application with AI-powered workout generation.
+A Next.js app where you chat with Logan, an AI personal trainer, and get a
+workout built for the time, equipment and goals you actually have today. Logan
+then coaches you through the session by voice.
 
-## Features
+## How it works
 
-- Create, edit, and delete workouts
-- Track exercises with sets, reps, and weights
-- **AI-powered workout generation using ChatGPT**
-- Modern, responsive UI built with Tailwind CSS
-- Single-server architecture with Next.js API routes
+1. **Chat** — tell Logan how long you have, what you want to work on, and what
+   equipment is around. He asks follow-ups for anything you leave out.
+2. **Preview** — Logan proposes a workout. Review the exercises, then start it
+   or go back and adjust.
+3. **Train** — work through the session, logging reps and weight per set. An
+   optional voice coach can mark sets complete hands-free.
+4. **Finish** — see what you actually completed. Logan remembers your
+   preferences for next time.
 
 ## Setup
 
-1. Install dependencies:
+Requires Node.js 20+.
+
 ```bash
 npm install
-```
-
-2. Set up environment variables:
-Create a `.env.local` file in the frontend directory with:
-```
-OPENAI_API_KEY=your_openai_api_key_here
-```
-
-3. Run the development server:
-```bash
+cp .env.example .env.local   # then fill it in
 npm run dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
+Open http://localhost:3000.
 
-## AI Workout Generation
+`.env.example` documents every variable. The three required ones are
+`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` and
+`OPENAI_API_KEY`; the app will not build or run without them. See
+[SUPABASE_SETUP.md](SUPABASE_SETUP.md) for where to find the Supabase values.
 
-The app now includes ChatGPT integration for generating personalized workouts:
+Memory (`MEM0_API_KEY`) is optional — without it Logan simply starts fresh each
+session instead of recalling past preferences.
 
-1. Click "Generate AI Workout" button
-2. Select your fitness level, workout type, and focus area
-3. Choose available equipment
-4. Set desired duration
-5. Click "Generate Workout" to get an AI-created workout plan
+## Scripts
 
-## Project Structure
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start the dev server |
+| `npm run build` | Production build (runs typecheck + lint) |
+| `npm run start` | Serve the production build |
+| `npm run lint` | ESLint |
+| `npm run typecheck` | TypeScript, no emit |
+
+## Project structure
 
 ```
 src/
-├── app/                 # Next.js app directory
-│   ├── api/            # API routes
-│   │   ├── workouts/   # Workout CRUD operations
-│   │   └── generate-workout/ # AI workout generation
-│   ├── page.tsx        # Main application page
-│   ├── layout.tsx      # Root layout
-│   └── globals.css     # Global styles
-├── components/         # React components
-│   ├── WorkoutForm.tsx # Form for creating/editing workouts
-│   ├── WorkoutList.tsx # List of workouts
-│   └── WorkoutGenerator.tsx # AI workout generator
-├── services/          # API services
-│   └── api.ts         # Backend API communication
-└── types/             # TypeScript type definitions
-    └── workout.ts     # Workout and exercise types
+├── app/
+│   ├── api/
+│   │   ├── chat-with-logan/        # Conversation with the trainer
+│   │   ├── generate-simple-workout/# Turns the conversation into a workout
+│   │   └── realtime-session/       # Mints ephemeral keys for the voice coach
+│   ├── page.tsx                    # Chat → preview → workout → summary
+│   └── layout.tsx
+├── components/                     # UI for each step of that flow
+├── contexts/AuthContext.tsx        # Supabase auth state
+├── lib/
+│   ├── conversation-context.ts     # Pulls goals/time/equipment out of chat
+│   ├── supabase.ts                 # Browser client
+│   ├── supabase-server.ts          # Server client + auth helper
+│   ├── memory.ts                   # Mem0 long-term memory
+│   └── logger.ts                   # Dev-only debug logging
+├── prompts/                        # All model prompts
+├── services/database.ts            # Supabase queries
+└── types/workout.ts
 ```
 
-## Available Scripts
+## API routes
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-- `npm run lint` - Run ESLint
+All three require an authenticated Supabase session and are rejected with 401
+otherwise — each one spends OpenAI credits.
 
-## API Routes
+| Route | Purpose |
+| --- | --- |
+| `POST /api/chat-with-logan` | Logan's next reply, given the conversation |
+| `POST /api/generate-simple-workout` | Build a workout from the conversation |
+| `POST /api/realtime-session` | Ephemeral key for the realtime voice coach |
 
-The app uses Next.js API routes for backend functionality:
+## Developer tools
 
-- `GET /api/workouts` - Get all workouts
-- `POST /api/workouts` - Create new workout
-- `GET /api/workouts/[id]` - Get specific workout
-- `PUT /api/workouts/[id]` - Update workout
-- `DELETE /api/workouts/[id]` - Delete workout
-- `POST /api/generate-workout` - Generate AI workout
+The chat reset button and memory inspector are hidden unless
+`NEXT_PUBLIC_ENABLE_DEV_TOOLS=true` (they are always on in `npm run dev`).
+Reset permanently clears the signed-in user's profile and chat history, so keep
+it off in production.
 
-## Technologies Used
+## Security notes
 
-- Next.js 15 (App Router)
-- React 18
-- TypeScript
-- Tailwind CSS
-- OpenAI API (ChatGPT)
-- Next.js API Routes
+- Never commit `.env.local`, and never paste keys into logs or issues.
+- `log.debug` is a no-op outside development. Keep chat content, AI responses
+  and memories out of `log.warn`/`log.error` — they hold personal data.
+- User identity is always read from the session cookie server-side, never from
+  a request body.
+
+## Built with
+
+Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS 4 · Supabase ·
+OpenAI · Mem0
