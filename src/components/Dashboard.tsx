@@ -190,7 +190,7 @@ export default function Dashboard({ workouts, onWorkoutClick, onGenerateNewPlan,
                       {workout.exercises.length} exercises • {workout.duration || 45} min
                     </p>
                     {workout.date && (
-                      <p className="text-xs text-gray-500 mt-1 font-medium">
+                      <p className="text-xs text-gray-400 mt-1 font-medium">
                         Next: {new Date(workout.date).toLocaleDateString()}
                       </p>
                     )}
@@ -198,7 +198,7 @@ export default function Dashboard({ workouts, onWorkoutClick, onGenerateNewPlan,
                 ))}
               </div>
             ) : (
-              <p className="text-gray-500 text-sm font-medium">Rest day</p>
+              <p className="text-gray-400 text-sm font-medium">Rest day</p>
             )}
           </div>
         ))}
@@ -384,7 +384,7 @@ export default function Dashboard({ workouts, onWorkoutClick, onGenerateNewPlan,
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-500 font-medium">No workouts scheduled</p>
+                  <p className="text-gray-400 font-medium">No workouts scheduled</p>
                 )}
               </div>
             )}

@@ -8,13 +8,18 @@ export default function AuthForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  // Tracked explicitly rather than sniffed out of the message text: most auth
+  // failures ("Invalid login credentials") contain no such word, so the previous
+  // substring check styled genuine errors as green successes.
+  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState('')
-  
+
   const { signIn, signUp } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+    setStatus('idle')
     setMessage('')
 
     try {
@@ -25,8 +30,10 @@ export default function AuthForm() {
         await signUp(email, password)
         setMessage('Check your email for the confirmation link!')
       }
-    } catch (error: any) {
-      setMessage(error.message || 'An error occurred')
+      setStatus('success')
+    } catch (error: unknown) {
+      setStatus('error')
+      setMessage(error instanceof Error ? error.message : 'An error occurred')
     } finally {
       setLoading(false)
     }
@@ -82,11 +89,13 @@ export default function AuthForm() {
           </button>
 
           {message && (
-            <div className={`text-center text-sm ${
-              message.includes('error') || message.includes('Error') 
-                ? 'text-red-400' 
-                : 'text-green-400'
-            }`}>
+            <div
+              role={status === 'error' ? 'alert' : 'status'}
+              aria-live={status === 'error' ? 'assertive' : 'polite'}
+              className={`text-center text-sm ${
+                status === 'error' ? 'text-red-400' : 'text-green-400'
+              }`}
+            >
               {message}
             </div>
           )}

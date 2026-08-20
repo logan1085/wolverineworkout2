@@ -601,7 +601,7 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
       <div className="hidden md:block bg-gradient-to-r from-teal-600 to-blue-700 text-white p-4 md:p-6 rounded-t-3xl">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3 md:space-x-4">
-            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden border-2 border-white border-opacity-30">
+            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden border-2 border-white/30">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img 
                 src="/logan-profile.jpg" 
@@ -614,7 +614,7 @@ export default function SimpleChat({ onWorkoutProposed }: SimpleChatProps) {
                   target.nextElementSibling?.classList.remove('hidden');
                 }}
               />
-              <div className="hidden w-full h-full bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+              <div className="hidden w-full h-full bg-white/20 rounded-full flex items-center justify-center">
                 <span className="text-lg md:text-xl font-bold">L</span>
               </div>
             </div>

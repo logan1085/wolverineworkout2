@@ -501,7 +501,7 @@ const VoiceChat = forwardRef<
       {/* Status indicators */}
       <div className="flex items-center space-x-4 mb-4">
         <div className={`flex items-center space-x-2 ${
-          voiceState.isConnected ? 'text-green-400' : 'text-gray-500'
+          voiceState.isConnected ? 'text-green-400' : 'text-gray-400'
         }`}>
           <div className={`w-2 h-2 rounded-full ${
             voiceState.isConnected ? 'bg-green-400' : 'bg-gray-500'
@@ -510,7 +510,7 @@ const VoiceChat = forwardRef<
         </div>
 
         <div className={`flex items-center space-x-2 ${
-          voiceState.isListening ? 'text-blue-400' : 'text-gray-500'
+          voiceState.isListening ? 'text-blue-400' : 'text-gray-400'
         }`}>
           <div className={`w-2 h-2 rounded-full ${
             voiceState.isListening ? 'bg-blue-400 animate-pulse' : 'bg-gray-500'
@@ -519,7 +519,7 @@ const VoiceChat = forwardRef<
         </div>
 
         <div className={`flex items-center space-x-2 ${
-          voiceState.isSpeaking ? 'text-purple-400' : 'text-gray-500'
+          voiceState.isSpeaking ? 'text-purple-400' : 'text-gray-400'
         }`}>
           <div className={`w-2 h-2 rounded-full ${
             voiceState.isSpeaking ? 'bg-purple-400 animate-pulse' : 'bg-gray-500'

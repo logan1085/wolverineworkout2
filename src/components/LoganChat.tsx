@@ -367,13 +367,13 @@ ${workoutPlan.notes}`,
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-50 p-4">
       <div className="bg-gray-900 rounded-3xl shadow-2xl w-full max-w-4xl h-[700px] flex flex-col border border-gray-800">
         {/* Header */}
         <div className="bg-gradient-to-r from-teal-600 to-blue-700 text-white p-6 rounded-t-3xl">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="w-14 h-14 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+              <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center">
                 <span className="text-2xl font-bold">L</span>
               </div>
               <div>
@@ -383,9 +383,10 @@ ${workoutPlan.notes}`,
             </div>
             <button
               onClick={onClose}
-              className="text-white hover:text-gray-200 transition-colors p-2 rounded-full hover:bg-white hover:bg-opacity-10"
+              aria-label="Close chat"
+              className="text-white hover:text-gray-200 transition-colors p-2 rounded-full hover:bg-white/10"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg aria-hidden="true" className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
