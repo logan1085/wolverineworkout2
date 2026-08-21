@@ -12,14 +12,18 @@ import {
   UpdateUserProfileRequest
 } from '@/types/workout';
 
-const supabase = createClient();
+// Resolved per call rather than once at module scope. `createClient` throws
+// when the Supabase environment variables are unset, and a module-scope call
+// makes that throw fire on import - including on the server while `next build`
+// prerenders any page that transitively imports this file.
+const supabase = () => createClient();
 
 export class DatabaseService {
   // ===== USER PROFILE OPERATIONS =====
   
   static async getUserProfile(userId: string): Promise<UserProfile | null> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabase()
         .from('user_profiles')
         .select('*')
         .eq('id', userId)
@@ -45,7 +49,7 @@ export class DatabaseService {
 
   static async createUserProfile(userId: string): Promise<UserProfile | null> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await supabase()
         .from('user_profiles')
         .insert({
           id: userId,
@@ -69,7 +73,7 @@ export class DatabaseService {
   }
 
   static async updateUserProfile(userId: string, updates: UpdateUserProfileRequest): Promise<UserProfile | null> {
-    const { data, error } = await supabase
+    const { data, error } = await supabase()
       .from('user_profiles')
       .update(updates)
       .eq('id', userId)
@@ -86,7 +90,7 @@ export class DatabaseService {
 
   static async resetUserProfile(userId: string): Promise<UserProfile | null> {
     // Reset user profile to initial state by setting optional fields to null
-    const { data, error } = await supabase
+    const { data, error } = await supabase()
       .from('user_profiles')
       .update({
         fitness_level: null,
@@ -167,7 +171,7 @@ export class DatabaseService {
   // ===== CHAT OPERATIONS =====
   
   static async createChat(request: CreateChatRequest): Promise<Chat | null> {
-    const { data, error } = await supabase
+    const { data, error } = await supabase()
       .from('chats')
       .insert(request)
       .select()
@@ -182,7 +186,7 @@ export class DatabaseService {
   }
 
   static async getChatById(chatId: string): Promise<Chat | null> {
-    const { data, error } = await supabase
+    const { data, error } = await supabase()
       .from('chats')
       .select('*')
       .eq('id', chatId)
@@ -197,7 +201,7 @@ export class DatabaseService {
   }
 
   static async getUserChats(userId: string): Promise<Chat[]> {
-    const { data, error } = await supabase
+    const { data, error } = await supabase()
       .from('chats')
       .select('*')
       .eq('user_id', userId)
@@ -212,7 +216,7 @@ export class DatabaseService {
   }
 
   static async getActiveChat(userId: string): Promise<Chat | null> {
-    const { data, error } = await supabase
+    const { data, error } = await supabase()
       .from('chats')
       .select('*')
       .eq('user_id', userId)
@@ -230,7 +234,7 @@ export class DatabaseService {
   }
 
   static async updateChat(chatId: string, updates: Partial<Chat>): Promise<Chat | null> {
-    const { data, error } = await supabase
+    const { data, error } = await supabase()
       .from('chats')
       .update(updates)
       .eq('id', chatId)
@@ -248,7 +252,7 @@ export class DatabaseService {
   // ===== MESSAGE OPERATIONS =====
   
   static async createMessage(request: CreateMessageRequest): Promise<Message | null> {
-    const { data, error } = await supabase
+    const { data, error } = await supabase()
       .from('messages')
       .insert(request)
       .select()
@@ -263,7 +267,7 @@ export class DatabaseService {
   }
 
   static async getChatMessages(chatId: string): Promise<Message[]> {
-    const { data, error } = await supabase
+    const { data, error } = await supabase()
       .from('messages')
       .select('*')
       .eq('chat_id', chatId)
@@ -281,7 +285,7 @@ export class DatabaseService {
   
   static async createWorkout(request: CreateWorkoutDBRequest): Promise<Workout | null> {
     // Start a transaction to create workout and exercises
-    const { data: workoutData, error: workoutError } = await supabase
+    const { data: workoutData, error: workoutError } = await supabase()
       .from('workouts')
       .insert({
         user_id: request.user_id,
@@ -318,7 +322,7 @@ export class DatabaseService {
         order_in_workout: exercise.order_in_workout || index + 1
       }));
 
-      const { error: exercisesError } = await supabase
+      const { error: exercisesError } = await supabase()
         .from('exercises')
         .insert(exercisesToInsert);
 
@@ -332,7 +336,7 @@ export class DatabaseService {
   }
 
   static async getWorkoutById(workoutId: string): Promise<Workout | null> {
-    const { data, error } = await supabase
+    const { data, error } = await supabase()
       .from('workouts')
       .select(`
         *,
@@ -355,7 +359,7 @@ export class DatabaseService {
   }
 
   static async getUserWorkouts(userId: string): Promise<Workout[]> {
-    const { data, error } = await supabase
+    const { data, error } = await supabase()
       .from('workouts')
       .select(`
         *,
@@ -389,7 +393,7 @@ export class DatabaseService {
     // renders. Selecting the bare row left `exercises` undefined, which is why
     // the "Workout Complete" screen reported no exercise details and a total of
     // zero sets after every session.
-    const { data, error } = await supabase
+    const { data, error } = await supabase()
       .from('workouts')
       .update(updates)
       .eq('id', workoutId)
@@ -419,7 +423,7 @@ export class DatabaseService {
     actual_reps?: number[];
     actual_weight_lbs?: number;
   }): Promise<Exercise | null> {
-    const { data, error } = await supabase
+    const { data, error } = await supabase()
       .from('exercises')
       .update(progress)
       .eq('id', exerciseId)
@@ -463,7 +467,7 @@ export class DatabaseService {
   // ===== UTILITY FUNCTIONS =====
 
   static async linkWorkoutToChat(chatId: string, workoutId: string): Promise<boolean> {
-    const { error } = await supabase
+    const { error } = await supabase()
       .from('chats')
       .update({ 
         workout_generated: true, 

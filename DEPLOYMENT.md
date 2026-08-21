@@ -27,8 +27,35 @@ Adding or changing one requires a rebuild, not just a restart.
 ## Deploying
 
 1. Import the repository into your host.
-2. Add the environment variables above.
+2. Add the environment variables above. Do this **before** the first deploy —
+   see the environment check below for why.
 3. Deploy. Build command is `npm run build`.
+
+On Vercel, tick every environment you actually deploy (Production, Preview,
+Development). A variable added to Production only will still fail preview
+builds. After adding one, start a **new** build — plain "Redeploy" can reuse the
+cached build output, which still has the old value inlined.
+
+## Environment check
+
+`npm run build` runs `scripts/check-env.mjs` first (via the `prebuild` script)
+and **aborts the build** when `NEXT_PUBLIC_SUPABASE_URL` or
+`NEXT_PUBLIC_SUPABASE_ANON_KEY` is missing.
+
+This is deliberate, because `NEXT_PUBLIC_*` values are inlined into the client
+bundle at build time. A build that runs without them does not fail on its own —
+it emits a bundle with `undefined` baked in, reports the deploy as green, and
+then breaks in the user's browser. Setting the variable afterwards does nothing
+until the app is rebuilt. Failing at the start of the build, naming the missing
+variable, is cheaper than debugging that.
+
+`OPENAI_API_KEY` is read per request inside the route handlers, not at build
+time, so a missing value is only a **warning**: the build succeeds, the AI
+routes return an error, and adding the key later needs no rebuild.
+
+The check reads `.env.local` the same way Next does, so a configured local
+checkout passes. Set `SKIP_ENV_CHECK=1` to bypass it — useful for compiling
+without credentials, never for a real deploy.
 
 ## Build configuration
 
@@ -58,8 +85,12 @@ npm run build
 
 ## Troubleshooting
 
+**Build stops with "required environment variables are not set"** — the check
+above is working. Add the named variables to your host and start a new build.
+
 **Blank page / "Missing required environment variable"** — a Supabase variable
-is unset. Add it and rebuild.
+is unset. Add it and rebuild. If the variable *is* set in the dashboard, the
+deploy reused a cached build that predates it; trigger a fresh build.
 
 **All API calls return 401** — the request has no valid Supabase session. Every
 AI route requires a signed-in user by design. Check that auth is configured and

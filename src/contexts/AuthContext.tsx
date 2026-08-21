@@ -17,9 +17,15 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
-  const supabase = createClient()
 
+  // The client is created inside the effect and the handlers, never during
+  // render. `createClient` throws when the Supabase environment variables are
+  // unset, and render also runs on the server during prerendering, so a
+  // render-time call turned a missing variable into a `next build` failure on
+  // an unrelated page. Effects and handlers only ever run in the browser.
   useEffect(() => {
+    const supabase = createClient()
+
     // Get initial session
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession()
@@ -38,10 +44,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     )
 
     return () => subscription.unsubscribe()
-  }, [supabase.auth])
+  }, [])
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error } = await createClient().auth.signInWithPassword({
       email,
       password,
     })
@@ -49,7 +55,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({
+    const { error } = await createClient().auth.signUp({
       email,
       password,
     })
@@ -57,7 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut()
+    const { error } = await createClient().auth.signOut()
     if (error) throw error
   }
 
