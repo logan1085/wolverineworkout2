@@ -103,3 +103,7 @@ it off in production.
 
 Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS 4 · Supabase ·
 OpenAI · Mem0
+
+### Garmin and personal Strava connections
+
+The health app’s Connections view supports the existing Garmin import flow and a new owner-only Strava official-MCP OAuth/live-question flow. Both require provider configuration; no live account is connected in this checkout. Strava’s current access restrictions and the complete activation checklist are documented in [CONNECTIONS.md](CONNECTIONS.md).

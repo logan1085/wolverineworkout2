@@ -1669,3 +1669,67 @@ button:disabled {
     padding: 16px;
   }
 }
+
+/* Live account connection: separate from durable health memory. */
+.strava-card {
+  border-top: 2px solid #fc5200;
+}
+.strava-wordmark {
+  color: #fc7432;
+  letter-spacing: 0.12em;
+}
+.strava-card h2 {
+  font-size: clamp(1.7rem, 2.5vw, 2.3rem);
+  line-height: 1.2;
+}
+.strava-card h2 em {
+  font-family: Georgia, serif;
+  font-weight: 400;
+}
+.strava-question {
+  display: grid;
+  gap: 14px;
+  margin-top: 22px;
+}
+.strava-question textarea {
+  width: 100%;
+  resize: vertical;
+  border: 1px solid var(--border, #33443b);
+  border-radius: 12px;
+  padding: 14px;
+  background: #10241b;
+  color: #f1f4ec;
+  font: inherit;
+}
+.strava-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.strava-consent input {
+  margin-top: 4px;
+  accent-color: #d4ed96;
+}
+.strava-answer {
+  margin-top: 22px;
+  padding: 20px;
+  border-radius: 14px;
+  background: #10241b;
+}
+.strava-answer > p:not(.eyebrow) {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.strava-links {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  font-size: 0.8rem;
+}
+.strava-links a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

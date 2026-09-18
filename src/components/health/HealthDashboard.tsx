@@ -14,6 +14,7 @@ import {
 } from "@/lib/health/model";
 import "./health.css";
 import MemoryPanel from "./MemoryPanel";
+import StravaConnection from "./StravaConnection";
 import { useHealthMemory } from "./useHealthMemory";
 import {
   emptyMemory,
@@ -683,7 +684,8 @@ export default function HealthDashboard() {
               className="quiet-button"
               onClick={() => setTab("Connections")}
             >
-              {connection.connected ? "Garmin connected" : "Connect Garmin"} ↗
+              {connection.connected ? "Garmin connected" : "Connect your apps"}{" "}
+              ↗
             </button>
           </div>
         </header>
@@ -1534,6 +1536,10 @@ export default function HealthDashboard() {
                   </>
                 )}
               </section>
+              <StravaConnection
+                key={user?.id || "signed-out"}
+                signedIn={!!user}
+              />
               <section className="panel privacy-card">
                 <span className="eyebrow">BUILT AROUND YOUR CONSENT</span>
                 <h2>
