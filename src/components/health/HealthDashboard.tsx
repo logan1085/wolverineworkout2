@@ -1,5 +1,5 @@
 "use client";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState, useId } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -15,6 +15,7 @@ import {
 import "./health.css";
 import MemoryPanel from "./MemoryPanel";
 import StravaConnection from "./StravaConnection";
+import { useMobileViewport } from "./useMobileViewport";
 import { useHealthMemory } from "./useHealthMemory";
 import {
   emptyMemory,
@@ -77,20 +78,27 @@ function Modal({
   children: React.ReactNode;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
+  const headingId = useId();
   useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     ref.current?.showModal();
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
   }, []);
   return (
     <dialog
       ref={ref}
       className="health-dialog"
+      aria-labelledby={headingId}
       onCancel={onClose}
       onClick={(e) => {
         if (e.target === ref.current) onClose();
       }}
     >
       <div className="dialog-heading">
-        <h2>{title}</h2>
+        <h2 id={headingId}>{title}</h2>
         <button
           className="icon-button"
           aria-label="Close dialog"
@@ -106,6 +114,19 @@ function Modal({
 export default function HealthDashboard() {
   const { user, signIn, signUp, signOut } = useAuth();
   const [tab, setTab] = useState<Tab>("Today");
+  const [moreOpen, setMoreOpen] = useState(false);
+  const { root, keyboardOpen } = useMobileViewport();
+  const chatLog = useRef<HTMLDivElement>(null);
+  const composerInput = useRef<HTMLTextAreaElement>(null);
+  const followChat = useRef(true);
+  function navigate(next: Tab) {
+    setMoreOpen(false);
+    setTab(next);
+    const url = new URL(window.location.href);
+    url.searchParams.set("tab", next);
+    window.history.replaceState({}, "", url);
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }
   const [data, setData] = useState<HealthState>(emptyHealth);
   const [sample, setSample] = useState(true);
   const [samples, setSamples] = useState<HealthState>(emptyHealth);
@@ -123,7 +144,7 @@ export default function HealthDashboard() {
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
   const [modal, setModal] = useState<
-    "checkin" | "activity" | "profile" | "delete" | null
+    "checkin" | "activity" | "profile" | "delete" | "context" | null
   >(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState("");
@@ -139,7 +160,7 @@ export default function HealthDashboard() {
   const chatEpoch = useRef(0);
   const activeRequest = useRef<AbortController | null>(null);
   const [range, setRange] = useState(7);
-  const chatEnd = useRef<HTMLDivElement>(null);
+
   const upload = useRef<HTMLInputElement>(null);
   const current = sample ? samples : data;
   const briefing = dailyBriefing(current);
@@ -226,8 +247,16 @@ export default function HealthDashboard() {
     };
   }, [user, tab]);
   useEffect(() => {
-    chatEnd.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  }, [messages, thinking]);
+    const log = chatLog.current;
+    if (log && !messages.length) log.scrollTop = 0;
+    else if (log && followChat.current) log.scrollTop = log.scrollHeight;
+  }, [messages, thinking, tab, keyboardOpen]);
+  useEffect(() => {
+    const input = composerInput.current;
+    if (!input) return;
+    input.style.height = "auto";
+    input.style.height = `${Math.min(input.scrollHeight, 144)}px`;
+  }, [draft, tab]);
   useEffect(() => {
     resetConversationView();
     setConsent(false);
@@ -622,18 +651,28 @@ export default function HealthDashboard() {
   );
   const weekMinutes = visibleActivities.reduce((sum, a) => sum + a.minutes, 0);
   return (
-    <div className="health-app">
+    <div
+      ref={root}
+      className={`health-app ${tab === "Your agent" ? "mobile-chat" : ""} ${keyboardOpen ? "keyboard-open" : ""}`}
+    >
       <aside className="rail">
         <Link className="wordmark" href="/" aria-label="Wolverine home">
           w<span aria-hidden="true">{"///"}</span>
           <b>wolverine</b>
         </Link>
+        <button
+          className="mobile-profile"
+          onClick={() => setModal("profile")}
+          aria-label="Edit your profile and goal"
+        >
+          {data.profile.name?.slice(0, 1).toUpperCase() || "W"}
+        </button>
         <div className="rail-label">YOUR HEALTH, CONNECTED</div>
         <nav aria-label="Main navigation">
           {tabs.map((x, i) => (
             <button
               key={x}
-              onClick={() => setTab(x)}
+              onClick={() => navigate(x)}
               className={tab === x ? "selected" : ""}
               aria-current={tab === x ? "page" : undefined}
             >
@@ -996,8 +1035,27 @@ export default function HealthDashboard() {
                         : "Ready when your AI connection is set up"}
                     </p>
                   </div>
+                  <button
+                    className="mobile-chat-context quiet-button"
+                    onClick={() => setModal("context")}
+                  >
+                    Context
+                  </button>
+                  <button
+                    className="mobile-new-chat quiet-button"
+                    disabled={thinking || !messages.length}
+                    onClick={() => void act(startConversation)}
+                  >
+                    New chat
+                  </button>
                 </div>
                 <div
+                  ref={chatLog}
+                  onScroll={(event) => {
+                    const log = event.currentTarget;
+                    followChat.current =
+                      log.scrollHeight - log.scrollTop - log.clientHeight < 80;
+                  }}
                   className="chat-log"
                   role="log"
                   aria-label="Conversation"
@@ -1121,54 +1179,68 @@ export default function HealthDashboard() {
                       ))}
                     </div>
                   )}
-                  <div ref={chatEnd} />
                 </div>
-                <label className="consent">
-                  <input
-                    type="checkbox"
-                    checked={consent}
-                    onChange={(e) => setConsent(e.target.checked)}
-                  />
-                  Allow this conversation and{" "}
-                  {sample
-                    ? "sample data"
-                    : "my health context and any enabled memories"}{" "}
-                  to be sent to OpenAI for a response.
-                </label>
-                <form
-                  className="composer"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    void send();
-                  }}
+                <div
+                  className={`chat-compose-area ${consent ? "has-consent" : ""}`}
                 >
-                  <textarea
-                    aria-label="Message your health agent"
-                    placeholder="What’s on your mind?"
-                    maxLength={4000}
-                    value={draft}
-                    onChange={(e) => setDraft(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && !e.shiftKey) {
-                        e.preventDefault();
-                        void send();
-                      }
+                  <label className="consent">
+                    <input
+                      type="checkbox"
+                      checked={consent}
+                      onChange={(e) => setConsent(e.target.checked)}
+                    />
+                    Allow this conversation and{" "}
+                    {sample
+                      ? "sample data"
+                      : "my health context and any enabled memories"}{" "}
+                    to be sent to OpenAI for a response.
+                  </label>
+                  <form
+                    className="composer"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      followChat.current = true;
+                      void send();
                     }}
-                  />
-                  <button
-                    className="primary"
-                    aria-label="Send message"
-                    disabled={
-                      thinking || memory.saving || !draft.trim() || !consent
-                    }
                   >
-                    ↑
-                  </button>
-                </form>
-                <small className="chat-footnote">
-                  AI can make mistakes. For symptoms or medical decisions, talk
-                  with a qualified clinician.
-                </small>
+                    <textarea
+                      ref={composerInput}
+                      aria-label="Message your health agent"
+                      enterKeyHint="enter"
+                      placeholder="What’s on your mind?"
+                      maxLength={4000}
+                      value={draft}
+                      onChange={(e) => setDraft(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (
+                          e.key === "Enter" &&
+                          !e.shiftKey &&
+                          !e.nativeEvent.isComposing &&
+                          window.matchMedia(
+                            "(hover: hover) and (pointer: fine)",
+                          ).matches
+                        ) {
+                          e.preventDefault();
+                          followChat.current = true;
+                          void send();
+                        }
+                      }}
+                    />
+                    <button
+                      className="primary"
+                      aria-label="Send message"
+                      disabled={
+                        thinking || memory.saving || !draft.trim() || !consent
+                      }
+                    >
+                      ↑
+                    </button>
+                  </form>
+                  <small className="chat-footnote">
+                    AI can make mistakes. For symptoms or medical decisions,
+                    talk with a qualified clinician.
+                  </small>
+                </div>
               </section>
               <aside className="context-panel panel">
                 <span className="eyebrow">WHAT YOUR AGENT SEES</span>
@@ -1668,6 +1740,110 @@ export default function HealthDashboard() {
           Wolverine is a wellness companion, not medical care.
         </footer>
       </main>
+      <nav className="mobile-dock" aria-label="Mobile navigation">
+        {(["Today", "Your agent", "Activity", "Journal"] as Tab[]).map(
+          (item, index) => (
+            <button
+              key={item}
+              className={tab === item ? "selected" : ""}
+              aria-current={tab === item ? "page" : undefined}
+              onClick={() => navigate(item)}
+            >
+              <span aria-hidden="true">{icons[index]}</span>
+              <span>{item === "Your agent" ? "Agent" : item}</span>
+            </button>
+          ),
+        )}
+        <button
+          className={
+            tab === "Memory" || tab === "Connections" || moreOpen
+              ? "selected"
+              : ""
+          }
+          aria-haspopup="dialog"
+          aria-expanded={moreOpen}
+          onClick={() => setMoreOpen(true)}
+        >
+          <span aria-hidden="true">•••</span>
+          <span>More</span>
+        </button>
+      </nav>
+      {moreOpen && (
+        <Modal title="Your space" onClose={() => setMoreOpen(false)}>
+          <div className="mobile-menu">
+            <button onClick={() => navigate("Memory")}>
+              <span>◇</span>
+              <div>
+                Memory<small>Review what your agent remembers</small>
+              </div>
+              <span>↗</span>
+            </button>
+            <button onClick={() => navigate("Connections")}>
+              <span>⌘</span>
+              <div>
+                Connections<small>Garmin, Strava and your account</small>
+              </div>
+              <span>↗</span>
+            </button>
+            <button
+              onClick={() => {
+                setMoreOpen(false);
+                setModal("profile");
+              }}
+            >
+              <span>◉</span>
+              <div>
+                Your profile<small>Goals and time for movement</small>
+              </div>
+              <span>↗</span>
+            </button>
+            <Link href="/workout">
+              <span>↗</span>
+              <div>
+                Workout coach<small>Open the original workout experience</small>
+              </div>
+              <span>↗</span>
+            </Link>
+          </div>
+        </Modal>
+      )}
+      {modal === "context" && (
+        <Modal title="What your agent sees" onClose={() => setModal(null)}>
+          <p>
+            {sample
+              ? "You’re exploring fictional sample records. Your personal memory is excluded."
+              : "Your current health profile, recent records, and relevant confirmed memories when memory is on."}
+          </p>
+          <div className="context-item">
+            <small>YOUR FOCUS</small>
+            <p>{current.profile.goal}</p>
+          </div>
+          <div className="context-item">
+            <small>TIME FOR MOVEMENT</small>
+            <p>{current.profile.minutes} minutes</p>
+          </div>
+          <div className="context-item">
+            <small>RECENT CONTEXT</small>
+            <p>
+              Up to 14 check-ins, 14 daily wearable records, and 20 activities.
+              Missing data stays unknown.
+            </p>
+          </div>
+          <p>
+            Data is sent to OpenAI only when you allow sharing and send a
+            message. Strava is queried separately in Connections.
+          </p>
+          <button
+            className="secondary"
+            onClick={() => {
+              setModal(null);
+              navigate("Memory");
+            }}
+          >
+            Review your memory
+          </button>
+        </Modal>
+      )}
       {modal === "checkin" && (
         <Modal title="A moment for you." onClose={() => setModal(null)}>
           <p className="subtle">

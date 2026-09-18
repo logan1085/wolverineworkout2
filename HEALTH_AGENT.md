@@ -82,3 +82,7 @@ See [CONNECTIONS.md](CONNECTIONS.md) for Garmin activation and the new personal 
 ## Agent behavior and prompt evaluation
 
 The runtime system prompt is now versioned in `src/lib/health/agent-prompt.ts` and shared with the separate Strava view. Read the generated [system prompt](docs/agent/SYSTEM_PROMPT.md) and [behavior guide](docs/agent/BEHAVIOR.md). Regenerate the readable prompt with `node scripts/export-agent-prompt.mjs`. Run `npm run eval:agent -- --live` against the local preview to exercise synthetic conversation cases; do not run another live-chat test simultaneously because the local account deliberately allows only one in-flight reply.
+
+## Mobile experience
+
+The phone layout now has bottom navigation, a More sheet, a dedicated chat viewport/composer, reachable context and profile controls, and home-screen assets. See [mobile usage and pending device checks](docs/mobile/USAGE.md). No offline health-data cache, background sync, or push notifications were added.

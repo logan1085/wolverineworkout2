@@ -1733,3 +1733,460 @@ button:disabled {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+/* Phone working surfaces: bottom navigation, safe areas, and one chat scroll area. */
+.mobile-dock,
+.mobile-profile,
+.mobile-new-chat {
+  display: none;
+}
+.health-app :is(.panel, .metric, .activity-row > div, .plan-row > div) {
+  min-width: 0;
+}
+.health-app
+  :is(.activity-row h3, .plan-row h3, .memory-chat-bar, .connection-note) {
+  overflow-wrap: anywhere;
+}
+.health-app button,
+.health-app a {
+  touch-action: manipulation;
+}
+@media (max-width: 760px) {
+  .health-app {
+    --dock-height: 72px;
+    padding-bottom: calc(var(--dock-height) + env(safe-area-inset-bottom));
+  }
+  .health-app .rail {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: calc(12px + env(safe-area-inset-top))
+      max(18px, env(safe-area-inset-right)) 12px
+      max(18px, env(safe-area-inset-left));
+    min-height: 64px;
+  }
+  .health-app .rail nav {
+    display: none;
+  }
+  .health-app .wordmark > span {
+    margin-left: -20px;
+  }
+  .health-app .wordmark b {
+    font-size: 20px;
+  }
+  .health-app .mobile-profile {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border: 1px solid #506343;
+    border-radius: 50%;
+    color: #d3f78b;
+    background: #253321;
+  }
+  .health-app .mobile-dock {
+    position: fixed;
+    z-index: 20;
+    inset: auto 0 0;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    min-height: var(--dock-height);
+    padding: 5px max(8px, env(safe-area-inset-right))
+      calc(5px + env(safe-area-inset-bottom))
+      max(8px, env(safe-area-inset-left));
+    border-top: 1px solid #344432;
+    background: #111c16f5;
+    backdrop-filter: blur(18px);
+  }
+  .health-app .mobile-dock button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    min-width: 0;
+    min-height: 60px;
+    padding: 6px 2px;
+    background: transparent;
+    border: 0;
+    border-radius: 10px;
+    color: #a9b5a3;
+    font-size: 0.75rem;
+  }
+  .health-app .mobile-dock button > span:first-child {
+    font-size: 23px;
+    line-height: 1;
+  }
+  .health-app .mobile-dock button.selected {
+    background: #2b3b24;
+    color: #d3f78b;
+  }
+  .health-app .health-main {
+    padding: 0 max(16px, env(safe-area-inset-right)) 24px
+      max(16px, env(safe-area-inset-left));
+  }
+  .health-app
+    :is(button, .quiet-button, .icon-button, .step, .range-toggle button) {
+    min-height: 44px;
+  }
+  .health-app :is(.icon-button, .step) {
+    min-width: 44px;
+  }
+  .health-app :is(.primary, .secondary, .light-btn, .danger-button) {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.4;
+  }
+  .health-app :is(input, select, textarea) {
+    font-size: 16px !important;
+  }
+  .health-app .topbar {
+    height: auto;
+    min-height: 52px;
+    padding: 6px 0;
+  }
+  .health-app .top-actions {
+    width: 100%;
+  }
+  .health-app .sample-pill {
+    font-size: 12px;
+    padding: 9px 12px;
+    text-align: left;
+    white-space: normal;
+  }
+  .health-app .greeting {
+    gap: 16px;
+    padding: 22px 0;
+  }
+  .health-app .greeting h1 {
+    font-size: clamp(28px, 8vw, 36px);
+    letter-spacing: -1px;
+  }
+  .health-app .greeting > .primary {
+    width: 100%;
+  }
+  .health-app .briefing {
+    padding: 24px;
+  }
+  .health-app .panel {
+    padding: 20px;
+  }
+  .health-app .metric {
+    padding: 15px 12px;
+  }
+  .health-app .metric > div:first-child {
+    gap: 6px;
+    font-size: 13px;
+  }
+  .health-app .metric small {
+    max-width: 100%;
+  }
+  .health-app .memory-setting {
+    flex-direction: column;
+  }
+  .health-app .memory-switch {
+    flex-direction: row;
+    min-height: 44px;
+  }
+  .health-app .button-row {
+    gap: 8px;
+  }
+  .health-app .button-row > button {
+    flex: 1 1 auto;
+  }
+  .health-app .activity-row {
+    gap: 10px;
+  }
+  .health-app .activity-row > div {
+    flex: 1;
+  }
+  .health-app .activity-row .activity-icon {
+    flex: 0 0 36px;
+    width: 36px;
+  }
+  .health-app .activity-row strong {
+    font-size: 16px;
+  }
+  .health-app .empty-inline {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .health-app .bar-chart {
+    gap: 3px;
+  }
+  .health-app .health-dialog {
+    inset: auto 0 var(--keyboard-inset, 0px);
+    margin: 0 auto;
+    width: 100%;
+    max-width: 600px;
+    max-height: min(90dvh, calc(var(--mobile-height, 100dvh) - 16px));
+    padding: 20px max(20px, env(safe-area-inset-right))
+      calc(24px + env(safe-area-inset-bottom))
+      max(20px, env(safe-area-inset-left));
+    border-radius: 22px 22px 0 0;
+    overscroll-behavior: contain;
+    scroll-padding: 20px;
+  }
+  .health-app .dialog-heading {
+    position: sticky;
+    top: -20px;
+    padding: 12px 0;
+    background: #19241c;
+    z-index: 1;
+  }
+  .mobile-menu {
+    display: grid;
+    gap: 8px;
+  }
+  .mobile-menu :is(button, a) {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    border: 1px solid #3b4c32;
+    border-radius: 12px;
+    background: #20301f;
+    color: #e6edde;
+    text-align: left;
+    text-decoration: none;
+  }
+  .mobile-menu :is(button, a) > span:first-child {
+    font-size: 24px;
+    color: #d3f78b;
+  }
+  .mobile-menu :is(button, a) > span:last-child {
+    margin-left: auto;
+  }
+  .mobile-menu small {
+    display: block;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #a8bb9a;
+    margin-top: 5px;
+  }
+
+  .health-app.mobile-chat {
+    position: fixed;
+    top: var(--mobile-top, 0px);
+    left: 0;
+    right: 0;
+    height: var(--mobile-height, 100dvh);
+    min-height: 0;
+    padding-bottom: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .mobile-chat .rail {
+    flex-shrink: 0;
+  }
+  .health-app.mobile-chat .health-main {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 8px;
+  }
+  .mobile-chat .topbar {
+    flex-shrink: 0;
+  }
+  .mobile-chat .greeting,
+  .mobile-chat footer {
+    display: none;
+  }
+  .mobile-chat .notice {
+    margin-top: 8px;
+    max-height: 90px;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+  .mobile-chat .memory-chat-bar {
+    margin: 8px 0;
+    padding: 8px 12px;
+    gap: 0;
+    flex-shrink: 0;
+    flex-direction: row;
+    align-items: center;
+    font-size: 12px;
+  }
+  .mobile-chat .memory-chat-bar .quiet-button {
+    font-size: 12px !important;
+    min-width: 70px;
+  }
+  .mobile-chat .chat-layout {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+  }
+  .health-app.mobile-chat .chat-panel {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    width: 100%;
+    min-height: 0;
+  }
+  .mobile-chat .chat-title {
+    padding: 10px 14px;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .health-app .mobile-new-chat {
+    display: block;
+    margin-left: auto;
+    white-space: nowrap;
+  }
+  .mobile-chat .chat-log {
+    flex: 1;
+    min-height: 0;
+    max-height: none;
+    padding: 16px 12px;
+    scrollbar-gutter: stable;
+  }
+  .mobile-chat .chat-welcome {
+    padding: 8px 0;
+  }
+  .mobile-chat .chat-welcome .agent-mark {
+    font-size: 32px;
+    margin: 8px 0;
+  }
+  .mobile-chat .chat-welcome h2 {
+    font-size: 26px;
+    margin: 12px 0;
+  }
+  .mobile-chat .prompt-chips {
+    margin-top: 16px;
+  }
+  .mobile-chat .message {
+    padding: 14px;
+    max-width: 96%;
+  }
+  .mobile-chat .message p {
+    line-height: 1.65;
+  }
+  .mobile-chat .chat-compose-area {
+    flex-shrink: 0;
+    border-top: 1px solid #344432;
+    background: #19241c;
+  }
+  .mobile-chat .consent {
+    margin: 8px 12px 0;
+    font-size: 12px;
+    line-height: 1.5;
+    padding: 4px 0;
+  }
+  .mobile-chat .consent input {
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+  }
+  .mobile-chat .composer {
+    margin: 10px 12px;
+    align-items: flex-end;
+  }
+  .health-app.mobile-chat .composer textarea {
+    min-height: 48px;
+    max-height: min(144px, 24dvh);
+    resize: none;
+    padding: 12px;
+    line-height: 1.5;
+  }
+  .mobile-chat .composer .primary {
+    height: 48px;
+    width: 48px;
+  }
+  .mobile-chat .chat-footnote {
+    font-size: 12px;
+    line-height: 1.4;
+    margin: 0 12px 10px;
+  }
+  .health-app.mobile-chat .mobile-dock {
+    position: relative;
+    flex-shrink: 0;
+  }
+  .health-app.keyboard-open .mobile-dock {
+    display: none;
+  }
+  .mobile-chat.keyboard-open .rail,
+  .mobile-chat.keyboard-open .topbar,
+  .mobile-chat.keyboard-open .memory-chat-bar,
+  .mobile-chat.keyboard-open .chat-footnote,
+  .mobile-chat.keyboard-open .has-consent .consent {
+    display: none;
+  }
+  .health-app.mobile-chat.keyboard-open .health-main {
+    padding-top: 8px;
+  }
+  .strava-links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}
+@media (max-width: 360px) {
+  .health-app .briefing,
+  .health-app .panel {
+    padding: 16px;
+  }
+  .health-app .metric > div:first-child {
+    font-size: 12px;
+  }
+  .health-app .metric strong {
+    font-size: 23px;
+  }
+  .health-app .garmin-logo {
+    font-size: 23px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .health-app *,
+  .health-app *::before,
+  .health-app *::after {
+    animation: none !important;
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}
+.mobile-chat-context {
+  display: none;
+}
+@media (max-width: 760px) {
+  .mobile-chat-context {
+    display: block;
+    margin-left: auto;
+  }
+  .health-app .mobile-new-chat {
+    margin-left: 0;
+  }
+  .mobile-chat .chat-title > .quiet-button {
+    font-size: 12px !important;
+    padding: 6px;
+  }
+  .mobile-chat .chat-title h2 {
+    font-size: 16px;
+  }
+  .mobile-chat.keyboard-open .chat-title p {
+    display: none;
+  }
+}
+.health-app .composer > .primary {
+  flex: 0 0 48px;
+  width: 48px;
+  margin-top: 0;
+}
+@media (max-width: 760px) {
+  .mobile-chat .chat-title > div {
+    min-width: 0;
+    flex: 1;
+  }
+  .mobile-chat .chat-title > button {
+    flex-shrink: 0;
+  }
+}
+@media (max-width: 360px) {
+  .mobile-chat .chat-title .small-agent {
+    display: none;
+  }
+}

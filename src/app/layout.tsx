@@ -18,7 +18,14 @@ const robotoCondensed = Roboto_Condensed({
 
 export const metadata: Metadata = {
   title: "Wolverine — Your personal health agent",
-  description: "Your daily health briefing, connected activity, and a coach that sees the whole picture.",
+  applicationName: "Wolverine",
+  appleWebApp: {
+    capable: true,
+    title: "Wolverine",
+    statusBarStyle: "black-translucent",
+  },
+  description:
+    "Your daily health briefing, connected activity, and a coach that sees the whole picture.",
 };
 
 // Next 15 requires viewport to be its own export; leaving it on `metadata` was
@@ -28,6 +35,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  themeColor: "#111916",
+  interactiveWidget: "resizes-content",
 };
 
 export default function RootLayout({
@@ -40,9 +49,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${robotoCondensed.variable} antialiased`}
       >
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );
