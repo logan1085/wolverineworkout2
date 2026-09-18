@@ -1,8 +1,10 @@
-const assert = require("node:assert/strict");
-const { test } = require("node:test");
-const fs = require("node:fs");
-const ts = require("typescript");
-const path = require("node:path");
+import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
+import assert from "node:assert/strict";
+import { test } from "node:test";
+import fs from "node:fs";
+import ts from "typescript";
+import path from "node:path";
 function load(relative) {
   const filename = path.resolve(relative);
   const source = ts.transpileModule(fs.readFileSync(filename, "utf8"), {
@@ -11,13 +13,13 @@ function load(relative) {
       target: ts.ScriptTarget.ES2022,
     },
   }).outputText;
-  const module = { exports: {} };
+  const compiledModule = { exports: {} };
   new Function("require", "module", "exports", source)(
     require,
-    module,
-    module.exports,
+    compiledModule,
+    compiledModule.exports,
   );
-  return module.exports;
+  return compiledModule.exports;
 }
 const { emptyHealth, validateHealth, dailyBriefing } = load(
   "src/lib/health/model.ts",

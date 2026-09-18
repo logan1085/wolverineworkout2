@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test:health": "node --test tests/health.test.cjs"
+    "test:health": "node --test tests/health.test.mjs",
+    "test:memory": "node --test tests/memory.test.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",

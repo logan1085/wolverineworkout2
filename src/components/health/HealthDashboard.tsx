@@ -13,7 +13,24 @@ import {
   validateHealth,
 } from "@/lib/health/model";
 import "./health.css";
-type Tab = "Today" | "Your agent" | "Activity" | "Journal" | "Connections";
+import MemoryPanel from "./MemoryPanel";
+import { useHealthMemory } from "./useHealthMemory";
+import {
+  emptyMemory,
+  MemoryEntry,
+  MemorySuggestion,
+  normalizeMemoryText,
+  recordConversation,
+  readLocalMemory,
+  SavedMessage,
+} from "@/lib/health/memory-model";
+type Tab =
+  | "Today"
+  | "Your agent"
+  | "Activity"
+  | "Journal"
+  | "Memory"
+  | "Connections";
 type ChatMessage = { role: "user" | "assistant"; content: string };
 type Connection = {
   configured: boolean;
@@ -25,9 +42,10 @@ const tabs: Tab[] = [
   "Your agent",
   "Activity",
   "Journal",
+  "Memory",
   "Connections",
 ];
-const icons = ["◉", "✳", "↗", "▤", "⌘"];
+const icons = ["◉", "✳", "↗", "▤", "◇", "⌘"];
 const dateLabel = (date: string) =>
   new Date(date + "T12:00:00").toLocaleDateString(undefined, {
     month: "short",
@@ -110,6 +128,15 @@ export default function HealthDashboard() {
   const [draft, setDraft] = useState("");
   const [thinking, setThinking] = useState(false);
   const [consent, setConsent] = useState(false);
+  const memory = useHealthMemory(user?.id);
+  const [suggestions, setSuggestions] = useState<MemorySuggestion[]>([]);
+  const [memoryUsed, setMemoryUsed] = useState<
+    Pick<MemoryEntry, "id" | "text" | "category" | "updatedAt">[]
+  >([]);
+  const conversationId = useRef<string | null>(null);
+  const restoredScope = useRef("");
+  const chatEpoch = useRef(0);
+  const activeRequest = useRef<AbortController | null>(null);
   const [range, setRange] = useState(7);
   const chatEnd = useRef<HTMLDivElement>(null);
   const upload = useRef<HTMLInputElement>(null);
@@ -146,7 +173,8 @@ export default function HealthDashboard() {
     let active = true;
     setLoaded(false);
     setData(emptyHealth);
-    setMessages([]);
+    resetConversationView();
+    restoredScope.current = "";
     setConsent(false);
     setConnection({ configured: false, connected: false, lastSync: null });
     async function load() {
@@ -163,7 +191,8 @@ export default function HealthDashboard() {
           const saved = localStorage.getItem("wolverine.health.v1");
           if (active) {
             setData(saved ? validateHealth(JSON.parse(saved)) : emptyHealth);
-            setSample(!saved);
+            const view = localStorage.getItem("wolverine.view.v1");
+            setSample(view === "sample" || (view !== "personal" && !saved));
           }
         }
       } catch (error) {
@@ -198,6 +227,115 @@ export default function HealthDashboard() {
   useEffect(() => {
     chatEnd.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [messages, thinking]);
+  useEffect(() => {
+    resetConversationView();
+    setConsent(false);
+    restoredScope.current = "";
+  }, [sample, user?.id]);
+  useEffect(() => {
+    if (!memory.ready) {
+      chatEpoch.current++;
+      activeRequest.current?.abort();
+      setMessages([]);
+      setThinking(false);
+      setSuggestions([]);
+      setMemoryUsed([]);
+      restoredScope.current = "";
+      return;
+    }
+    if (sample) {
+      restoredScope.current = "";
+      return;
+    }
+    const scope = user?.id || "local";
+    if (restoredScope.current === scope) return;
+    restoredScope.current = scope;
+    if (memory.state.enabled) {
+      const saved = memory.state.conversations.find(
+        (c) => c.id === memory.state.activeConversationId,
+      );
+      if (saved) {
+        conversationId.current = saved.id;
+        setMessages(saved.messages);
+      }
+    }
+  }, [
+    memory.ready,
+    sample,
+    user?.id,
+    memory.state.enabled,
+    memory.state.conversations,
+    memory.state.activeConversationId,
+  ]);
+  function resetConversationView() {
+    chatEpoch.current++;
+    activeRequest.current?.abort();
+    setThinking(false);
+    conversationId.current = null;
+    setMessages([]);
+    setSuggestions([]);
+    setMemoryUsed([]);
+    setDraft("");
+  }
+  async function startConversation() {
+    if (!sample && memory.state.enabled) {
+      await memory.update((s) => ({ ...s, activeConversationId: null }));
+    }
+    resetConversationView();
+  }
+  async function resumeConversation(id: string) {
+    if (thinking) return;
+    const saved = memory.state.conversations.find((c) => c.id === id);
+    if (!saved) return;
+    await memory.update((s) => ({ ...s, activeConversationId: id }));
+    resetConversationView();
+    setSample(false);
+    setMessages(saved.messages);
+    conversationId.current = id;
+    setConsent(false);
+    setTab("Your agent");
+  }
+  async function acceptSuggestion(
+    suggestion: MemorySuggestion,
+    replaceId?: string,
+  ) {
+    if (thinking || sample) return;
+    await act(async () => {
+      const now = new Date().toISOString();
+      await memory.update((s) => {
+        const already = s.entries.some(
+          (m) =>
+            normalizeMemoryText(m.text) ===
+            normalizeMemoryText(suggestion.text),
+        );
+        if (already) return s;
+        const entry: MemoryEntry = {
+          id: replaceId || crypto.randomUUID(),
+          category: suggestion.category,
+          text: suggestion.text,
+          evidence: suggestion.evidence,
+          source: "conversation",
+          createdAt: replaceId
+            ? s.entries.find((m) => m.id === replaceId)?.createdAt || now
+            : now,
+          updatedAt: now,
+          expiresOn: null,
+        };
+        return {
+          ...s,
+          entries: replaceId
+            ? s.entries.map((m) => (m.id === replaceId ? entry : m))
+            : [entry, ...s.entries],
+          ...(replaceId
+            ? { conversations: [], activeConversationId: null }
+            : {}),
+        };
+      });
+      if (replaceId) resetConversationView();
+      else setSuggestions((items) => items.filter((x) => x !== suggestion));
+      setNotice("Memory saved. You can review or change it in Memory.");
+    });
+  }
   async function save(next: HealthState) {
     if (!loaded)
       throw new Error(
@@ -220,8 +358,13 @@ export default function HealthDashboard() {
     setSample(false);
   }
   function changeSample(value: boolean) {
+    try {
+      localStorage.setItem("wolverine.view.v1", value ? "sample" : "personal");
+    } catch {
+      /* View preferences are optional. */
+    }
     setSample(value);
-    setMessages([]);
+    resetConversationView();
     setConsent(false);
   }
   async function act(fn: () => Promise<void>) {
@@ -311,7 +454,7 @@ export default function HealthDashboard() {
     });
   }
   async function send(text = draft) {
-    if (thinking || !text.trim()) return;
+    if (thinking || !text.trim() || memory.saving) return;
     if (!consent) {
       setNotice("Please allow sharing your health context before sending.");
       return;
@@ -320,35 +463,98 @@ export default function HealthDashboard() {
       setNotice("Sign in and connect the AI service to talk with your agent.");
       return;
     }
-    const next = [
+    const useMemory = !sample && memory.ready && memory.state.enabled;
+    if (useMemory && !user) {
+      try {
+        if (readLocalMemory(localStorage).revision !== memory.revision) {
+          await memory.reload();
+          setNotice(
+            "Memory changed in another tab. Please send your message again.",
+          );
+          return;
+        }
+      } catch {
+        setNotice(
+          "Memory could not be read. Open Memory to reload before sharing saved facts.",
+        );
+        return;
+      }
+    }
+    const next: ChatMessage[] = [
       ...messages,
-      { role: "user" as const, content: text.trim() },
-    ].slice(-19);
+      { role: "user", content: text.trim() },
+    ];
+    const epoch = chatEpoch.current;
+    const id = conversationId.current || crypto.randomUUID();
+    const controller = new AbortController();
+    activeRequest.current = controller;
     setMessages(next);
     setDraft("");
     setThinking(true);
+    setSuggestions([]);
+    setMemoryUsed([]);
     try {
       const response = await fetch("/api/health/chat", {
         method: "POST",
+        signal: controller.signal,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: next,
-          state: current,
+          messages: next.slice(-19),
+          state: {
+            ...current,
+            checkIns: current.checkIns.slice(0, 14),
+            metrics: current.metrics.slice(-14),
+            activities: current.activities.slice(0, 20),
+            completed: [],
+          },
           sample,
           consent: true,
+          useMemory,
+          memoryRevision: memory.revision,
+          memory: useMemory
+            ? { ...memory.state, conversations: [], activeConversationId: null }
+            : undefined,
         }),
       });
       const result = await response.json();
-      if (!response.ok) throw new Error(result.error);
-      setMessages([...next, { role: "assistant", content: result.message }]);
+      if (!response.ok) {
+        if (response.status === 409) {
+          await memory.reload();
+          setNotice(result.error);
+          return;
+        }
+        throw new Error(result.error);
+      }
+      if (epoch !== chatEpoch.current) return;
+      const complete: SavedMessage[] = [
+        ...next,
+        { role: "assistant", content: result.message },
+      ];
+      setMessages(complete);
+      setMemoryUsed(result.memoryUsed || []);
+      setSuggestions(useMemory ? result.suggestions || [] : []);
+      if (useMemory) {
+        try {
+          await memory.update((s) => recordConversation(s, id, complete));
+          if (epoch === chatEpoch.current) conversationId.current = id;
+        } catch {
+          setNotice(
+            "This conversation could not be saved. Open Memory to reload and resolve the save error.",
+          );
+        }
+      }
     } catch (error) {
+      if (epoch !== chatEpoch.current || controller.signal.aborted) return;
       setNotice(
         error instanceof Error ? error.message : "The agent could not respond.",
       );
       setMessages(next.slice(0, -1));
       setDraft(text);
     } finally {
-      setThinking(false);
+      if (epoch === chatEpoch.current) {
+        setThinking(false);
+        activeRequest.current = null;
+      }
     }
   }
   function ask(text: string) {
@@ -465,11 +671,13 @@ export default function HealthDashboard() {
             <button
               className="sample-pill"
               onClick={() => changeSample(!sample)}
-              disabled={thinking}
+              disabled={thinking || tab === "Memory"}
             >
-              {sample
-                ? "Sample data · View my health"
-                : "My health · Explore sample"}
+              {tab === "Memory"
+                ? "Personal memory"
+                : sample
+                  ? "Sample data · View my health"
+                  : "My health · Explore sample"}
             </button>
             <button
               className="quiet-button"
@@ -755,9 +963,23 @@ export default function HealthDashboard() {
               <button
                 className="quiet-button"
                 disabled={thinking || !messages.length}
-                onClick={() => setMessages([])}
+                onClick={() => void act(startConversation)}
               >
-                Clear conversation
+                New conversation
+              </button>
+            </div>
+            <div className="memory-chat-bar">
+              <span>
+                {sample
+                  ? "Sample chat · personal memory is excluded"
+                  : memory.ready && memory.state.enabled
+                    ? "Memory on · conversation history is saved"
+                    : memory.error
+                      ? "Memory unavailable · this chat is not saved"
+                      : "Memory off · this chat is not saved"}
+              </span>
+              <button className="quiet-button" onClick={() => setTab("Memory")}>
+                Manage memory ↗
               </button>
             </div>
             <div className="chat-layout">
@@ -810,6 +1032,93 @@ export default function HealthDashboard() {
                       Putting your day in context<span>…</span>
                     </div>
                   )}
+                  {!sample && memoryUsed.length > 0 && (
+                    <details className="memory-included">
+                      <summary>
+                        {memoryUsed.length} saved{" "}
+                        {memoryUsed.length === 1 ? "memory" : "memories"}{" "}
+                        included in this reply’s context
+                      </summary>
+                      <ul>
+                        {memoryUsed.map((m) => (
+                          <li key={m.id}>{m.text}</li>
+                        ))}
+                      </ul>
+                    </details>
+                  )}
+                  {!sample && suggestions.length > 0 && (
+                    <div className="memory-suggestions">
+                      <h3>Worth remembering?</h3>
+                      <p>
+                        Review these before they become part of your saved
+                        memory.
+                      </p>
+                      {suggestions.map((suggestion, i) => (
+                        <div className="memory-suggestion" key={i}>
+                          <span className="memory-category">
+                            {suggestion.category}
+                          </span>
+                          <p>{suggestion.text}</p>
+                          <blockquote>“{suggestion.evidence}”</blockquote>
+                          <div className="button-row">
+                            <button
+                              className="secondary"
+                              disabled={memory.saving || busy || thinking}
+                              onClick={() => void acceptSuggestion(suggestion)}
+                            >
+                              Remember this
+                            </button>
+                            <button
+                              className="quiet-button"
+                              onClick={() =>
+                                setSuggestions((items) =>
+                                  items.filter((x) => x !== suggestion),
+                                )
+                              }
+                            >
+                              Not now
+                            </button>
+                          </div>
+                          {memory.state.entries.some(
+                            (m) => m.category === suggestion.category,
+                          ) && (
+                            <label>
+                              Updating something you told me before?
+                              <select
+                                aria-label="Replace an existing memory"
+                                defaultValue=""
+                                disabled={memory.saving || busy || thinking}
+                                onChange={(e) => {
+                                  const id = e.target.value;
+                                  if (!id) return;
+                                  if (
+                                    window.confirm(
+                                      "Replace this saved fact and clear old conversations so the previous version cannot return?",
+                                    )
+                                  )
+                                    void acceptSuggestion(suggestion, id);
+                                  e.target.value = "";
+                                }}
+                              >
+                                <option value="">
+                                  Choose a memory to replace…
+                                </option>
+                                {memory.state.entries
+                                  .filter(
+                                    (m) => m.category === suggestion.category,
+                                  )
+                                  .map((m) => (
+                                    <option key={m.id} value={m.id}>
+                                      {m.text}
+                                    </option>
+                                  ))}
+                              </select>
+                            </label>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   <div ref={chatEnd} />
                 </div>
                 <label className="consent">
@@ -819,8 +1128,10 @@ export default function HealthDashboard() {
                     onChange={(e) => setConsent(e.target.checked)}
                   />
                   Allow this conversation and{" "}
-                  {sample ? "sample data" : "my health context"} to be sent to
-                  OpenAI for a response.
+                  {sample
+                    ? "sample data"
+                    : "my health context and any enabled memories"}{" "}
+                  to be sent to OpenAI for a response.
                 </label>
                 <form
                   className="composer"
@@ -845,7 +1156,9 @@ export default function HealthDashboard() {
                   <button
                     className="primary"
                     aria-label="Send message"
-                    disabled={thinking || !draft.trim() || !consent}
+                    disabled={
+                      thinking || memory.saving || !draft.trim() || !consent
+                    }
                   >
                     ↑
                   </button>
@@ -1104,6 +1417,27 @@ export default function HealthDashboard() {
             </div>
           </>
         )}
+        {tab === "Memory" && (
+          <MemoryPanel
+            state={memory.state}
+            ready={memory.ready}
+            error={memory.error}
+            busy={thinking || memory.saving || busy}
+            cloud={!!user}
+            update={memory.update}
+            reload={memory.reload}
+            onResume={(id) => void act(() => resumeConversation(id))}
+            onForget={() => {
+              resetConversationView();
+              try {
+                localStorage.setItem("wolverine.view.v1", "personal");
+              } catch {
+                /* Optional view preference. */
+              }
+              setSample(false);
+            }}
+          />
+        )}
         {tab === "Connections" && (
           <>
             <div className="greeting">
@@ -1320,7 +1654,7 @@ export default function HealthDashboard() {
           </>
         )}
         <footer>
-          {sample
+          {tab !== "Memory" && sample
             ? "Preview uses fictional sample data. "
             : user
               ? "Your history is saved to your account. "
@@ -1528,8 +1862,9 @@ export default function HealthDashboard() {
         >
           <p>
             This removes your saved profile, check-ins, activities, and plan
-            history {user ? "from your account" : "from this browser"}. Export a
-            backup first if you want to keep a copy.
+            history, saved memories, and conversations{" "}
+            {user ? "from your account" : "from this browser"}. Export a backup
+            first if you want to keep a copy.
           </p>
           <p className="subtle">
             Your Garmin connection is separate. Disconnect it first if you want
@@ -1544,6 +1879,8 @@ export default function HealthDashboard() {
               disabled={busy}
               onClick={() =>
                 void act(async () => {
+                  await memory.update(() => emptyMemory());
+                  resetConversationView();
                   if (user) {
                     const r = await fetch("/api/health/data", {
                       method: "DELETE",

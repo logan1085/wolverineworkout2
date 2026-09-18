@@ -1439,3 +1439,233 @@ button:disabled {
     font-size: 16px;
   }
 }
+.memory-setting {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+  margin-bottom: 24px;
+  background: linear-gradient(110deg, #273b29, #19271e);
+}
+.memory-setting h2 {
+  margin-bottom: 10px;
+}
+.memory-setting p {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #beceb2;
+  max-width: 750px;
+  margin: 0 0 10px;
+}
+.memory-setting small {
+  font-size: 12px;
+  color: #a8be99;
+}
+.memory-switch {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.health-app .memory-switch input {
+  width: 24px;
+  height: 24px;
+  min-height: 24px;
+}
+.memory-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(270px, 1fr);
+  gap: 24px;
+}
+.memory-editor {
+  margin-bottom: 24px;
+}
+.count-badge {
+  font-size: 14px;
+  color: #a8c390;
+  background: #2a3d24;
+  padding: 3px 9px;
+  border-radius: 20px;
+  vertical-align: middle;
+  margin-left: 7px;
+}
+.memory-filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.memory-filters > input {
+  flex: 1;
+}
+.health-app .memory-filters > select {
+  width: 160px;
+}
+.memory-card {
+  border-top: 1px solid #35492f;
+  padding: 22px 0;
+}
+.memory-category {
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: #c7e7a1;
+  background: #2d4226;
+  padding: 5px 9px;
+  border-radius: 4px;
+}
+.memory-card small {
+  font-size: 12px;
+  color: #a4b499;
+}
+.memory-card > p {
+  font-size: 17px;
+  line-height: 1.7;
+  margin: 15px 0;
+  overflow-wrap: anywhere;
+}
+.memory-card blockquote,
+.memory-suggestion blockquote {
+  border-left: 2px solid #80995f;
+  color: #a6b998;
+  padding-left: 14px;
+  margin: 10px 0 20px;
+  font-size: 14px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.memory-history {
+  align-self: start;
+}
+.conversation-row {
+  border-top: 1px solid #35492f;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 13px 0;
+}
+.conversation-row > button:first-child {
+  border: 0;
+  background: transparent;
+  text-align: left;
+  color: #d8e4ce;
+  flex: 1;
+  min-width: 0;
+  padding: 5px 0;
+}
+.conversation-row strong {
+  font-size: 15px;
+  font-weight: 500;
+  display: block;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.conversation-row small {
+  font-size: 12px;
+  color: #9fb48f;
+  display: block;
+  margin-top: 6px;
+}
+.memory-chat-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin: 0 0 20px;
+  padding: 15px 18px;
+  background: #223220;
+  border: 1px solid #3e5732;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #bed2ab;
+}
+.memory-included {
+  border-top: 1px solid #405436;
+  padding: 16px 0;
+  font-size: 13px;
+  color: #b6caa6;
+  line-height: 1.8;
+}
+.memory-included summary {
+  cursor: pointer;
+}
+.memory-included li {
+  margin: 8px 0;
+}
+.memory-suggestions {
+  background: #263925;
+  border: 1px solid #506b3d;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px 0;
+}
+.memory-suggestions h3 {
+  font-family: Georgia, serif;
+  font-size: 25px;
+  font-weight: 400;
+  margin: 0;
+}
+.memory-suggestions > p {
+  font-size: 14px;
+  color: #aabb9a;
+  line-height: 1.7;
+}
+.memory-suggestion {
+  padding-top: 18px;
+  margin-top: 18px;
+  border-top: 1px solid #4b613d;
+}
+.memory-suggestion > p {
+  font-size: 16px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+.memory-suggestion label {
+  display: block;
+  font-size: 13px;
+  color: #adc79a;
+  margin-top: 17px;
+}
+.health-app .memory-suggestion select {
+  font-size: 14px;
+}
+.forget-button {
+  color: #dab5a4;
+}
+.memory-editor textarea {
+  min-height: 100px;
+}
+@media (max-width: 1000px) {
+  .memory-layout {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 760px) {
+  .memory-setting {
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .memory-setting p {
+    font-size: 15px;
+  }
+  .memory-filters {
+    flex-direction: column;
+  }
+  .health-app .memory-filters > select {
+    width: 100%;
+  }
+  .memory-chat-bar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .memory-card .section-heading {
+    gap: 10px;
+  }
+  .memory-switch {
+    flex-direction: column;
+  }
+  .memory-suggestions {
+    padding: 16px;
+  }
+}

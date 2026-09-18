@@ -1,8 +1,12 @@
 # Wolverine — Personal Health Agent
 
-A Next.js app where you chat with Logan, an AI personal trainer, and get a
-workout built for the time, equipment and goals you actually have today. Logan
-then coaches you through the session by voice.
+A personal health companion for daily check-ins, activity history, contextual AI conversations, and durable memory. The original workout and voice coach is preserved at `/workout`.
+
+The `/` dashboard includes an opt-in **Memory** view. Save, correct, expire, export, or forget facts and resume conversations. Sample chats remain separate. Device-local memory works immediately; account sync needs the Supabase migrations. See [HEALTH_AGENT.md](HEALTH_AGENT.md) for setup, validation, and current integration limits.
+
+## Original workout coach
+
+The following workflow describes `/workout`.
 
 ## How it works
 
@@ -17,7 +21,7 @@ then coaches you through the session by voice.
 
 ## Setup
 
-Requires Node.js 20+.
+Use Node.js 22 LTS (some existing dependencies require Node 22).
 
 ```bash
 npm install
