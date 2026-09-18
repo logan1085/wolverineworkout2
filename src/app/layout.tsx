@@ -17,8 +17,8 @@ const robotoCondensed = Roboto_Condensed({
 });
 
 export const metadata: Metadata = {
-  title: "Logan - AI Personal Trainer",
-  description: "Your AI-powered personal trainer for customized workouts",
+  title: "Wolverine — Your personal health agent",
+  description: "Your daily health briefing, connected activity, and a coach that sees the whole picture.",
 };
 
 // Next 15 requires viewport to be its own export; leaving it on `metadata` was

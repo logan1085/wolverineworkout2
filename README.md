@@ -1,4 +1,4 @@
-# Logan — AI Personal Trainer
+# Wolverine — Personal Health Agent
 
 A Next.js app where you chat with Logan, an AI personal trainer, and get a
 workout built for the time, equipment and goals you actually have today. Logan

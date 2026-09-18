@@ -24,16 +24,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // render-time call turned a missing variable into a `next build` failure on
   // an unrelated page. Effects and handlers only ever run in the browser.
   useEffect(() => {
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      setLoading(false)
+      return
+    }
     const supabase = createClient()
 
     // Get initial session
     const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      setUser(session?.user ?? null)
-      setLoading(false)
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        setUser(session?.user ?? null)
+      } finally {
+        setLoading(false)
+      }
     }
 
-    getSession()
+    void getSession().catch(() => setUser(null))
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
