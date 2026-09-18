@@ -86,3 +86,7 @@ The runtime system prompt is now versioned in `src/lib/health/agent-prompt.ts` a
 ## Mobile experience
 
 The phone layout now has bottom navigation, a More sheet, a dedicated chat viewport/composer, reachable context and profile controls, and home-screen assets. See [mobile usage and pending device checks](docs/mobile/USAGE.md). No offline health-data cache, background sync, or push notifications were added.
+
+## Public transparency
+
+`/transparency`, `/SOUL.md`, and `/MEMORY.md` are static public documentation. They contain no personal exports and make no calls to browser storage, authentication, Supabase, or integration providers. The prompt is generated from runtime source; the memory policy is a reviewed explanation with conditional deployment status. These routes being implemented locally does not establish that they are live on the public Vercel site.

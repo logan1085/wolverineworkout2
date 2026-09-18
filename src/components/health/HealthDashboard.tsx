@@ -688,6 +688,7 @@ export default function HealthDashboard() {
             <br />
             <small>Every single day.</small>
           </p>
+          <Link href="/transparency">Our soul & memory ↗</Link>
           <Link href="/workout">Open workout coach ↗</Link>
           <button
             className="profile-button"
@@ -1737,7 +1738,8 @@ export default function HealthDashboard() {
             : user
               ? "Your history is saved to your account. "
               : "Your personal check-ins are stored on this device. "}
-          Wolverine is a wellness companion, not medical care.
+          Wolverine is a wellness companion, not medical care.{" "}
+          <Link href="/transparency">Read our soul & memory ↗</Link>
         </footer>
       </main>
       <nav className="mobile-dock" aria-label="Mobile navigation">
@@ -1797,6 +1799,13 @@ export default function HealthDashboard() {
               </div>
               <span>↗</span>
             </button>
+            <Link href="/transparency">
+              <span>◇</span>
+              <div>
+                Our soul & memory<small>Read how the agent works</small>
+              </div>
+              <span>↗</span>
+            </Link>
             <Link href="/workout">
               <span>↗</span>
               <div>

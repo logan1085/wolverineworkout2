@@ -111,3 +111,7 @@ The health app’s Connections view supports the existing Garmin import flow and
 ### Agent system prompt
 
 Wolverine’s [system prompt](docs/agent/SYSTEM_PROMPT.md) defines its voice, use of evidence, memory rules, health boundaries and actual capabilities. The [behavior guide](docs/agent/BEHAVIOR.md) explains the design and reusable live evaluation suite. Runtime source: `src/lib/health/agent-prompt.ts`.
+
+### Public soul and memory files
+
+`/transparency` explains the personal health agent's behavior and memory model without reading user data. `/SOUL.md` publishes the runtime-derived behavior specification; `/MEMORY.md` publishes the storage/recall policy, never a personal memory export. The page is linked from the dashboard sidebar, footer, and mobile More menu. `npm run docs:agent` regenerates the public artifacts; production builds also regenerate them automatically. Edit memory policy in `docs/agent/MEMORY.md` and behavior in `src/lib/health/agent-prompt.ts`.

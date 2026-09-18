@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "node scripts/check-env.mjs",
+    "prebuild": "node scripts/export-agent-prompt.mjs && node scripts/check-env.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
@@ -12,7 +12,8 @@
     "test:health": "node --test tests/health.test.mjs",
     "test:memory": "node --test tests/memory.test.mjs",
     "test:connections": "node --test tests/connections.test.mjs",
-    "eval:agent": "node evals/run-health-agent.mjs"
+    "eval:agent": "node evals/run-health-agent.mjs",
+    "docs:agent": "node scripts/export-agent-prompt.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",
