@@ -78,3 +78,7 @@ Validation: `npm run test:memory` covers reload persistence, disabled/expired re
 ## Account integrations
 
 See [CONNECTIONS.md](CONNECTIONS.md) for Garmin activation and the new personal Strava official-MCP connection. Strava answers stay in the Connections view and never enter the persistent health/memory stores. Real-account setup and compatibility verification remain pending.
+
+## Agent behavior and prompt evaluation
+
+The runtime system prompt is now versioned in `src/lib/health/agent-prompt.ts` and shared with the separate Strava view. Read the generated [system prompt](docs/agent/SYSTEM_PROMPT.md) and [behavior guide](docs/agent/BEHAVIOR.md). Regenerate the readable prompt with `node scripts/export-agent-prompt.mjs`. Run `npm run eval:agent -- --live` against the local preview to exercise synthetic conversation cases; do not run another live-chat test simultaneously because the local account deliberately allows only one in-flight reply.

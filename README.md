@@ -107,3 +107,7 @@ OpenAI · Mem0
 ### Garmin and personal Strava connections
 
 The health app’s Connections view supports the existing Garmin import flow and a new owner-only Strava official-MCP OAuth/live-question flow. Both require provider configuration; no live account is connected in this checkout. Strava’s current access restrictions and the complete activation checklist are documented in [CONNECTIONS.md](CONNECTIONS.md).
+
+### Agent system prompt
+
+Wolverine’s [system prompt](docs/agent/SYSTEM_PROMPT.md) defines its voice, use of evidence, memory rules, health boundaries and actual capabilities. The [behavior guide](docs/agent/BEHAVIOR.md) explains the design and reusable live evaluation suite. Runtime source: `src/lib/health/agent-prompt.ts`.

@@ -220,6 +220,9 @@ function chatHarness({
   const routeModule = { exports: {} };
   const imports = {
     openai: { default: FakeOpenAI },
+    "@/lib/health/agent-prompt": {
+      buildStravaPrompt: () => "Synthetic prompt",
+    },
     "next/server": { NextResponse: Response },
     "@/lib/supabase-server": {
       createClient: async () => ({

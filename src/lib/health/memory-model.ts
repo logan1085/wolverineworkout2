@@ -297,17 +297,31 @@ export const agentMemorySchema = {
   additionalProperties: false,
   required: ["reply", "suggestions"],
   properties: {
-    reply: { type: "string" },
+    reply: {
+      type: "string",
+      description:
+        "Answer the user using the system behavior rules. Name record dates and sources when used. Never invent a baseline, completed action, or saved memory. If records are fictional, explicitly call them the sample profile and do not attribute them to the user.",
+    },
     suggestions: {
       type: "array",
+      description:
+        "Default to an empty array. Only propose explicit durable first-person facts stated in the latest user message. Never turn requests, questions, missed workouts, one-time plans, today's availability, third-party quotes, or facts from the reference profile into memory. Each evidence quote must logically support the exact proposed fact. Return [] in sample mode or when memory is off.",
       items: {
         type: "object",
         additionalProperties: false,
         required: ["category", "text", "evidence"],
         properties: {
           category: { type: "string", enum: [...memoryCategories] },
-          text: { type: "string" },
-          evidence: { type: "string" },
+          text: {
+            type: "string",
+            description:
+              "One durable fact the user explicitly stated about themselves; not advice, inference, an assistant-generated plan, or a profile goal borrowed from context.",
+          },
+          evidence: {
+            type: "string",
+            description:
+              "Exact contiguous declarative self-report from the latest user message that states this same durable fact about the user. A request such as Suggest a break is not evidence of a routine. A question is not evidence of a goal. If no eligible self-report exists, return no suggestions.",
+          },
         },
       },
     },
