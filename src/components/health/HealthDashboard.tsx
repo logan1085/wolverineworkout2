@@ -1,6 +1,8 @@
 "use client";
 import { FormEvent, useEffect, useRef, useState, useId } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
+const SketchStudio = dynamic(() => import("./SketchStudio"), { ssr: false });
 import { useAuth } from "@/contexts/AuthContext";
 import {
   Activity,
@@ -144,7 +146,7 @@ export default function HealthDashboard() {
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
   const [modal, setModal] = useState<
-    "checkin" | "activity" | "profile" | "delete" | "context" | null
+    "checkin" | "activity" | "profile" | "delete" | "context" | "studio" | null
   >(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState("");
@@ -682,6 +684,7 @@ export default function HealthDashboard() {
           ))}
         </nav>
         <div className="rail-bottom">
+          <button className="studio-launch" onClick={() => setModal("studio")}>◇ 3D studio</button>
           <div className="mini-orb" />
           <p>
             A little more in tune.
@@ -1184,6 +1187,7 @@ export default function HealthDashboard() {
                 <div
                   className={`chat-compose-area ${consent ? "has-consent" : ""}`}
                 >
+                  <button className="studio-launch" onClick={() => setModal("studio")}>◇ Create a 3D sketch</button>
                   <label className="consent">
                     <input
                       type="checkbox"
@@ -1772,6 +1776,7 @@ export default function HealthDashboard() {
       </nav>
       {moreOpen && (
         <Modal title="Your space" onClose={() => setMoreOpen(false)}>
+          <button className="studio-launch" onClick={() => { setMoreOpen(false); setModal("studio"); }}>◇ Create a 3D sketch</button>
           <div className="mobile-menu">
             <button onClick={() => navigate("Memory")}>
               <span>◇</span>
@@ -1816,6 +1821,7 @@ export default function HealthDashboard() {
           </div>
         </Modal>
       )}
+      {modal === "studio" && (<Modal title="Make something yours." onClose={() => setModal(null)}><SketchStudio key={user?.id || "local"} /></Modal>)}
       {modal === "context" && (
         <Modal title="What your agent sees" onClose={() => setModal(null)}>
           <p>

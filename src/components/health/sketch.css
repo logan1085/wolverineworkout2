@@ -1,0 +1,14 @@
+.sketch-studio { min-width: 0; }
+.sketch-studio h3 { font-size: 1.5rem; margin: .5rem 0; }
+.sketch-studio p { line-height: 1.5; }
+.sketch-eyebrow { color: #cde5a3; font-size: .75rem; text-transform: uppercase; letter-spacing: .12em; }
+.sketch-canvas { height: clamp(210px, 32dvh, 360px); width: 100%; overflow: hidden; border-radius: 20px; background: radial-gradient(ellipse at 50% 45%, #35594b, #102a22 75%); display: grid; place-items: center; margin: 16px 0 8px; }
+.sketch-canvas canvas { display:block; touch-action: none; max-width: 100%; }
+.sketch-controls { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+.health-app .sketch-controls button { width: auto; margin: 0; min-height: 44px; padding: 8px 12px; border: 1px solid #5c7464; border-radius: 12px; background: #17372c; color: #f0f3e7; font-size: .8rem; }
+.sketch-studio form { display: grid; gap: 12px; margin-top: 24px; }
+.health-app .sketch-studio textarea { width: 100%; box-sizing: border-box; font-size: 16px; padding: 12px; border-radius: 12px; background: #10271f; color: #f0f3e7; border: 1px solid #5c7464; }
+.health-app .sketch-check { display: flex; gap: 10px; align-items: flex-start; line-height: 1.5; font-size: .85rem; }
+.health-app .sketch-check input { width: 20px; height: 20px; flex: 0 0 20px; margin-top: 2px; }
+.sketch-hint { color: #b6c4b8; font-size: .8rem; }
+.health-app .studio-launch { min-height: 44px; background: transparent; color: #dbeaaf; border: 1px solid #52664b; border-radius: 12px; padding: 8px 14px; margin: 8px 0; }

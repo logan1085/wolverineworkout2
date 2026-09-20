@@ -4,6 +4,8 @@ A personal health companion for daily check-ins, activity history, contextual AI
 
 The `/` dashboard includes an opt-in **Memory** view. Save, correct, expire, export, or forget facts and resume conversations. Sample chats remain separate. Device-local memory works immediately; account sync needs the Supabase migrations. See [HEALTH_AGENT.md](HEALTH_AGENT.md) for setup, validation, and current integration limits.
 
+The **3D studio**, available from chat and mobile More, turns descriptions into stylized, touch-interactive objects. Revise sketches and download GLB geometry or scene JSON. Sketches remain separate from health memory. See [studio capabilities and limits](docs/studio/README.md).
+
 ## Original workout coach
 
 The following workflow describes `/workout`.
