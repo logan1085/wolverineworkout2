@@ -9,3 +9,9 @@ Descriptions and optionally the current scene go to OpenAI with store:false. No 
 The endpoint requires same-origin identity, explicit sharing consent, bounded request size, and validated geometry. Cloud generation shares the daily agent quota. Untrusted output cannot load scripts, external textures or assets. Three.js loads only when the viewer opens, renders on interaction rather than continuously, and caps pixel ratio at 1.5.
 
 Validation: scene unit tests, HTTP authorization/consent guards, synthetic live generation, lint, TypeScript and production build. Physical touch interaction, GPU rendering and downloaded GLB appearance still require device QA.
+
+## Blender object library
+
+The studio opens to a six-object catalog: kettlebell, dumbbell, hydration bottle, yoga mat, balance stones and moon sculpture. Category filters, rendered thumbnails and a touch/keyboard 3D viewer work without AI or health-account storage. Only the selected GLB loads; original downloads work even without WebGL. Choose Create with AI for the separate editable sketch tool, and download a sketch before switching views.
+
+Editable .blend sources and regeneration instructions are in assets/blender; public models and thumbnails are under public/models/wolverine. Original artwork, no third-party models or external textures. The full web catalog is about 1 MB. Seven catalog checks load all six GLBs with the actual Three.js loader, check bounds and file sizes, and confirm Blender sources exist. Blender thumbnails were visually inspected; physical mobile WebGL testing remains pending.

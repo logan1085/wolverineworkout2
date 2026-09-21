@@ -12,3 +12,10 @@
 .health-app .sketch-check input { width: 20px; height: 20px; flex: 0 0 20px; margin-top: 2px; }
 .sketch-hint { color: #b6c4b8; font-size: .8rem; }
 .health-app .studio-launch { min-height: 44px; background: transparent; color: #dbeaaf; border: 1px solid #52664b; border-radius: 12px; padding: 8px 14px; margin: 8px 0; }
+.catalog-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+.health-app .catalog-card { display: flex; flex-direction: column; align-items: center; min-width: 0; padding: 10px; border-radius: 18px; background: radial-gradient(ellipse at top, #35594b, #102a22); color: #eef0df; border: 1px solid #4b6456; text-align: center; }
+.catalog-card img { width: 100%; height: auto; aspect-ratio: 1; object-fit: contain; }
+.catalog-card strong { font-size: 14px; }
+.catalog-card small { margin: 6px 0; color: #c4cdbb; }
+.health-app .catalog-card[aria-pressed="true"], .health-app .sketch-controls button[aria-pressed="true"] { border-color: #d5eb9d; box-shadow: inset 0 0 0 1px #d5eb9d; }
+.catalog-selected { margin-top: 24px; }

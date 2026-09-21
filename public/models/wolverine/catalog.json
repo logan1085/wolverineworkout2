@@ -1,0 +1,56 @@
+[
+  {
+    "id": "kettlebell",
+    "title": "Lime kettlebell",
+    "category": "Movement",
+    "description": "A rounded cast-weight silhouette with a satin handle.",
+    "model": "/models/wolverine/kettlebell.glb",
+    "thumbnail": "/models/wolverine/kettlebell.png",
+    "bytes": 74236
+  },
+  {
+    "id": "dumbbell",
+    "title": "Everyday dumbbell",
+    "category": "Movement",
+    "description": "Soft-edged plates and a brushed metal grip.",
+    "model": "/models/wolverine/dumbbell.glb",
+    "thumbnail": "/models/wolverine/dumbbell.png",
+    "bytes": 86968
+  },
+  {
+    "id": "bottle",
+    "title": "Hydration bottle",
+    "category": "Daily rituals",
+    "description": "A warm coral bottle with a contrasting loop cap.",
+    "model": "/models/wolverine/bottle.glb",
+    "thumbnail": "/models/wolverine/bottle.png",
+    "bytes": 106860
+  },
+  {
+    "id": "yoga-mat",
+    "title": "Morning mat",
+    "category": "Recovery",
+    "description": "A forest-green mat with a rolled edge and carry strap.",
+    "model": "/models/wolverine/yoga-mat.glb",
+    "thumbnail": "/models/wolverine/yoga-mat.png",
+    "bytes": 72504
+  },
+  {
+    "id": "balance-stones",
+    "title": "Balance stones",
+    "category": "Recovery",
+    "description": "Three smooth river stones on a quiet plinth.",
+    "model": "/models/wolverine/balance-stones.glb",
+    "thumbnail": "/models/wolverine/balance-stones.png",
+    "bytes": 89640
+  },
+  {
+    "id": "moon",
+    "title": "Moonlight",
+    "category": "Rest",
+    "description": "A sculptural crescent on a small bedside pedestal.",
+    "model": "/models/wolverine/moon.glb",
+    "thumbnail": "/models/wolverine/moon.png",
+    "bytes": 118588
+  }
+]
