@@ -10,7 +10,10 @@ import {
   MemoryState,
   validateMemory,
 } from "@/lib/health/memory-model";
+import ContextBrief from "./ContextBrief";
+import type { HealthState } from "@/lib/health/model";
 type Props = {
+  health: HealthState;
   state: MemoryState;
   ready: boolean;
   error: string;
@@ -23,6 +26,7 @@ type Props = {
 };
 export default function MemoryPanel({
   state,
+  health,
   ready,
   error,
   busy,
@@ -132,6 +136,7 @@ export default function MemoryPanel({
           )}
         </div>
       )}
+      {ready && <ContextBrief health={health} memory={state} onEdit={id => { const entry = state.entries.find(e => e.id === id); if (entry) { setEditing(entry); setShowForm(true); } }} />}
       <section className="panel memory-setting">
         <div>
           <h2>Memory is {state.enabled ? "on" : "off"}</h2>

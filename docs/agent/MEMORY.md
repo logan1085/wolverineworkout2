@@ -54,3 +54,9 @@ The prompt instructs the agent not to propose one-off symptoms, temporary availa
 ## 6. Public files are not personal files
 
 SOUL.md publishes the agent's intended behavior. MEMORY.md publishes this storage and recall policy. Neither file reads your browser storage, Supabase account, provider connections, or saved chats. These documents are available without signing in. Your actual memory remains in the private Memory view and its explicit export flow.
+
+## Inspectable context brief
+
+The Memory view shows the same derived brief sent with personal-context chat requests: editable profile settings, up to 12 most recently updated active confirmed facts (only when memory is on), and records from the last seven UTC calendar dates. Additional relevant memories can be retrieved for the question. Included-memory disclosures cover both sources. The brief is rebuilt on read, never persisted or committed to Git. Forgetting, editing and expiry therefore affect the next brief without a separate summary to delete.
+
+Recent records are observations, not inferred traits. Same-date self-reported and Garmin sleep differences of at least one hour are flagged for clarification. This is not general contradiction detection; free-text conflicts still require user review. The personal Memory view excludes fictional sample records. Pausing memory removes confirmed facts from the brief but does not turn off explicitly shared health context.

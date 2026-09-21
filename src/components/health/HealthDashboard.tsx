@@ -1533,6 +1533,7 @@ export default function HealthDashboard() {
         )}
         {tab === "Memory" && (
           <MemoryPanel
+            health={data}
             state={memory.state}
             ready={memory.ready}
             error={memory.error}

@@ -2,7 +2,7 @@
 
 A personal health companion for daily check-ins, activity history, contextual AI conversations, and durable memory. The original workout and voice coach is preserved at `/workout`.
 
-The `/` dashboard includes an opt-in **Memory** view. Save, correct, expire, export, or forget facts and resume conversations. Sample chats remain separate. Device-local memory works immediately; account sync needs the Supabase migrations. See [HEALTH_AGENT.md](HEALTH_AGENT.md) for setup, validation, and current integration limits.
+The `/` dashboard includes an opt-in **Memory** view, including “What Wolverine knows about me”: a dated, inspectable brief shared with the agent, with confirmed facts, recent observations, and limited source-discrepancy checks. Save, correct, expire, export, or forget facts and resume conversations. Sample chats remain separate. Device-local memory works immediately; account sync needs the Supabase migrations. See [HEALTH_AGENT.md](HEALTH_AGENT.md) for setup, validation, and current integration limits.
 
 The **3D studio**, available from chat and mobile More, turns descriptions into stylized, touch-interactive objects. Revise sketches, undo a change, reopen saved scene JSON, and download GLB geometry or scene JSON. Sketches remain separate from health memory. See [studio capabilities and limits](docs/studio/README.md).
 

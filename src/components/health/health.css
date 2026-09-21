@@ -2197,3 +2197,10 @@ button:disabled {
   .keyboard-open .composer-tools .studio-launch { display: none; }
   .keyboard-open .composer-tools:has(.quiet-button) { min-height: 44px; }
 }
+.knowledge-brief { margin-bottom: 20px; overflow-wrap: anywhere; }
+.knowledge-brief h3 { margin-top: 24px; font-size: 16px; }
+.knowledge-brief ul { padding-left: 20px; }
+.knowledge-brief li { margin: 12px 0; line-height: 1.6; }
+.knowledge-brief li p { margin: 4px 0; }
+.knowledge-brief small { color: #b7c3b1; line-height: 1.6; }
+.knowledge-brief .quiet-button { display: block; min-height: 44px; }
