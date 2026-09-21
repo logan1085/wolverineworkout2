@@ -151,6 +151,16 @@ export default function HealthDashboard() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState("");
   const [thinking, setThinking] = useState(false);
+  const [chatError, setChatError] = useState("");
+  const [online, setOnline] = useState(true);
+  const interrupted = useRef<{ messages: ChatMessage[]; text: string } | null>(null);
+  useEffect(() => {
+    const update = () => setOnline(navigator.onLine);
+    update();
+    window.addEventListener("online", update);
+    window.addEventListener("offline", update);
+    return () => { window.removeEventListener("online", update); window.removeEventListener("offline", update); };
+  }, []);
   const [consent, setConsent] = useState(false);
   const memory = useHealthMemory(user?.id);
   const [suggestions, setSuggestions] = useState<MemorySuggestion[]>([]);
@@ -268,6 +278,8 @@ export default function HealthDashboard() {
     if (!memory.ready) {
       chatEpoch.current++;
       activeRequest.current?.abort();
+      activeRequest.current = null;
+      interrupted.current = null;
       setMessages([]);
       setThinking(false);
       setSuggestions([]);
@@ -299,9 +311,24 @@ export default function HealthDashboard() {
     memory.state.conversations,
     memory.state.activeConversationId,
   ]);
-  function resetConversationView() {
+  function stopReply() {
     chatEpoch.current++;
     activeRequest.current?.abort();
+    activeRequest.current = null;
+    setThinking(false);
+    if (interrupted.current) {
+      setMessages(interrupted.current.messages);
+      setDraft(interrupted.current.text);
+    }
+    interrupted.current = null;
+    setChatError("Stopped waiting. Your message is back in the composer. The service may still finish processing it.");
+  }
+  function resetConversationView() {
+    setChatError("");
+    interrupted.current = null;
+    chatEpoch.current++;
+    activeRequest.current?.abort();
+    activeRequest.current = null;
     setThinking(false);
     conversationId.current = null;
     setMessages([]);
@@ -486,13 +513,14 @@ export default function HealthDashboard() {
     });
   }
   async function send(text = draft) {
-    if (thinking || !text.trim() || memory.saving) return;
+    if (thinking || activeRequest.current || !text.trim() || memory.saving) return;
+    if (!online) { setChatError("You’re offline. Your draft is still here; reconnect to send it."); return; }
     if (!consent) {
-      setNotice("Please allow sharing your health context before sending.");
+      setChatError("Please allow sharing your health context before sending.");
       return;
     }
     if (!session.ai || (!user && !session.local)) {
-      setNotice("Sign in and connect the AI service to talk with your agent.");
+      setChatError("Sign in and connect the AI service to talk with your agent.");
       return;
     }
     const useMemory = !sample && memory.ready && memory.state.enabled;
@@ -520,6 +548,8 @@ export default function HealthDashboard() {
     const id = conversationId.current || crypto.randomUUID();
     const controller = new AbortController();
     activeRequest.current = controller;
+    interrupted.current = { messages, text };
+    setChatError("");
     setMessages(next);
     setDraft("");
     setThinking(true);
@@ -551,13 +581,16 @@ export default function HealthDashboard() {
       const result = await response.json();
       if (!response.ok) {
         if (response.status === 409) {
+          if (epoch !== chatEpoch.current || controller.signal.aborted) return;
+          setMessages(next.slice(0, -1));
+          setDraft(text);
+          setChatError("Memory changed. Your draft is restored; review the refreshed context before sending again.");
           await memory.reload();
-          setNotice(result.error);
           return;
         }
         throw new Error(result.error);
       }
-      if (epoch !== chatEpoch.current) return;
+      if (epoch !== chatEpoch.current || controller.signal.aborted) return;
       const complete: SavedMessage[] = [
         ...next,
         { role: "assistant", content: result.message },
@@ -577,8 +610,8 @@ export default function HealthDashboard() {
       }
     } catch (error) {
       if (epoch !== chatEpoch.current || controller.signal.aborted) return;
-      setNotice(
-        error instanceof Error ? error.message : "The agent could not respond.",
+      setChatError(
+        error instanceof Error ? error.message : "The agent could not respond. Your draft is ready to send again.",
       );
       setMessages(next.slice(0, -1));
       setDraft(text);
@@ -586,6 +619,7 @@ export default function HealthDashboard() {
       if (epoch === chatEpoch.current) {
         setThinking(false);
         activeRequest.current = null;
+        interrupted.current = null;
       }
     }
   }
@@ -1187,7 +1221,8 @@ export default function HealthDashboard() {
                 <div
                   className={`chat-compose-area ${consent ? "has-consent" : ""}`}
                 >
-                  <button className="studio-launch" onClick={() => setModal("studio")}>◇ Create a 3D sketch</button>
+                  <div className="composer-tools"><button className="studio-launch" onClick={() => setModal("studio")}>◇ 3D studio</button>{thinking && <button className="quiet-button" onClick={stopReply}>Stop response</button>}</div>
+                  {(!online || chatError) && <div className="chat-recovery" role="status">{!online ? "You’re offline. Reconnect to send; your draft stays here." : chatError}</div>}
                   <label className="consent">
                     <input
                       type="checkbox"
@@ -1235,7 +1270,7 @@ export default function HealthDashboard() {
                       className="primary"
                       aria-label="Send message"
                       disabled={
-                        thinking || memory.saving || !draft.trim() || !consent
+                        thinking || memory.saving || !draft.trim() || !consent || !online
                       }
                     >
                       ↑

@@ -27,3 +27,7 @@ Use a secure reachable deployment for a real phone; the laptop's `127.0.0.1` URL
 - Confirm health records and memories retain their existing behavior across navigation; Strava ephemeral answers are cleared when leaving Connections as before.
 
 Device verification remains necessary before describing this as tested on iPhone or Android. Home-screen metadata is not a guarantee of install prompts on every browser.
+
+## Recovery improvements — September 20
+
+Chat errors appear inside the composer area. Offline detection keeps drafts in place and disables sending until reconnection; it does not cache health data or enable offline AI. Stop response restores the submitted draft and ignores late responses, but does not promise the provider stops processing. Memory conflicts also restore the draft. The 3D launcher hides while the mobile keyboard is open; Stop remains reachable. Test these behaviors on devices before release.

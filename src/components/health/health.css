@@ -2190,3 +2190,10 @@ button:disabled {
     display: none;
   }
 }
+
+.composer-tools { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.chat-recovery { padding: 10px 12px; margin: 6px 0; border: 1px solid #887e50; border-radius: 10px; background: #302f20; color: #f4e9c5; font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+@media (max-width: 700px) {
+  .keyboard-open .composer-tools .studio-launch { display: none; }
+  .keyboard-open .composer-tools:has(.quiet-button) { min-height: 44px; }
+}
