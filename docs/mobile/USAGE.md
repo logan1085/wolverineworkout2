@@ -12,7 +12,7 @@
 
 ## Validation completed
 
-Production compilation and lint/type validation. HTTP checks cover the manifest and generated home-screen assets. Code review covers responsive breakpoints, safe-area spacing, visible-viewport listeners/cleanup, IME handling, and conditional consent visibility. No browser interaction or physical-device testing has been performed in this change.
+Production compilation and lint/type validation. HTTP checks cover the manifest and generated home-screen assets. Code review covers responsive breakpoints, safe-area spacing, visible-viewport listeners/cleanup, IME handling, and conditional consent visibility. This initial mobile implementation was checked in code. Subsequent browser acceptance is recorded below and in `../PRODUCT_QUALITY.md`; physical-device testing remains pending.
 
 ## Device acceptance checklist — pending
 
