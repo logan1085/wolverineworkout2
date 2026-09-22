@@ -2227,3 +2227,34 @@ button:disabled {
 .character-avatar { width:56px; height:56px; }
 .character-welcome { width:150px; height:150px; }
 @media(max-width:500px) { .character-options { grid-template-columns:1fr; } .character-options button { display:grid; grid-template-columns:90px 1fr; text-align:left; } .character-options img { grid-row:span 3; } }
+/* Companion art direction: a quiet studio portrait, with controls secondary. */
+.health-app .briefing { background:linear-gradient(115deg,#22392d 0%,#263e31 45%,#172c24 100%); border-color:#49624c; border-radius:28px; padding:36px 40px; gap:30px; }
+.health-app .briefing h2 { font-size:clamp(34px,3.5vw,52px); letter-spacing:-1.5px; line-height:1.06; max-width:440px; }
+.health-object-live { position:relative; border-radius:24px; background:radial-gradient(ellipse at 50% 38%,#71836650,transparent 68%); }
+.health-object-live .sketch-canvas { height:330px; }
+.health-object-live .object-copy h3 { font-family:var(--font-inter),sans-serif; text-transform:uppercase; font-size:11px; letter-spacing:.13em; color:#d9e4c7; }
+.health-app .health-object-live .object-copy p { font-size:12px; color:#a6b99f; margin:8px auto; }
+.health-object-live .quiet-button { border-bottom:1px solid #607453; border-radius:0; padding:4px 0; }
+.daily-objects .health-object { background:#1d2c23; border-color:#344a3a; border-radius:22px; }
+.daily-objects .object-art { flex-basis:110px; }
+.daily-objects .object-copy h3 { font-size:22px; }
+.daily-objects .object-copy p { font-size:13px; color:#aebda7; }
+.companion-portrait { border-radius:24px; background:radial-gradient(ellipse at 50% 40%,#5a7052,#22372c 70%); padding:24px 16px 10px; }
+.companion-sunny .companion-portrait { background:radial-gradient(ellipse at 50% 40%,#8c7143,#342e24 75%); }
+.companion-pebble .companion-portrait { background:radial-gradient(ellipse at 50% 40%,#657c88,#24333b 75%); }
+.companion-heading { text-align:center; }
+.companion-heading > span { font-size:9px; letter-spacing:.2em; color:#d2dcc6; }
+.health-app .companion-heading h3 { font-family:Georgia,serif; font-size:42px; font-weight:400; letter-spacing:-1px; margin:6px 0; }
+.health-app .companion-heading p { font-size:13px; color:#d2dcc6; margin:0; }
+.companion-portrait .sketch-canvas { height:290px; background:none; margin:0; }
+.companion-portrait .sketch-controls { justify-content:center; gap:4px; }
+.health-app .companion-portrait .sketch-controls button { background:#14201c50; border-color:#bfcaa22b; padding:7px 9px; font-size:11px; }
+.companion-portrait .sketch-hint { text-align:center; }
+.companion-choices { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:18px 0; }
+.companion-choices button { color:#e9eedd; border:1px solid #475c43; background:#213329; padding:6px 6px 12px; border-radius:18px; display:flex; flex-direction:column; align-items:center; gap:5px; }
+.companion-choices button[aria-pressed="true"] { background:#344932; border-color:#d3e4aa; box-shadow:0 0 0 1px #d3e4aa; }
+.companion-choices img { width:100%; height:auto; }
+.companion-choices strong { font-size:14px; }
+.companion-choices small { font-size:10px; color:#bdcbb1; }
+.health-app .companion-note { text-align:center; color:#aaba9f; font-size:12px; line-height:1.6; }
+@media(max-width:760px) { .health-app .briefing { padding:28px 24px; gap:6px; } .health-app .briefing h2 { font-size:36px; } .health-object-live .sketch-canvas { height:270px; } .companion-portrait { padding:20px 10px 8px; } .companion-portrait .sketch-canvas { height:250px; } }

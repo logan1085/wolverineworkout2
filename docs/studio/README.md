@@ -23,3 +23,7 @@ Today replaces the CSS orb with a live, demand-rendered Blender object: balance 
 ## Selectable companions
 
 Moss, Sunny and Pebble are original Blender companions. Choose character from Today, the chat avatar, the desktop rail or mobile More. The choice updates the daily 3D figure and chat welcome/avatar; Moss is the default. It is an appearance preference only, scoped to the signed-in account (or signed-out device) in localStorage, never part of health memory or AI requests. Cross-tab changes are reflected; unavailable storage keeps the preference for the current visit with a visible notice. This is device-local, not cross-device account sync. The picker includes an interactive preview with keyboard controls and GLB download. Editable files are in assets/blender/characters; regenerate with scripts/blender/build_characters.py.
+
+## Companion visual revision
+
+Distinct companion silhouettes, denoised 640px portrait renders and refined eyes/materials. The live renderer now uses a generated studio environment, filmic tone mapping, key/rim lighting, ground shadows and tighter bounding-box framing. The picker gives the selected companion a large portrait above three compact choices; geometry downloads stay in the object studio. Daily cards use quieter surfaces and secondary controls. This is a visual revision, with Blender render inspection and build/asset checks; browser and physical-device visual acceptance remain pending.
