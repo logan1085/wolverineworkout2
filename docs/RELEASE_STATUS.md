@@ -38,3 +38,10 @@ Last audited September 22, 2026, against application commit `e33079f` and its Re
 No passwords, API keys or health exports should be sent through chat. The requested next user action is signing into the existing Supabase account, not creating or purchasing a new project.
 
 [Current Preview](https://wolverineworkout2-git-feat-pers-506864-logan-horowitzs-projects.vercel.app) · [GitHub branch](https://github.com/logan1085/wolverineworkout2/tree/feat/personal-health-agent)
+
+## UI redesign — September 22, 2026
+
+Shipped `63f21fb` to GitHub branch `feat/personal-health-agent` and Vercel Preview:
+https://wolverineworkout2-mdst37bsm-logan-horowitzs-projects.vercel.app
+
+Replaced the forest theme with warm white surfaces, navy typography, and soft blue accents across the health app. Simplified first-use Today, enlarged the companion, unified dialogs and navigation, and bundled licensed fonts locally after Google Fonts broke the local build. Browser review covered mobile Today, check-in, character picker, agent, activity, journal, and More, plus desktop Today, memory, and connections. The mobile check-in has no horizontal overflow. Production build, lint, and type validation passed; Vercel reports Ready. Production promotion and previously documented account integration blockers remain unchanged.
