@@ -50,3 +50,11 @@ The session endpoint now reports actual bounded authentication-service reachabil
 - Reduced mobile header density and rebuilt companion controls so the preview and all three character choices fit together at 390 × 844. Rotation/zoom retain named 44px controls and keyboard access.
 - Browser-reviewed Today at 390 × 844 and 1440 × 1000, the mobile companion dialog, and mobile Agent. No horizontal desktop overflow or browser console errors observed. These are browser viewport checks, not physical-device or keyboard testing.
 - Validation: 49 unit tests, lint, TypeScript, and production build. Supabase dependency build warning remains; hosted account reachability is a separate unresolved service issue.
+
+### First-use and save recovery — September 22
+
+- A fresh browser now starts with its personal empty dashboard. Sample records remain opt-in and labelled; existing explicit view preferences are preserved. The empty briefing opens the first check-in directly.
+- New check-ins require explicit sleep, energy, stress and soreness values. Existing same-day answers remain editable. Storage destination and the separation from sample data are explained in the form.
+- Save errors appear inside the open dialog. The check-in fields and dialog dismissal are disabled while a save is pending. Successful saves remember the personal view for reloads.
+- Failed history loads now expose a retry action and block saves until a successful load, protecting records from being replaced by the temporary empty state.
+- Browser evidence: isolated localhost origin (separate from the user's 127.0.0.1 storage) showed the personal empty dashboard; opening its first-check-in action showed four blank required fields. Attempting an empty save kept the dialog open with native missing-value validation. No synthetic health records were saved. Cloud persistence and injected storage/network failures still require dedicated runtime acceptance.

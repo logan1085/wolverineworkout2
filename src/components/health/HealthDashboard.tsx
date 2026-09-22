@@ -81,7 +81,11 @@ function Modal({
   title,
   onClose,
   children,
+  error,
+  pending = false,
 }: {
+  error?: string;
+  pending?: boolean;
   title: string;
   onClose: () => void;
   children: React.ReactNode;
@@ -101,9 +105,9 @@ function Modal({
       ref={ref}
       className="health-dialog"
       aria-labelledby={headingId}
-      onCancel={onClose}
+      onCancel={(e) => { if (pending) e.preventDefault(); else onClose(); }}
       onClick={(e) => {
-        if (e.target === ref.current) onClose();
+        if (!pending && e.target === ref.current) onClose();
       }}
     >
       <div className="dialog-heading">
@@ -111,11 +115,13 @@ function Modal({
         <button
           className="icon-button"
           aria-label="Close dialog"
+          disabled={pending}
           onClick={onClose}
         >
           ×
         </button>
       </div>
+      {error && <p className="form-error" role="alert">{error}</p>}
       {children}
     </dialog>
   );
@@ -138,9 +144,11 @@ export default function HealthDashboard() {
     window.scrollTo({ top: 0, behavior: "instant" });
   }
   const [data, setData] = useState<HealthState>(emptyHealth);
-  const [sample, setSample] = useState(true);
+  const [sample, setSample] = useState(false);
   const [samples, setSamples] = useState<HealthState>(emptyHealth);
   const [loaded, setLoaded] = useState(false);
+  const [historyError, setHistoryError] = useState("");
+  const [historyRetry, setHistoryRetry] = useState(0);
   const [session, setSession] = useState({
     local: false,
     ai: false,
@@ -164,12 +172,14 @@ export default function HealthDashboard() {
     lastSync: null,
   });
   const [notice, setNotice] = useState("");
+  const [actionError, setActionError] = useState("");
   const [objectId, setObjectId] = useState<string | undefined>();
   function openObject(id: string) { setObjectId(id); setModal("studio"); }
   const [busy, setBusy] = useState(false);
   const [modal, setModal] = useState<
     "checkin" | "activity" | "profile" | "delete" | "context" | "studio" | "character" | null
   >(null);
+  useEffect(() => { setActionError(""); }, [modal]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState("");
   const [thinking, setThinking] = useState(false);
@@ -227,6 +237,7 @@ export default function HealthDashboard() {
   useEffect(() => {
     let active = true;
     setLoaded(false);
+    setHistoryError("");
     setData(emptyHealth);
     resetConversationView();
     restoredScope.current = "";
@@ -247,16 +258,11 @@ export default function HealthDashboard() {
           if (active) {
             setData(saved ? validateHealth(JSON.parse(saved)) : emptyHealth);
             const view = localStorage.getItem("wolverine.view.v1");
-            setSample(view === "sample" || (view !== "personal" && !saved));
+            setSample(view === "sample");
           }
         }
       } catch (error) {
-        if (active)
-          setNotice(
-            error instanceof Error
-              ? error.message
-              : "Could not load health history.",
-          );
+        if (active) setHistoryError(error instanceof Error ? error.message : "Could not load health history.");
       } finally {
         if (active) setLoaded(true);
       }
@@ -265,7 +271,7 @@ export default function HealthDashboard() {
     return () => {
       active = false;
     };
-  }, [user]);
+  }, [user, historyRetry]);
   useEffect(() => {
     let active = true;
     fetch("/api/garmin/status")
@@ -421,6 +427,7 @@ export default function HealthDashboard() {
       throw new Error(
         "Your history is still loading. Please try again in a moment.",
       );
+    if (historyError) throw new Error("Your history could not be loaded. Close this form and retry loading it before saving.");
     const valid = validateHealth(next);
     if (user) {
       const response = await fetch("/api/health/data", {
@@ -435,6 +442,7 @@ export default function HealthDashboard() {
       localStorage.setItem("wolverine.health.v1", JSON.stringify(valid));
       setData(valid);
     }
+    try { localStorage.setItem("wolverine.view.v1", "personal"); } catch { /* Optional view preference. */ }
     setSample(false);
   }
   function changeSample(value: boolean) {
@@ -450,14 +458,13 @@ export default function HealthDashboard() {
   async function act(fn: () => Promise<void>) {
     if (busy) return;
     setBusy(true);
+    setActionError("");
     try {
       await fn();
     } catch (error) {
-      setNotice(
-        error instanceof Error
-          ? error.message
-          : "Something went wrong. Please retry.",
-      );
+      const message = error instanceof Error ? error.message : "Something went wrong. Please retry.";
+      if (modal) setActionError(message);
+      else setNotice(message);
     } finally {
       setBusy(false);
     }
@@ -788,6 +795,7 @@ export default function HealthDashboard() {
             </button>
           </div>
         </header>
+        {historyError && <div className="history-recovery" role="alert"><div><strong>Your history couldn’t be loaded.</strong><p>Saving is paused to protect your existing records. Check your connection and try again.</p></div><button className="secondary" disabled={!loaded} onClick={() => setHistoryRetry(n => n + 1)}>Retry loading</button></div>}
         {notice && (
           <div className="notice" role="status">
             <span>{notice}</span>
@@ -848,13 +856,13 @@ export default function HealthDashboard() {
                 <p>{briefing.description}</p>
                 <button
                   className="light-btn"
-                  onClick={() =>
-                    ask(
-                      "Help me understand my latest check-in and choose one useful next step.",
-                    )
-                  }
+                  disabled={!loaded}
+                  onClick={() => {
+                    if (!sample && !data.checkIns.length) startCheckin();
+                    else ask("Help me understand my latest check-in and choose one useful next step.");
+                  }}
                 >
-                  Talk through my day ↗
+                  {!sample && !data.checkIns.length ? "Add your first check-in" : "Talk through my day ↗"}
                 </button>
                 <details className="briefing-source"><summary>What shaped this briefing</summary>
                   Based on{" "}
@@ -1928,22 +1936,25 @@ export default function HealthDashboard() {
         </Modal>
       )}
       {modal === "checkin" && (
-        <Modal title="A moment for you." onClose={() => setModal(null)}>
+        <Modal title="A moment for you." error={actionError} pending={busy} onClose={() => setModal(null)}>
           <p className="subtle">
-            How are you arriving today? This saves to your personal history.
+            How are you arriving today? {user ? "Saved privately to your account." : "Saved on this device. No account needed."}{sample && " This is your own check-in, separate from the sample."}
           </p>
           <form onSubmit={submitCheckin}>
+            <fieldset className="checkin-fields" disabled={busy}>
             <div className="form-grid">
               <label>
                 Sleep last night <span>hours</span>
                 <input
                   name="sleepHours"
+                  inputMode="decimal"
+                  placeholder="e.g. 7.5"
                   type="number"
                   step="0.1"
                   min="0"
                   max="24"
                   defaultValue={
-                    data.checkIns.find((c) => c.date === today)?.sleepHours ?? 7
+                    data.checkIns.find((c) => c.date === today)?.sleepHours ?? ""
                   }
                   required
                 />
@@ -1952,10 +1963,12 @@ export default function HealthDashboard() {
                 Energy
                 <select
                   name="energy"
+                  required
                   defaultValue={
-                    data.checkIns.find((c) => c.date === today)?.energy ?? 3
+                    data.checkIns.find((c) => c.date === today)?.energy ?? ""
                   }
                 >
+                  <option value="" disabled>Choose how you feel</option>
                   {["Very low", "Low", "Okay", "Good", "Great"].map((s, i) => (
                     <option key={s} value={i + 1}>
                       {i + 1} · {s}
@@ -1967,10 +1980,12 @@ export default function HealthDashboard() {
                 Stress
                 <select
                   name="stress"
+                  required
                   defaultValue={
-                    data.checkIns.find((c) => c.date === today)?.stress ?? 2
+                    data.checkIns.find((c) => c.date === today)?.stress ?? ""
                   }
                 >
+                  <option value="" disabled>Choose how you feel</option>
                   {["Very calm", "Low", "Moderate", "High", "Very high"].map(
                     (s, i) => (
                       <option key={s} value={i + 1}>
@@ -1984,10 +1999,12 @@ export default function HealthDashboard() {
                 Soreness
                 <select
                   name="soreness"
+                  required
                   defaultValue={
-                    data.checkIns.find((c) => c.date === today)?.soreness ?? 1
+                    data.checkIns.find((c) => c.date === today)?.soreness ?? ""
                   }
                 >
+                  <option value="" disabled>Choose how you feel</option>
                   {["None", "Mild", "Noticeable", "High", "Very high"].map(
                     (s, i) => (
                       <option key={s} value={i + 1}>
@@ -2012,11 +2029,12 @@ export default function HealthDashboard() {
             <button className="primary" disabled={busy}>
               {busy ? "Saving…" : "Save my check-in"}
             </button>
+            </fieldset>
           </form>
         </Modal>
       )}
       {modal === "activity" && (
-        <Modal title="Every bit counts." onClose={() => setModal(null)}>
+        <Modal title="Every bit counts." error={actionError} pending={busy} onClose={() => setModal(null)}>
           <form onSubmit={submitActivity}>
             <label>
               Activity name
@@ -2083,7 +2101,7 @@ export default function HealthDashboard() {
         </Modal>
       )}
       {modal === "profile" && (
-        <Modal title="Make this yours." onClose={() => setModal(null)}>
+        <Modal title="Make this yours." error={actionError} pending={busy} onClose={() => setModal(null)}>
           <form onSubmit={submitProfile}>
             <label>
               What should we call you?
@@ -2123,6 +2141,8 @@ export default function HealthDashboard() {
       {modal === "delete" && (
         <Modal
           title="Clear your health history?"
+          error={actionError}
+          pending={busy}
           onClose={() => setModal(null)}
         >
           <p>
@@ -2136,7 +2156,7 @@ export default function HealthDashboard() {
             to stop future imports.
           </p>
           <div className="button-row">
-            <button className="secondary" onClick={() => setModal(null)}>
+            <button className="secondary" disabled={busy} onClick={() => setModal(null)}>
               Keep my history
             </button>
             <button
