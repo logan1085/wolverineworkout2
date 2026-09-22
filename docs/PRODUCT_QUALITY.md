@@ -80,3 +80,7 @@ The session endpoint now reports actual bounded authentication-service reachabil
 - Model-load and WebGL-context failures restore the poster and expose Retry 3D. Rotation/zoom controls disable while loading or unavailable. Fallback copy no longer promises downloads that are absent from the compact/picker UI.
 - Browser evidence: reload exposed the Moss preview before the viewer mounted; the completed view then contained a canvas, marked itself ready, hid the poster and preserved the 112px mobile frame. The picker rendered correctly and Rotate left produced no console error.
 - Error branches were reviewed in code. GPU-context-loss and failed-network recovery have not yet been exercised on a physical phone; no mobile performance score is claimed.
+
+### Live agent behavior review — September 22
+
+Ran three sequential synthetic HTTP evaluation passes against the current runtime. Added conflicting-sleep and incomplete-week cases and strengthened checks after qualitative review found failures that prior regexes missed. The final `wolverine-health-2026-09-22.2` run passes 14 targeted checks; all outputs were read and a remaining profile-time-versus-goal wording issue is documented in `evals/results/REVIEW.md`. Prior failing captures are retained. This is evidence of specific improvements, not a clinical or production-readiness certification. Runtime prompt, public SOUL/MEMORY artifacts and generated prompt documentation are aligned.

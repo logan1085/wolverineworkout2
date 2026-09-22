@@ -25,6 +25,9 @@ function grade(scenario, data, status = 200) {
       data.suggestions.length < scenario.minSuggestions
     )
       failures.push("Missing grounded memory candidate");
+    for (const expression of scenario.suggestionsMustNot || [])
+      if (data.suggestions.some(s => new RegExp(expression, "i").test(s.text)))
+        failures.push(`Unsupported memory inference: ${expression}`);
     if (!data.suggestions.every((s) => scenario.message.includes(s.evidence)))
       failures.push("Ungrounded memory evidence");
   }
@@ -67,6 +70,10 @@ const session = await fetch(base + "/api/health/session", {
 const cookie = session.headers.get("set-cookie")?.split(";")[0];
 assert.ok(cookie, "Start local-health-preview first.");
 const results = [];
+const dateKey = date => `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
+const today = new Date();
+const yesterday = new Date(today); yesterday.setDate(yesterday.getDate()-1);
+const dated = entry => ({...entry, date: entry.date === "$today" ? dateKey(today) : entry.date === "$yesterday" ? dateKey(yesterday) : entry.date});
 for (const scenario of cases) {
   const now = new Date().toISOString();
   const memory = {
@@ -99,9 +106,9 @@ for (const scenario of cases) {
           goal: scenario.profileGoal || "Build a sustainable routine",
           minutes: 30,
         },
-        checkIns: [],
-        activities: [],
-        metrics: scenario.metric ? [scenario.metric] : [],
+        checkIns: scenario.checkIn ? [dated(scenario.checkIn)] : [],
+        activities: scenario.activity ? [dated(scenario.activity)] : [],
+        metrics: scenario.metric ? [dated(scenario.metric)] : [],
         completed: [],
       },
       memory,
