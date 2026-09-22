@@ -5,9 +5,9 @@ import { exampleSketch, validateSketch, Sketch } from "@/lib/health/scene-model"
 import "./sketch.css";
 const Viewer = dynamic(() => import("./SketchViewer"), { ssr: false, loading: () => <div className="sketch-canvas">Loading 3D viewer…</div> });
 const Catalog = dynamic(() => import("./ObjectCatalog"), { ssr: false });
-export default function SketchStudio() {
+export default function SketchStudio({ initialId }: { initialId?: string }) {
   const [mode, setMode] = useState("catalog");
-  return <><div className="sketch-controls"><button type="button" aria-pressed={mode === "catalog"} onClick={() => setMode("catalog")}>Object library</button><button type="button" aria-pressed={mode === "create"} onClick={() => setMode("create")}>Create with AI</button></div><p className="sketch-hint">Download a generated sketch before switching views.</p>{mode === "catalog" ? <Catalog /> : <SketchEditor />}</>;
+  return <><div className="sketch-controls"><button type="button" aria-pressed={mode === "catalog"} onClick={() => setMode("catalog")}>Object library</button><button type="button" aria-pressed={mode === "create"} onClick={() => setMode("create")}>Create with AI</button></div><p className="sketch-hint">Download a generated sketch before switching views.</p>{mode === "catalog" ? <Catalog initialId={initialId} /> : <SketchEditor />}</>;
 }
 function SketchEditor() {
   const [scene,setScene]=useState(exampleSketch), [prompt,setPrompt]=useState(""), [consent,setConsent]=useState(false), [busy,setBusy]=useState(false), [error,setError]=useState(""), [revise,setRevise]=useState(false);

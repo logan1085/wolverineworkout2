@@ -15,6 +15,8 @@ import {
   validateHealth,
 } from "@/lib/health/model";
 import "./health.css";
+import HealthObject from "./HealthObject";
+import "./sketch.css";
 import MemoryPanel from "./MemoryPanel";
 import StravaConnection from "./StravaConnection";
 import { useMobileViewport } from "./useMobileViewport";
@@ -144,6 +146,8 @@ export default function HealthDashboard() {
     lastSync: null,
   });
   const [notice, setNotice] = useState("");
+  const [objectId, setObjectId] = useState<string | undefined>();
+  function openObject(id: string) { setObjectId(id); setModal("studio"); }
   const [busy, setBusy] = useState(false);
   const [modal, setModal] = useState<
     "checkin" | "activity" | "profile" | "delete" | "context" | "studio" | null
@@ -842,14 +846,12 @@ export default function HealthDashboard() {
                   · Rules-based daily guide
                 </small>
               </div>
-              <div className="orbit" aria-hidden="true">
-                <div className="orbit-core">
-                  <span>YOUR NEXT STEP</span>
-                  <strong>{briefing.label}</strong>
-                  <small>Movement · Sleep · Recovery</small>
-                </div>
-              </div>
+              <HealthObject id={briefing.label === "Keep it easy" ? "balance-stones" : "kettlebell"} title={briefing.label} description="Drag to turn your daily object." onOpen={openObject} live />
             </section>
+            <div className="daily-objects">
+              <HealthObject id="bottle" title="A moment to reset" description="Make room for a small daily ritual." onOpen={openObject} action="Plan my day" onAction={() => ask("Help me choose one manageable daily habit based on my context.")} />
+              <HealthObject id="moon" title="Make space for rest" description="Reflect on your sleep and energy." onOpen={openObject} action="Check in" onAction={startCheckin} />
+            </div>
             <div className="metrics">
               {[
                 {
@@ -1334,6 +1336,7 @@ export default function HealthDashboard() {
                 ＋ Log activity
               </button>
             </div>
+            <HealthObject id="dumbbell" title="Movement that fits your day" description="Build around your time, preferences and current energy." onOpen={openObject} action="Talk through a plan" onAction={() => ask("Help me plan movement that fits my available time, preferences and how I feel today.")} />
             <div className="activity-summary">
               <div>
                 <span className="eyebrow">
@@ -1457,6 +1460,10 @@ export default function HealthDashboard() {
               <button className="primary" onClick={startCheckin}>
                 ＋ Daily check-in
               </button>
+            </div>
+            <div className="daily-objects">
+              <HealthObject id="balance-stones" title="Notice how you feel" description="Your own observations belong alongside your watch data." onOpen={openObject} action="Daily check-in" onAction={startCheckin}/>
+              <HealthObject id="yoga-mat" title="Room to recover" description="Talk through a gentler day, without a performance target." onOpen={openObject} action="Discuss recovery" onAction={() => ask("Help me think through a gentle recovery day based on my recent context. Ask if you need more information.")}/>
             </div>
             <div className="journal-grid">
               <section className="panel">
@@ -1857,7 +1864,7 @@ export default function HealthDashboard() {
           </div>
         </Modal>
       )}
-      {modal === "studio" && (<Modal title="Make something yours." onClose={() => setModal(null)}><SketchStudio key={user?.id || "local"} /></Modal>)}
+      {modal === "studio" && (<Modal title="Make something yours." onClose={() => setModal(null)}><SketchStudio key={`${user?.id || "local"}:${objectId || "catalog"}`} initialId={objectId} /></Modal>)}
       {modal === "context" && (
         <Modal title="What your agent sees" onClose={() => setModal(null)}>
           <p>

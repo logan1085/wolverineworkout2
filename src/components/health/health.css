@@ -2204,3 +2204,17 @@ button:disabled {
 .knowledge-brief li p { margin: 4px 0; }
 .knowledge-brief small { color: #b7c3b1; line-height: 1.6; }
 .knowledge-brief .quiet-button { display: block; min-height: 44px; }
+.health-object { display:flex; align-items:center; gap:20px; border:1px solid #43543d; border-radius:22px; padding:18px; background:radial-gradient(ellipse at top left,#304b38,#19271e); margin-bottom:20px; min-width:0; }
+.health-object .object-art { flex:0 0 140px; border:0; background:transparent; padding:0; border-radius:18px; cursor:pointer; }
+.health-object .object-art img { width:100%; height:auto; }
+.health-object h3 { font-family:Georgia,serif; font-size:24px; font-weight:400; margin:0 0 8px; }
+.health-object p { font-size:14px; line-height:1.5; color:#c9d4c0; margin:0 0 12px; }
+.object-actions { display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
+.object-actions button { min-height:44px; }
+.daily-objects { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+.health-object-live { display:block; padding:0; border:0; margin:0; background:none; text-align:center; }
+.health-object-live .sketch-canvas { height:260px; margin:0; background:none; }
+.health-object-live .object-actions { justify-content:center; }
+.health-object-live h3 { font-size:22px; }
+@media(max-width:1000px) { .daily-objects { grid-template-columns:1fr; gap:0; } }
+@media(max-width:760px) { .health-object { gap:12px; padding:14px; } .health-object .object-art { flex-basis:100px; } .health-object h3 { font-size:21px; } .health-object-live { padding:0; } .health-object-live .sketch-canvas { height:200px; } }

@@ -5,7 +5,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { GLTFExporter } from "three/addons/exporters/GLTFExporter.js";
 import { Sketch } from "@/lib/health/scene-model";
-export default function SketchViewer({ sketch, modelUrl }: { sketch: Sketch; modelUrl?: string }) {
+export default function SketchViewer({ sketch, modelUrl, compact = false }: { sketch: Sketch; modelUrl?: string; compact?: boolean }) {
   const host = useRef<HTMLDivElement>(null);
   const actions = useRef<{ move: (action: string) => void; download: () => Promise<void> } | null>(null);
   const [error, setError] = useState("");
@@ -63,6 +63,6 @@ export default function SketchViewer({ sketch, modelUrl }: { sketch: Sketch; mod
     };
     return () => { disposed=true; actions.current=null; observer.disconnect(); controls.dispose(); renderer.domElement.removeEventListener("webglcontextlost",lost); disposeGroup(group); renderer.dispose(); renderer.domElement.remove(); };
   },[sketch, modelUrl]);
-  return <><div className="sketch-canvas" ref={host} role="img" aria-label={sketch.title} />{loading && <p role="status">Loading object…</p>}{error && <p role="alert">{error}</p>}<div className="sketch-controls">{[["left","Rotate left"],["right","Rotate right"],["in","Zoom in"],["out","Zoom out"],["reset","Reset view"]].map(([action,label]) => <button type="button" key={action} onClick={() => actions.current?.move(action)}>{label}</button>)}</div><p className="sketch-hint">Drag to turn · Pinch to zoom</p><div className="sketch-controls"><button type="button" onClick={() => actions.current?.download()} disabled={!!error || loading}>Download GLB</button>{!modelUrl && <button type="button" onClick={() => download(new Blob([JSON.stringify(sketch,null,2)],{type:"application/json"}),"wolverine-sketch.json")}>Download scene JSON</button>}</div></>;
+  return <><div className="sketch-canvas" ref={host} role="img" aria-label={sketch.title} />{loading && <p role="status">Loading object…</p>}{error && <p role="alert">{error}</p>}{!compact && <><div className="sketch-controls">{[["left","Rotate left"],["right","Rotate right"],["in","Zoom in"],["out","Zoom out"],["reset","Reset view"]].map(([action,label]) => <button type="button" key={action} onClick={() => actions.current?.move(action)}>{label}</button>)}</div><p className="sketch-hint">Drag to turn · Pinch to zoom</p><div className="sketch-controls"><button type="button" onClick={() => actions.current?.download()} disabled={!!error || loading}>Download GLB</button>{!modelUrl && <button type="button" onClick={() => download(new Blob([JSON.stringify(sketch,null,2)],{type:"application/json"}),"wolverine-sketch.json")}>Download scene JSON</button>}</div></>}</>;
 }
 function download(blob: Blob, name: string) { const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download=name; a.click(); setTimeout(() => URL.revokeObjectURL(url),10000); }
