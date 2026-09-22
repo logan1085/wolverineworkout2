@@ -2258,3 +2258,37 @@ button:disabled {
 .companion-choices small { font-size:10px; color:#bdcbb1; }
 .health-app .companion-note { text-align:center; color:#aaba9f; font-size:12px; line-height:1.6; }
 @media(max-width:760px) { .health-app .briefing { padding:28px 24px; gap:6px; } .health-app .briefing h2 { font-size:36px; } .health-object-live .sketch-canvas { height:270px; } .companion-portrait { padding:20px 10px 8px; } .companion-portrait .sketch-canvas { height:250px; } }
+@media(max-width:760px) {
+  .health-app .greeting { gap:12px; margin:18px 0; }
+  .health-app .greeting h1 { font-size:29px; line-height:1.12; margin:8px 0; }
+  .health-app .greeting .eyebrow { margin-bottom:8px; font-size:10px; }
+  .health-app .greeting > div > p:not(.eyebrow) { font-size:13px; margin:0; }
+  .health-app .briefing { display:grid; grid-template-columns:minmax(0,1fr) 132px; padding:20px; gap:8px 10px; }
+  .briefing-copy { display:contents; }
+  .briefing-copy > .eyebrow { grid-column:1; grid-row:1; align-self:end; font-size:9px; line-height:1.6; }
+  .health-app .briefing-copy h2 { grid-column:1; grid-row:2; font-size:28px; margin:0; letter-spacing:-.7px; align-self:start; }
+  .briefing-copy > p { grid-column:1/-1; grid-row:3; font-size:13px; margin:10px 0; }
+  .briefing-copy > button { grid-column:1/-1; grid-row:4; justify-self:start; }
+  .briefing-copy > small { grid-column:1/-1; grid-row:5; font-size:10px; margin-top:12px; }
+  .briefing > .health-object-live { grid-column:2; grid-row:1/span 2; align-self:center; }
+  .health-object-live .sketch-canvas { height:158px; }
+  .health-object-live .object-copy h3,.health-app .health-object-live .object-copy p { display:none; }
+  .health-object-live .quiet-button { font-size:10px; min-height:32px; }
+}
+@media(max-width:360px) { .health-app .briefing { grid-template-columns:minmax(0,1fr) 105px; padding:16px; } .health-app .briefing-copy h2 { font-size:25px; } }
+.companion-loading { height:390px; display:grid; place-items:center; color:#c5d4b9; font-size:12px; }
+@media(max-width:760px) {
+  .health-app .dialog-heading h2 { font-size:25px; line-height:1.15; }
+  .companion-loading { height:370px; }
+  .health-app.mobile-chat .rail { display:none; }
+  .health-app.mobile-chat .topbar { min-height:0; padding:6px 0; margin:0 0 8px; }
+  .mobile-chat .memory-chat-bar { padding:8px 10px; margin-bottom:8px; font-size:11px; }
+  .mobile-chat .chat-welcome { padding:18px 10px; }
+  .mobile-chat .character-welcome,.mobile-chat .character-welcome img { width:96px; height:96px; }
+  .mobile-chat .chat-welcome h2 { margin:8px 0; font-size:26px; }
+  .mobile-chat .chat-welcome p { margin:8px 0 14px; }
+  .mobile-chat .chat-compose-area { padding:8px 12px; }
+  .mobile-chat .composer-tools .studio-launch { margin:0 0 6px; min-height:36px; padding:6px 10px; font-size:12px; }
+  .mobile-chat .consent { margin:6px 0 10px; font-size:11px; gap:8px; }
+  .mobile-chat .chat-footnote { font-size:10px; margin-top:6px; }
+}

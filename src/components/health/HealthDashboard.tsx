@@ -827,7 +827,7 @@ export default function HealthDashboard() {
               </button>
             </div>
             <section className="briefing">
-              <div>
+              <div className="briefing-copy">
                 <span className="eyebrow">
                   WOLVERINE BRIEFING{sample ? " · SAMPLE PROFILE" : ""}
                 </span>

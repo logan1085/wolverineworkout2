@@ -6,6 +6,8 @@ const nextConfig: NextConfig = {
   // a broken build should be caught in CI rather than at runtime in a user's
   // browser.
   reactStrictMode: true,
+  // Keep framework controls from covering the mobile navigation in previews.
+  devIndicators: false,
 
   // Never leak the framework version in response headers.
   poweredByHeader: false,

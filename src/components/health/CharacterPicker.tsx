@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import { useMemo } from "react";
 import Image from "next/image";
 import {characters} from "./useCharacter";
-const Viewer = dynamic(() => import("./SketchViewer"), {ssr:false});
+const Viewer = dynamic(() => import("./SketchViewer"), {ssr:false, loading:()=> <div className="companion-loading" role="status">Preparing your companion…</div>});
 const traits: Record<string,string> = {moss:"A little room to grow.",sunny:"Find your bright spot.",pebble:"Steady, at your own pace."};
 export default function CharacterPicker({selected,onChoose,disabled,error}: {selected:string;onChoose:(id:string)=>void;disabled:boolean;error:string}) {
   const character=characters.find(c=>c.id===selected) || characters[0];

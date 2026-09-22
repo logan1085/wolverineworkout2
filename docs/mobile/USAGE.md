@@ -31,3 +31,7 @@ Device verification remains necessary before describing this as tested on iPhone
 ## Recovery improvements — September 20
 
 Chat errors appear inside the composer area. Offline detection keeps drafts in place and disables sending until reconnection; it does not cache health data or enable offline AI. Stop response restores the submitted draft and ignores late responses, but does not promise the provider stops processing. Memory conflicts also restore the draft. The 3D launcher hides while the mobile keyboard is open; Stop remains reachable. Test these behaviors on devices before release.
+
+## Browser acceptance — September 22
+
+Inspected the live local app at a 390×844 browser viewport. Found and fixed an overlong first screen that hid the character, excess mobile chat chrome, missing space during lazy character-preview loading, and the framework development indicator intercepting Today taps. Verified Sunny selection propagates to Today and chat and survives reload; restored Moss after testing. The browser console showed no errors during this walkthrough. These are browser checks, not physical iPhone/Android keyboard tests. The originally open tab was stale and required a reload to load the current build.
