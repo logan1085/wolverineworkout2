@@ -66,3 +66,10 @@ The session endpoint now reports actual bounded authentication-service reachabil
 - Backdrop dismissal now requires both a press and release outside the dialog bounds. Interior padding and drags beginning inside no longer count as backdrop clicks.
 - Browser verification with the current bundle: Escape and the Close button return focus to Daily check-in; reverse-tab from Close lands on Save my check-in; forward-tab from Save lands on Close; More → Choose character keeps exactly one open dialog with focus inside, then Escape returns to More.
 - Native screen-reader and physical-device testing remain open. The pointer-boundary and busy-state guards were inspected in code; those specific branches were not fault-injected in this browser pass.
+
+### Daily evidence and calendar trends — September 22
+
+- Confirmed that today's primary metric values already require today's date. Corrected the remaining attribution errors: missing Garmin sleep is labelled unknown; wearable-only low sleep is attributed to Garmin instead of a nonexistent check-in; stress appears among the inputs when a check-in shapes the plan.
+- A steps-only record no longer implies the app has enough current sleep/wellbeing context for its daily direction. Explicit self-reported sleep continues to take precedence over wearable sleep, matching the primary card.
+- Spark bars now use seven calendar days with missing days preserved, excluding stale and future records. Zero and absent values no longer draw positive-height bars. These remain decorative summaries, not clinical recovery scores.
+- Four regression cases passed alongside the existing eight health tests, covering stale dates, wearable-only evidence, partial measurements, stress attribution, zero/missing values and calendar boundaries. The expanded evidence disclosure was also checked in the browser using labelled sample data, then returned to the personal view.

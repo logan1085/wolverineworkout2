@@ -101,6 +101,23 @@ export function sampleHealth(): HealthState {
     ],
   };
 }
+/** Seven calendar days, oldest first. Missing days stay unknown, never zero-filled. */
+export function dailyTrends(state: HealthState, today = dayKey()) {
+  return Array.from({ length: 7 }, (_, i) => {
+    const date = new Date(today + "T12:00:00");
+    date.setDate(date.getDate() - (6 - i));
+    const key = dayKey(date);
+    const check = state.checkIns.find(entry => entry.date === key);
+    const metric = state.metrics.find(entry => entry.date === key);
+    return {
+      date: key,
+      sleepHours: check?.sleepHours ?? metric?.sleepHours,
+      restingHeartRate: metric?.restingHeartRate,
+      steps: metric?.steps,
+      energy: check?.energy,
+    };
+  });
+}
 export function dailyBriefing(state: HealthState, today = dayKey()) {
   const check = state.checkIns.find((x) => x.date === today);
   const metric = state.metrics.find((x) => x.date === today);
@@ -109,7 +126,7 @@ export function dailyBriefing(state: HealthState, today = dayKey()) {
     (!!check &&
       (check.energy <= 2 || check.soreness >= 4 || check.stress >= 4)) ||
     (sleep !== undefined && sleep < 6);
-  const hasData = !!check || !!metric;
+  const hasData = !!check || sleep !== undefined;
   return {
     title: !hasData
       ? "Start with how you feel."
@@ -119,7 +136,7 @@ export function dailyBriefing(state: HealthState, today = dayKey()) {
     description: !hasData
       ? "A quick check-in gives your day a starting point. Add your sleep, energy, and anything on your mind."
       : easy
-        ? "Your latest check-in points toward a lighter day. Choose a comfortable walk or rest, and adjust if something feels off."
+        ? `${check ? "Today’s check-in" : "Today’s Garmin sleep record"} points toward a lighter day. Choose a comfortable walk or rest, and adjust if something feels off.`
         : "Use your plan as a starting point, then adapt it to your energy and schedule. A wearable can add context; you get the final say.",
     label: !hasData
       ? "Your first step"
@@ -127,9 +144,9 @@ export function dailyBriefing(state: HealthState, today = dayKey()) {
         ? "Keep it easy"
         : "Find your rhythm",
     reasons: [
-      ...(sleep !== undefined ? [`${sleep.toFixed(1)} hours of sleep`] : []),
+      ...(sleep !== undefined ? [`${check ? "Self-reported" : "Garmin"} sleep: ${sleep.toFixed(1)} hours`] : []),
       ...(check
-        ? [`Energy ${check.energy}/5`, `Soreness ${check.soreness}/5`]
+        ? [`Energy ${check.energy}/5`, `Stress ${check.stress}/5`, `Soreness ${check.soreness}/5`]
         : []),
     ],
     plan: [

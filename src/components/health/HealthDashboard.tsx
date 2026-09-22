@@ -12,6 +12,7 @@ import {
   CheckIn,
   HealthState,
   dailyBriefing,
+  dailyTrends,
   dayKey,
   emptyHealth,
   sampleHealth,
@@ -71,7 +72,7 @@ function Spark({ values }: { values: (number | undefined)[] }) {
         <i
           key={i}
           style={{
-            height: v === undefined ? "3%" : `${Math.max((v / max) * 100, 8)}%`,
+            height: v === undefined || v === 0 ? "0%" : `${Math.max((v / max) * 100, 8)}%`,
           }}
         />
       ))}
@@ -663,6 +664,7 @@ export default function HealthDashboard() {
     if (upload.current) upload.current.value = "";
   }
   const sleep = check?.sleepHours ?? latest?.sleepHours;
+  const trends = dailyTrends(current, today);
   const visibleActivities = current.activities.filter(
     (a) => (Date.now() - Date.parse(a.date + "T00:00:00")) / 86400000 < range,
   );
@@ -842,22 +844,20 @@ export default function HealthDashboard() {
                       : `${Math.floor(sleep)}h ${Math.round((sleep % 1) * 60)}m`,
                   detail: check
                     ? "Self-reported today"
-                    : latest
+                    : latest?.sleepHours !== undefined
                       ? "Garmin · today"
                       : "No sleep recorded",
                   icon: "☾",
-                  values: current.metrics.slice(-7).map((m) => m.sleepHours),
+                  values: trends.map((m) => m.sleepHours),
                 },
                 {
                   name: "Resting heart rate",
                   value: latest?.restingHeartRate?.toString() ?? "—",
                   detail: latest?.restingHeartRate
                     ? "bpm · Garmin today"
-                    : "Connect Garmin for trends",
+                    : connection.connected ? "No heart rate received today" : "Connect Garmin for trends",
                   icon: "♡",
-                  values: current.metrics
-                    .slice(-7)
-                    .map((m) => m.restingHeartRate),
+                  values: trends.map((m) => m.restingHeartRate),
                 },
                 {
                   name: "Daily movement",
@@ -867,7 +867,7 @@ export default function HealthDashboard() {
                       ? "steps · Garmin today"
                       : "No steps received today",
                   icon: "↗",
-                  values: current.metrics.slice(-7).map((m) => m.steps),
+                  values: trends.map((m) => m.steps),
                 },
                 {
                   name: "Energy",
@@ -876,10 +876,7 @@ export default function HealthDashboard() {
                     ? "Self-reported today"
                     : "How are you feeling?",
                   icon: "☀",
-                  values: current.checkIns
-                    .slice(0, 7)
-                    .reverse()
-                    .map((c) => c.energy),
+                  values: trends.map((c) => c.energy),
                 },
               ].map((m) => (
                 <article className="metric" key={m.name}>

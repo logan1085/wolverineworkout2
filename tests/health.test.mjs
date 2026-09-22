@@ -152,3 +152,45 @@ test("PKCE state binds the OAuth flow to the signed-in user and callback", () =>
   assert.ok(cookie.expires > Date.now());
   assert.equal(url.searchParams.get("code_challenge_method"), "S256");
 });
+
+test("daily direction names wearable-only evidence and ignores stale sleep", () => {
+  const s = base();
+  s.metrics = [{ date: "2026-09-18", sleepHours: 5, source: "garmin" }];
+  const guide = dailyBriefing(s, "2026-09-18");
+  assert.equal(guide.label, "Keep it easy");
+  assert.match(guide.description, /Garmin sleep record/);
+  assert.doesNotMatch(guide.description, /check-in/);
+  assert.deepEqual(guide.reasons, ["Garmin sleep: 5.0 hours"]);
+  assert.equal(dailyBriefing(s, "2026-09-19").label, "Your first step");
+});
+test("steps alone do not imply a current sleep or wellbeing assessment", () => {
+  const s = base();
+  s.metrics = [{ date: "2026-09-18", steps: 0, source: "garmin" }];
+  const guide = dailyBriefing(s, "2026-09-18");
+  assert.equal(guide.label, "Your first step");
+  assert.deepEqual(guide.reasons, []);
+});
+test("stress that changes the plan is included in the visible evidence", () => {
+  const s = base();
+  s.checkIns = [{ id: "s", date: "2026-09-18", energy: 5, stress: 5, soreness: 1, sleepHours: 8, note: "" }];
+  const guide = dailyBriefing(s, "2026-09-18");
+  assert.equal(guide.label, "Keep it easy");
+  assert.ok(guide.reasons.includes("Stress 5/5"));
+});
+test("daily trends preserve calendar gaps, zeros and self-reported sleep precedence", () => {
+  const { dailyTrends } = load("src/lib/health/model.ts");
+  const s = base();
+  s.metrics = [
+    { date: "2026-08-01", steps: 10000, source: "garmin" },
+    { date: "2026-09-16", steps: 0, source: "garmin" },
+    { date: "2026-09-18", sleepHours: 5, source: "garmin" },
+    { date: "2026-09-19", steps: 4000, source: "garmin" },
+  ];
+  s.checkIns = [{ id: "s", date: "2026-09-18", sleepHours: 7, energy: 3, stress: 2, soreness: 1, note: "" }];
+  const days = dailyTrends(s, "2026-09-18");
+  assert.deepEqual(days.map(d => d.date), ["2026-09-12", "2026-09-13", "2026-09-14", "2026-09-15", "2026-09-16", "2026-09-17", "2026-09-18"]);
+  assert.deepEqual(days.map(d => d.steps), [undefined, undefined, undefined, undefined, 0, undefined, undefined]);
+  assert.equal(days[6].sleepHours, 7);
+  assert.equal(days[6].energy, 3);
+  assert.equal(dailyTrends(base(), "2026-03-10")[0].date, "2026-03-04");
+});
