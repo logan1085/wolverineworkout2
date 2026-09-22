@@ -1,18 +1,16 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Roboto_Condensed } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 
-const inter = Inter({
+const inter = localFont({
   variable: "--font-inter",
-  subsets: ["latin"],
+  src: [{ path: "./fonts/inter-400.ttf", weight: "400", style: "normal" }, { path: "./fonts/inter-500.ttf", weight: "500", style: "normal" }, { path: "./fonts/inter-600.ttf", weight: "600", style: "normal" }, { path: "./fonts/inter-700.ttf", weight: "700", style: "normal" }],
   display: "swap",
 });
-
-const robotoCondensed = Roboto_Condensed({
+const robotoCondensed = localFont({
   variable: "--font-roboto-condensed",
-  subsets: ["latin"],
-  weight: ["300", "400", "700"],
+  src: [{ path: "./fonts/roboto-condensed-300.ttf", weight: "300", style: "normal" }, { path: "./fonts/roboto-condensed-400.ttf", weight: "400", style: "normal" }, { path: "./fonts/roboto-condensed-700.ttf", weight: "700", style: "normal" }],
   display: "swap",
 });
 
@@ -35,7 +33,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#111916",
+  themeColor: "#f8f9fc",
   interactiveWidget: "resizes-content",
 };
 

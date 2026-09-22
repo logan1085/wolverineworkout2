@@ -26,7 +26,7 @@ export default function SketchViewer({ sketch, modelUrl, compact = false, downlo
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.05;
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.type = THREE.PCFShadowMap;
     element.appendChild(renderer.domElement);
     renderer.domElement.setAttribute("aria-label", sketch.title + (compact ? ". Drag to turn." : ". Use the buttons below to rotate or zoom."));
     const scene = new THREE.Scene();

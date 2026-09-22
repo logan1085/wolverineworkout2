@@ -681,7 +681,7 @@ export default function HealthDashboard() {
     >
       <aside className="rail">
         <Link className="wordmark" href="/" aria-label="Wolverine home">
-          w<span aria-hidden="true">{"///"}</span>
+          <span className="brand-symbol" aria-hidden="true"><HealthIcon name="agent" /></span>
           <b>wolverine</b>
         </Link>
         <button
@@ -743,8 +743,8 @@ export default function HealthDashboard() {
               {tab === "Memory"
                 ? "Personal memory"
                 : sample
-                  ? "Sample data · View my health"
-                  : "My health · Explore sample"}
+                  ? "Demo · Back to my health"
+                  : "Explore demo"}
             </button>
             <button
               className="quiet-button"
@@ -790,13 +790,13 @@ export default function HealthDashboard() {
                     </>
                   ) : (
                     <>
-                      Make room for <em>feeling good.</em>
+                      Your day, <em>at your pace.</em>
                     </>
                   )}
                 </h1>
                 <p>Your health is more than your last workout.</p>
               </div>
-              <button
+              {(sample || data.checkIns.length > 0) && <button
                 className="primary"
                 onClick={startCheckin}
                 disabled={!loaded}
@@ -805,7 +805,7 @@ export default function HealthDashboard() {
                 {data.checkIns.some((c) => c.date === today)
                   ? "Update check-in"
                   : "Daily check-in"}
-              </button>
+              </button>}
             </div>
             <section className="briefing">
               <div className="briefing-copy">
@@ -834,7 +834,7 @@ export default function HealthDashboard() {
               </div>
               <HealthObject id={companion.character.id} title={`${companion.character.title} · ${briefing.label}`} openLabel="Choose character" description="Your daily companion. Drag to turn." onOpen={() => setModal("character")} live />
             </section>
-            <div className="metrics">
+            {(check || latest) ? <div className="metrics">
               {[
                 {
                   name: "Sleep",
@@ -892,7 +892,12 @@ export default function HealthDashboard() {
                   <Spark values={m.values} />
                 </article>
               ))}
-            </div>
+            </div> : <section className="signals-empty">
+              <div className="signals-icon"><HealthIcon name="activity" /></div>
+              <div><span className="eyebrow">YOUR DAILY SIGNALS</span><h2>A little context. A clearer picture.</h2><p>Your sleep, movement, and energy come together here as you check in or connect a wearable.</p></div>
+              <button className="secondary" onClick={() => navigate("Connections")}>Connect your apps <span aria-hidden="true">↗</span></button>
+            </section>}
+            <div className="section-heading daily-section-heading"><h2>Make a little space for you</h2><span className="subtle">One small step at a time</span></div>
             <div className="daily-objects">
               <HealthObject id="bottle" title="A moment to reset" description="Make room for a small daily ritual." onOpen={openObject} action="Plan my day" onAction={() => ask("Help me choose one manageable daily habit based on my context.")} />
               <HealthObject id="moon" title="Make space for rest" description="Reflect on your sleep and energy." onOpen={openObject} action="Check in" onAction={startCheckin} />
