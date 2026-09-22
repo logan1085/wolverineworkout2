@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+import ts from 'typescript';
+import assert from 'node:assert/strict';
+import {test} from 'node:test';
+const compiled={exports:{}};
+new Function('module','exports',ts.transpileModule(fs.readFileSync('src/lib/health/account-status.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText)(compiled,compiled.exports);
+const {checkAccountStatus}=compiled.exports;
+test('missing configuration never contacts a service',async()=>{assert.equal(await checkAccountStatus(undefined,'key',()=>{throw Error('called');}),'not_configured');});
+test('unreachable, rejected and invalid responses fail closed',async()=>{for(const fetcher of [async()=>{throw Error('DNS failed');},async()=>new Response('{}',{status:401}),async()=>new Response('not json'),async()=>Response.json([])])assert.equal(await checkAccountStatus('https://example.test','test-key',fetcher),'unavailable');});
+test('reachable auth endpoint enables sign-in without exposing settings or credentials',async()=>{let request;const result=await checkAccountStatus('https://example.test','test-key',async(url,options)=>{request={url:String(url),options};return Response.json({external:{email:true}});});assert.equal(result,'ready');assert.equal(request.url,'https://example.test/auth/v1/settings');assert.equal(request.options.redirect,'error');assert.equal(request.options.cache,'no-store');assert.ok(request.options.signal instanceof AbortSignal);});

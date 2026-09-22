@@ -1,0 +1,152 @@
+/* Shared visual language: forest, warm paper, and a restrained citron accent. */
+.health-app {
+  --ink: #edf0e8;
+  --muted: #a2afa6;
+  --line: #ffffff12;
+  --lime: #dcebb0;
+  background: #111b17;
+}
+.health-app .health-main { max-width: 1560px; }
+.health-app .rail { background: #101914; border-color: var(--line); }
+.health-app .rail nav { gap: 5px; }
+.health-app .rail nav button { min-height: 48px; border-radius: 12px; }
+.health-app .rail nav button.selected { background: #e0ecc411; color: #e0ecc4; }
+.health-app .rail nav button span { display: flex; align-items: center; }
+.health-app .topbar { height: 72px; border-color: var(--line); }
+.health-app .sample-pill { background: #e0ecc408; border-color: #e0ecc426; color: #bdc8b5; font-size: 11px; }
+.health-app .greeting { padding: 30px 0; }
+.health-app .greeting h1 { letter-spacing: -1.3px; font-weight: 400; }
+.health-app .eyebrow { font-size: 10px; letter-spacing: .15em; }
+.health-app :is(.primary,.light-btn,.secondary) { border-radius: 12px; padding: 13px 18px; }
+.health-app button { transition: background-color .18s ease, border-color .18s ease, color .18s ease; }
+.health-app button:focus-visible,.health-app summary:focus-visible { outline: 2px solid #dcebb0; outline-offset: 4px; }
+.health-app .briefing {
+  color: #24372c;
+  background: radial-gradient(ellipse at 85% 30%,#f6f5e7 0%,#e6ead7 47%,#dce3cb 100%);
+  border: 0;
+  border-radius: 24px;
+  min-height: 320px;
+  padding: 34px 36px;
+  grid-template-columns: minmax(0,1.3fr) minmax(180px,.7fr);
+  gap: 20px;
+  box-shadow: inset 0 1px 0 #ffffff90;
+}
+.health-app .briefing-copy { align-self: center; }
+.health-app .briefing .eyebrow { color: #55654e; }
+.health-app .briefing h2 { font-size: clamp(32px,3.2vw,48px); line-height: 1.06; letter-spacing: -1.5px; margin: 18px 0; max-width: 450px; }
+.health-app .briefing-copy > p { color: #52614c; font-size: 14px; line-height: 1.7; margin-bottom: 22px; }
+.health-app .briefing .light-btn { background: #263d2f; color: #f0f2e6; }
+.health-app .briefing .light-btn:hover { background: #38513e; }
+.health-app .briefing :focus-visible { outline-color: #263d2f; }
+.health-app .briefing-source { display: block; margin-top: 20px; color: #596650; font-size: 11px; line-height: 1.7; max-width: 430px; }
+.health-app .briefing-source summary { cursor: pointer; padding: 4px 0; color: #53634c; }
+.health-app .briefing-source[open] summary { margin-bottom: 6px; }
+.health-app .briefing .health-object-live { align-self: center; background: radial-gradient(ellipse at 50% 65%,#94a97d28,transparent 66%); }
+.health-app .briefing .health-object-live .sketch-canvas { height: 235px; }
+.health-app .briefing .health-object-live .object-copy h3 { color: #53644b; font-size: 10px; }
+.health-app .briefing .health-object-live .object-copy p { display: none; }
+.health-app .briefing .health-object-live .quiet-button { color: #4d5f46; border: 1px solid #73826235; border-radius: 24px; padding: 8px 14px; margin-top: 10px; font-size: 11px; min-height: 36px; }
+.health-app .metrics { margin: 24px 0; gap: 12px; }
+.health-app .metric { border: 1px solid #ffffff0d; border-radius: 18px; background: #1a2720; padding: 22px; min-height: 158px; }
+.health-app .metric strong { font-size: 32px; font-weight: 400; letter-spacing: -1.2px; margin-top: 18px; font-variant-numeric: tabular-nums; }
+.health-app .metric small { color: #a2b09f; font-size: 10px; }
+.health-app .metric .spark { opacity: .16; }
+.health-app .daily-objects { gap: 16px; margin: 0 0 24px; }
+.health-app .daily-objects .health-object { margin: 0; border: 1px solid #ffffff10; background: #1a241e; border-radius: 18px; padding: 18px; gap: 12px; }
+.health-app .daily-objects .health-object:nth-child(2) { background: #222621; }
+.health-app .daily-objects .object-art { flex-basis: 86px; }
+.health-app .daily-objects h3 { font-size: 23px; letter-spacing: -.5px; }
+.health-app .daily-objects p { color: #a6b29f; font-size: 12px; margin-bottom: 8px; }
+.health-app .daily-objects .light-btn { padding: 0; background: none; color: #e0ecc4; font-size: 12px !important; min-height: 36px; }
+.health-app .daily-objects .light-btn::after { content: ' ↗'; margin-left: 5px; }
+.health-app .daily-objects .quiet-button { font-size: 10px; color: #a8b29f; }
+.health-app .daily-objects .object-actions { gap: 16px; }
+.health-app .panel { border-radius: 20px; border-color: #ffffff10; background: #17231c; }
+.health-app .panel h2 { font-weight: 400; letter-spacing: -.6px; }
+.health-app .plan-row { padding: 20px 0; border-color: #ffffff0e; }
+.health-app .plan-row h3 { font-size: 14px; font-weight: 500; }
+.health-app .plan-row p { font-size: 12px; color: #a2afa0; }
+.health-app .step { border-radius: 50%; background: #243329; border-color: #506449; font-size: 12px; }
+.health-app .agent-teaser { background: radial-gradient(ellipse at top right,#354331,#1b291f 70%); }
+.health-app footer { color: #9ba994; }
+@media (hover:hover) {
+  .health-app .metric:hover { border-color: #e0ecc42b; }
+  .health-app .daily-objects .object-art:hover { background: #ffffff08; }
+  .health-app .rail nav button:hover { background: #ffffff08; }
+}
+@media (max-width: 1000px) {
+  .health-app .daily-objects { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .health-app .daily-objects .health-object { flex-direction: column; align-items: flex-start; }
+  .health-app .daily-objects .object-art { width: 86px; flex-basis: auto; }
+}
+@media (max-width: 760px) {
+  .health-app .rail { min-height: 66px; border-bottom: 0; }
+  .health-app .wordmark b { font-size: 19px; }
+  .health-app .mobile-profile { width: 38px; height: 38px; min-height: 38px; font-size: 13px; border-color: #dcebb030; background: #e0ecc40a; }
+  .health-app .topbar { height: auto; min-height: 42px; padding: 0 0 8px; border: 0; }
+  .health-app .sample-pill { min-height: 32px; padding: 6px 10px; font-size: 10px; }
+  .health-app .greeting { padding: 18px 0; margin: 0 0 8px; }
+  .health-app .greeting h1 { font-size: 30px; line-height: 1.13; margin: 8px 0 10px; letter-spacing: -1px; }
+  .health-app .greeting .eyebrow { font-size: 9px; color: #a5b29b; }
+  .health-app .today-greeting { display: block; }
+  .health-app .today-greeting > div > p:not(.eyebrow) { font-size: 12px; }
+  .health-app .today-greeting > .primary { width: auto; margin: 16px 0 0; padding: 10px 15px; min-height: 44px; font-size: 12px !important; }
+  .health-app .briefing { padding: 22px; border-radius: 22px; min-height: 0; grid-template-columns: minmax(0,1fr) 116px; gap: 0 8px; }
+  .health-app .briefing-copy { display: contents; }
+  .health-app .briefing-copy > .eyebrow { font-size: 8px; grid-column: 1; grid-row: 1; align-self: end; line-height: 1.6; }
+  .health-app .briefing-copy h2 { grid-column: 1; grid-row: 2; font-size: 28px; line-height: 1.08; margin: 10px 0 0; letter-spacing: -.9px; }
+  .health-app .briefing > .health-object-live { grid-column: 2; grid-row: 1 / span 2; align-self: center; }
+  .health-app .briefing .health-object-live .sketch-canvas { height: 136px; }
+  .health-app .briefing .health-object-live .quiet-button { font-size: 9px; padding: 4px 9px; margin-top: 0; min-height: 32px; }
+  .health-app .briefing-copy > p { grid-column: 1/-1; grid-row: 3; margin: 18px 0; font-size: 12px; line-height: 1.65; }
+  .health-app .briefing-copy > button { grid-column: 1/-1; grid-row: 4; justify-self: start; min-height: 44px; font-size: 12px !important; }
+  .health-app .briefing-source { grid-column: 1/-1; grid-row: 5; margin: 12px 0 0; font-size: 10px; }
+  .health-app .briefing-source summary { min-height: 32px; display: flex; align-items: center; gap: 6px; }
+  .health-app .briefing-source summary::before { content: '+'; font-size: 13px; }
+  .health-app .briefing-source[open] summary::before { content: '−'; }
+  .health-app .metrics { gap: 10px; margin: 16px 0; }
+  .health-app .metric { min-height: 140px; padding: 16px; border-radius: 16px; }
+  .health-app .metric > div:first-child { font-size: 11px; gap: 4px; }
+  .health-app .metric strong { font-size: 27px; margin: 14px 0 6px; }
+  .health-app .metric small { font-size: 9px; max-width: 100%; }
+  .health-app .daily-objects { gap: 10px; margin-bottom: 18px; }
+  .health-app .daily-objects .health-object { padding: 14px; gap: 4px; }
+  .health-app .daily-objects h3 { font-size: 21px; line-height: 1.15; }
+  .health-app .daily-objects p { font-size: 11px; line-height: 1.6; }
+  .health-app .daily-objects .object-art { width: 78px; }
+  .health-app .daily-objects .object-actions { gap: 0; flex-direction: column; align-items: flex-start; }
+  .health-app .daily-objects .object-actions button { min-height: 44px; }
+  .health-app .panel { border-radius: 18px; }
+  .health-app .mobile-dock { background: #101a16f5; border-color: #dcebb01c; padding-top: 8px; }
+  .health-app .mobile-dock button { font-size: 10px; gap: 6px; border-radius: 14px; }
+  .health-app .mobile-dock button > span:first-child { display: grid; place-items: center; height: 26px; }
+  .health-app .mobile-dock button.selected { background: #dcebb00d; color: #e1edbd; }
+  .health-app.mobile-chat .topbar { min-height: 0; }
+}
+@media (max-width: 360px) {
+  .health-app .briefing { padding: 18px; grid-template-columns: minmax(0,1fr) 98px; }
+  .health-app .briefing-copy h2 { font-size: 25px; }
+  .health-app .briefing .health-object-live .sketch-canvas { height: 120px; }
+}
+@media (prefers-reduced-motion:reduce) { .health-app button { transition: none; } }
+@media (max-width: 760px) {
+  .health-app .today-greeting { padding: 10px 0 18px; }
+  .health-app .today-greeting > div > p:not(.eyebrow) { display: none; }
+  .health-app .today-greeting > .primary { margin-top: 10px; }
+  .health-app .briefing .health-object-live .sketch-canvas { height: 112px; }
+  .health-app .briefing .health-object-live .quiet-button { font-size: 10px !important; white-space: nowrap; min-height: 44px; padding: 4px 7px; border: 0; }
+}
+.viewer-control-symbol { display: none; }
+.companion-portrait .viewer-control-symbol { display: inline; font-size: 20px; }
+.companion-portrait .viewer-control-label { display: none; }
+.health-app .companion-portrait .sketch-controls button { width: 44px; height: 44px; padding: 0; }
+@media (max-width: 760px) {
+  .health-app .companion-heading h3 { font-size: 34px; }
+  .health-app .companion-heading p { font-size: 12px; }
+  .health-app .companion-portrait { padding: 18px 10px 8px; }
+  .health-app .companion-portrait .sketch-canvas { height: 180px; }
+  .health-app .companion-portrait .sketch-hint { font-size: 10px; margin: 8px 0; }
+  .health-app .companion-choices { gap: 8px; margin: 14px 0; }
+  .health-app .companion-choices img { max-width: 84px; }
+  .health-app .companion-note { font-size: 11px; }
+}

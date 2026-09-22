@@ -19,7 +19,9 @@ import {
 } from "@/lib/health/model";
 import "./health.css";
 import HealthObject from "./HealthObject";
+import HealthIcon from "./HealthIcon";
 import "./sketch.css";
+import "./refinement.css";
 import MemoryPanel from "./MemoryPanel";
 import StravaConnection from "./StravaConnection";
 import { useMobileViewport } from "./useMobileViewport";
@@ -54,7 +56,7 @@ const tabs: Tab[] = [
   "Memory",
   "Connections",
 ];
-const icons = ["◉", "✳", "↗", "▤", "◇", "⌘"];
+const icons = ["today", "agent", "activity", "journal", "memory", "connections"] as const;
 const dateLabel = (date: string) =>
   new Date(date + "T12:00:00").toLocaleDateString(undefined, {
     month: "short",
@@ -143,7 +145,19 @@ export default function HealthDashboard() {
     local: false,
     ai: false,
     auth: false,
+    authStatus: "checking",
   });
+  const [checkingAccount, setCheckingAccount] = useState(false);
+  async function refreshAccountStatus() {
+    setCheckingAccount(true);
+    try {
+      const response = await fetch("/api/health/session");
+      if (!response.ok) throw new Error("Status unavailable");
+      setSession(await response.json());
+    } catch {
+      setSession(s => ({...s, auth:false, authStatus:"unavailable"}));
+    } finally { setCheckingAccount(false); }
+  }
   const [connection, setConnection] = useState<Connection>({
     configured: false,
     connected: false,
@@ -203,13 +217,12 @@ export default function HealthDashboard() {
       history.replaceState(null, "", location.pathname);
     }
     fetch("/api/health/session")
-      .then((r) => r.json())
+      .then((r) => { if (!r.ok) throw new Error("Status unavailable"); return r.json(); })
       .then(setSession)
-      .catch(() =>
-        setNotice(
-          "Connection status is unavailable. Local check-ins still work.",
-        ),
-      );
+      .catch(() => {
+        setSession(s => ({...s, auth:false, authStatus:"unavailable"}));
+        setNotice("Connection status is unavailable. Local check-ins still work.");
+      });
   }, []);
   useEffect(() => {
     let active = true;
@@ -720,7 +733,7 @@ export default function HealthDashboard() {
               className={tab === x ? "selected" : ""}
               aria-current={tab === x ? "page" : undefined}
             >
-              <span aria-hidden="true">{icons[i]}</span>
+              <span aria-hidden="true"><HealthIcon name={icons[i]} /></span>
               {x}
             </button>
           ))}
@@ -789,7 +802,7 @@ export default function HealthDashboard() {
         )}
         {tab === "Today" && (
           <>
-            <div className="greeting">
+            <div className="greeting today-greeting">
               <div>
                 <p className="eyebrow">
                   {loaded
@@ -829,7 +842,7 @@ export default function HealthDashboard() {
             <section className="briefing">
               <div className="briefing-copy">
                 <span className="eyebrow">
-                  WOLVERINE BRIEFING{sample ? " · SAMPLE PROFILE" : ""}
+                  YOUR DAILY DIRECTION{sample ? " · SAMPLE" : ""}
                 </span>
                 <h2>{briefing.title}</h2>
                 <p>{briefing.description}</p>
@@ -843,20 +856,16 @@ export default function HealthDashboard() {
                 >
                   Talk through my day ↗
                 </button>
-                <small className="briefing-source">
+                <details className="briefing-source"><summary>What shaped this briefing</summary>
                   Based on{" "}
                   {briefing.reasons.length
                     ? briefing.reasons.join(" · ")
                     : "your next check-in"}{" "}
                   · Rules-based daily guide
-                </small>
+                </details>
               </div>
               <HealthObject id={companion.character.id} title={`${companion.character.title} · ${briefing.label}`} openLabel="Choose character" description="Your daily companion. Drag to turn." onOpen={() => setModal("character")} live />
             </section>
-            <div className="daily-objects">
-              <HealthObject id="bottle" title="A moment to reset" description="Make room for a small daily ritual." onOpen={openObject} action="Plan my day" onAction={() => ask("Help me choose one manageable daily habit based on my context.")} />
-              <HealthObject id="moon" title="Make space for rest" description="Reflect on your sleep and energy." onOpen={openObject} action="Check in" onAction={startCheckin} />
-            </div>
             <div className="metrics">
               {[
                 {
@@ -920,6 +929,10 @@ export default function HealthDashboard() {
                   <Spark values={m.values} />
                 </article>
               ))}
+            </div>
+            <div className="daily-objects">
+              <HealthObject id="bottle" title="A moment to reset" description="Make room for a small daily ritual." onOpen={openObject} action="Plan my day" onAction={() => ask("Help me choose one manageable daily habit based on my context.")} />
+              <HealthObject id="moon" title="Make space for rest" description="Reflect on your sleep and energy." onOpen={openObject} action="Check in" onAction={startCheckin} />
             </div>
             <div className="bottom-grid">
               <section className="panel">
@@ -1699,6 +1712,7 @@ export default function HealthDashboard() {
                 {user ? (
                   <>
                     <p className="account-email">{user.email}</p>
+                    {session.authStatus === "unavailable" && <div role="status"><p>The account service is temporarily unavailable. Saving and syncing may fail until the connection returns.</p><button className="secondary" disabled={checkingAccount} onClick={() => void refreshAccountStatus()}>{checkingAccount ? "Checking…" : "Check again"}</button></div>}
                     <button
                       className="secondary"
                       onClick={() =>
@@ -1728,14 +1742,18 @@ export default function HealthDashboard() {
                 ) : (
                   <>
                     <p className="subtle">
-                      Account sync is awaiting the app’s Supabase configuration.
-                      You can use check-ins and the activity log on this device.
+                      {session.authStatus === "checking"
+                        ? "Checking account availability…"
+                        : session.authStatus === "unavailable"
+                          ? "Account sign-in is temporarily unavailable. Your existing local records are still on this device."
+                          : "Account sync is not set up yet. You can use check-ins and the activity log on this device."}
                     </p>
                     <p className="connection-note">
                       {session.local && session.ai
                         ? "Your existing OpenAI key is connected to this local preview."
-                        : "The AI service will be available once configured."}
+                        : "Personal AI conversations require a working account connection. You can explore the sample dashboard and object library now."}
                     </p>
+                    <button className="secondary" disabled={checkingAccount} onClick={() => void refreshAccountStatus()}>{checkingAccount ? "Checking…" : "Check again"}</button>
                   </>
                 )}
               </section>
@@ -1803,7 +1821,7 @@ export default function HealthDashboard() {
               aria-current={tab === item ? "page" : undefined}
               onClick={() => navigate(item)}
             >
-              <span aria-hidden="true">{icons[index]}</span>
+              <span aria-hidden="true"><HealthIcon name={icons[index]} /></span>
               <span>{item === "Your agent" ? "Agent" : item}</span>
             </button>
           ),
@@ -1818,7 +1836,7 @@ export default function HealthDashboard() {
           aria-expanded={moreOpen}
           onClick={() => setMoreOpen(true)}
         >
-          <span aria-hidden="true">•••</span>
+          <span aria-hidden="true"><HealthIcon name="more" /></span>
           <span>More</span>
         </button>
       </nav>

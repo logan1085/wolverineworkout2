@@ -15,7 +15,8 @@
     "eval:agent": "node evals/run-health-agent.mjs",
     "docs:agent": "node scripts/export-agent-prompt.mjs",
     "test:scene": "node --test tests/scene.test.mjs",
-    "test:catalog": "node --test tests/catalog.test.mjs"
+    "test:catalog": "node --test tests/catalog.test.mjs",
+    "test:account": "node --test tests/account-status.test.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",

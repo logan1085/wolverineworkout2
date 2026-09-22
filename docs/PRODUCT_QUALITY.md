@@ -36,3 +36,17 @@ A person can check in, understand what informed a response, choose one manageabl
 3. Connect one real Garmin account and the authorized Strava owner; verify lifecycle behavior.
 4. Review multi-day agent outputs against actual user needs with explicit consent for any personal data used.
 5. Publish the validated revision and log the deployment. Local builds are not public ships.
+
+## Hosted account audit — September 22
+
+Rechecked the configured Vercel Preview Supabase host: DNS lookup and an auth-settings request both failed with ENOTFOUND. No database records were read or changed. Provider credentials were kept out of output and the temporary ignored environment file was removed after the check. Garmin/Strava configuration and database migration validation remain open; the account endpoint availability probe does not prove either.
+
+The session endpoint now reports actual bounded authentication-service reachability, not simply the presence of environment variables. It returns ready, unavailable or not_configured, caches results for 15 seconds and coalesces simultaneous checks. Unavailable accounts show a retryable state instead of a working-looking sign-in form; local data tools remain accessible. A healthy auth endpoint still needs real account/migration/isolation testing. The user has been asked to restore the existing project or identify the active Wolverine database; do not replace it with an unrelated project.
+
+### Visual hierarchy refinement — September 22
+
+- Replaced the uniform green dashboard treatment with a warm paper briefing, quieter forest surfaces, consistent stroke navigation icons, and a more restrained button hierarchy.
+- Moved health metrics ahead of optional object cards. The daily briefing keeps its full explanation under an accessible disclosure; sample data remains explicitly labelled.
+- Reduced mobile header density and rebuilt companion controls so the preview and all three character choices fit together at 390 × 844. Rotation/zoom retain named 44px controls and keyboard access.
+- Browser-reviewed Today at 390 × 844 and 1440 × 1000, the mobile companion dialog, and mobile Agent. No horizontal desktop overflow or browser console errors observed. These are browser viewport checks, not physical-device or keyboard testing.
+- Validation: 49 unit tests, lint, TypeScript, and production build. Supabase dependency build warning remains; hosted account reachability is a separate unresolved service issue.
