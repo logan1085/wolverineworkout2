@@ -1,6 +1,9 @@
 "use client";
 import { FormEvent, useEffect, useRef, useState, useId } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import CharacterPicker from "./CharacterPicker";
+import { useCharacter } from "./useCharacter";
 import dynamic from "next/dynamic";
 const SketchStudio = dynamic(() => import("./SketchStudio"), { ssr: false });
 import { useAuth } from "@/contexts/AuthContext";
@@ -117,6 +120,7 @@ function Modal({
 }
 export default function HealthDashboard() {
   const { user, signIn, signUp, signOut } = useAuth();
+  const companion = useCharacter(user?.id);
   const [tab, setTab] = useState<Tab>("Today");
   const [moreOpen, setMoreOpen] = useState(false);
   const { root, keyboardOpen } = useMobileViewport();
@@ -150,7 +154,7 @@ export default function HealthDashboard() {
   function openObject(id: string) { setObjectId(id); setModal("studio"); }
   const [busy, setBusy] = useState(false);
   const [modal, setModal] = useState<
-    "checkin" | "activity" | "profile" | "delete" | "context" | "studio" | null
+    "checkin" | "activity" | "profile" | "delete" | "context" | "studio" | "character" | null
   >(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState("");
@@ -722,6 +726,7 @@ export default function HealthDashboard() {
           ))}
         </nav>
         <div className="rail-bottom">
+          <button className="studio-launch" onClick={() => setModal("character")}>Choose character</button>
           <button className="studio-launch" onClick={() => setModal("studio")}>◇ 3D studio</button>
           <div className="mini-orb" />
           <p>
@@ -846,7 +851,7 @@ export default function HealthDashboard() {
                   · Rules-based daily guide
                 </small>
               </div>
-              <HealthObject id={briefing.label === "Keep it easy" ? "balance-stones" : "kettlebell"} title={briefing.label} description="Drag to turn your daily object." onOpen={openObject} live />
+              <HealthObject id={companion.character.id} title={`${companion.character.title} · ${briefing.label}`} openLabel="Choose character" description="Your daily companion. Drag to turn." onOpen={() => setModal("character")} live />
             </section>
             <div className="daily-objects">
               <HealthObject id="bottle" title="A moment to reset" description="Make room for a small daily ritual." onOpen={openObject} action="Plan my day" onAction={() => ask("Help me choose one manageable daily habit based on my context.")} />
@@ -1066,7 +1071,7 @@ export default function HealthDashboard() {
             <div className="chat-layout">
               <section className="panel chat-panel">
                 <div className="chat-title">
-                  <span className="small-agent">✳</span>
+                  <button className="character-avatar" aria-label={`Change character, currently ${companion.character.title}`} onClick={() => setModal("character")}><Image src={companion.character.thumbnail} alt="" width={56} height={56}/></button>
                   <div>
                     <h2>Wolverine</h2>
                     <p>
@@ -1103,7 +1108,7 @@ export default function HealthDashboard() {
                 >
                   {!messages.length && (
                     <div className="chat-welcome">
-                      <span className="agent-mark">✳</span>
+                      <button className="character-welcome" aria-label="Choose your character" onClick={() => setModal("character")}><Image src={companion.character.thumbnail} alt={companion.character.title} width={150} height={150}/></button>
                       <h2>Let’s connect the dots.</h2>
                       <p>What would make today feel a little better?</p>
                       <div className="prompt-chips">
@@ -1819,6 +1824,7 @@ export default function HealthDashboard() {
       </nav>
       {moreOpen && (
         <Modal title="Your space" onClose={() => setMoreOpen(false)}>
+          <button className="studio-launch" onClick={() => {setMoreOpen(false);setModal("character");}}>Choose character</button>
           <button className="studio-launch" onClick={() => { setMoreOpen(false); setModal("studio"); }}>◇ Create a 3D sketch</button>
           <div className="mobile-menu">
             <button onClick={() => navigate("Memory")}>
@@ -1864,6 +1870,7 @@ export default function HealthDashboard() {
           </div>
         </Modal>
       )}
+      {modal === "character" && <Modal title="Meet your companion." onClose={() => setModal(null)}><CharacterPicker selected={companion.character.id} onChoose={companion.choose} disabled={!companion.ready} error={companion.error}/></Modal>}
       {modal === "studio" && (<Modal title="Make something yours." onClose={() => setModal(null)}><SketchStudio key={`${user?.id || "local"}:${objectId || "catalog"}`} initialId={objectId} /></Modal>)}
       {modal === "context" && (
         <Modal title="What your agent sees" onClose={() => setModal(null)}>

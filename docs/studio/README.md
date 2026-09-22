@@ -19,3 +19,7 @@ Editable .blend sources and regeneration instructions are in assets/blender; pub
 ## Objects in daily use
 
 Today replaces the CSS orb with a live, demand-rendered Blender object: balance stones for the existing gentler-day briefing, otherwise the kettlebell. Bottle and moon render cards lead to habit planning and check-in. Activity pairs the dumbbell with movement planning; Journal pairs balance stones and the yoga mat with check-in and recovery conversation. These cards use lightweight Blender-rendered images, with explicit Explore in 3D actions opening the exact asset at the top of the studio. Only the briefing uses an inline WebGL canvas; the other surfaces avoid multiple simultaneous renderers. Mobile cards stack, and the live briefing keeps an explicit route to keyboard controls.
+
+## Selectable companions
+
+Moss, Sunny and Pebble are original Blender companions. Choose character from Today, the chat avatar, the desktop rail or mobile More. The choice updates the daily 3D figure and chat welcome/avatar; Moss is the default. It is an appearance preference only, scoped to the signed-in account (or signed-out device) in localStorage, never part of health memory or AI requests. Cross-tab changes are reflected; unavailable storage keeps the preference for the current visit with a visible notice. This is device-local, not cross-device account sync. The picker includes an interactive preview with keyboard controls and GLB download. Editable files are in assets/blender/characters; regenerate with scripts/blender/build_characters.py.

@@ -15,3 +15,6 @@ for(const asset of catalog) test(`${asset.id}: loadable bounded GLB and source f
   assert.ok(fs.statSync('public'+asset.thumbnail).size>1000);
   assert.ok(fs.statSync('assets/blender/'+asset.id+'.blend').size>1000);
 });
+
+const characters=JSON.parse(fs.readFileSync("public/models/characters/catalog.json","utf8"));
+test("three unique characters with valid geometry and editable sources",async()=>{assert.equal(characters.length,3);assert.equal(new Set(characters.map(c=>c.id)).size,3);for(const c of characters){const b=fs.readFileSync("public"+c.model);assert.ok(b.length<800000);const gltf=await new GLTFLoader().parseAsync(b.buffer.slice(b.byteOffset,b.byteOffset+b.byteLength),"");assert.ok(new Box3().setFromObject(gltf.scene).getSize(new Vector3()).length()>0);assert.ok(fs.statSync("assets/blender/characters/"+c.id+".blend").size>1000);}});

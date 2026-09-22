@@ -2218,3 +2218,12 @@ button:disabled {
 .health-object-live h3 { font-size:22px; }
 @media(max-width:1000px) { .daily-objects { grid-template-columns:1fr; gap:0; } }
 @media(max-width:760px) { .health-object { gap:12px; padding:14px; } .health-object .object-art { flex-basis:100px; } .health-object h3 { font-size:21px; } .health-object-live { padding:0; } .health-object-live .sketch-canvas { height:200px; } }
+.character-options { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:20px 0; }
+.character-options button { display:flex; flex-direction:column; align-items:center; gap:8px; color:#e8efdc; background:#24392d; border:1px solid #546a4f; border-radius:18px; padding:12px; min-width:0; }
+.character-options button[aria-pressed="true"] { border:2px solid #d5ed9c; background:#354832; }
+.character-options img { width:100%; height:auto; }
+.character-options span,.character-options small { font-size:12px; line-height:1.5; }
+.health-app .character-avatar,.health-app .character-welcome { border:0; padding:0; background:transparent; cursor:pointer; flex-shrink:0; }
+.character-avatar { width:56px; height:56px; }
+.character-welcome { width:150px; height:150px; }
+@media(max-width:500px) { .character-options { grid-template-columns:1fr; } .character-options button { display:grid; grid-template-columns:90px 1fr; text-align:left; } .character-options img { grid-row:span 3; } }
