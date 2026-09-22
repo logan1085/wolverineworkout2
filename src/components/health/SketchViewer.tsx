@@ -6,17 +6,21 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { GLTFExporter } from "three/addons/exporters/GLTFExporter.js";
 import { Sketch } from "@/lib/health/scene-model";
-export default function SketchViewer({ sketch, modelUrl, compact = false, downloads = true }: { sketch: Sketch; modelUrl?: string; compact?: boolean; downloads?: boolean }) {
+export default function SketchViewer({ sketch, modelUrl, compact = false, downloads = true, onReadyChange }: { sketch: Sketch; modelUrl?: string; compact?: boolean; downloads?: boolean; onReadyChange?: (ready: boolean) => void }) {
   const host = useRef<HTMLDivElement>(null);
   const actions = useRef<{ move: (action: string) => void; download: () => Promise<void> } | null>(null);
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(!!modelUrl);
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     if (!host.current) return;
     const element = host.current;
+    setError("");
+    setLoading(!!modelUrl);
+    onReadyChange?.(false);
     let renderer: THREE.WebGLRenderer;
     try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); }
-    catch { setError(modelUrl ? "3D needs WebGL on this device. You can still download the original model below." : "3D needs WebGL on this device. You can still download the scene JSON."); return; }
+    catch { setLoading(false); setError("Interactive 3D is unavailable on this device."); return; }
     setError("");
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -24,7 +28,7 @@ export default function SketchViewer({ sketch, modelUrl, compact = false, downlo
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     element.appendChild(renderer.domElement);
-    renderer.domElement.setAttribute("aria-label", sketch.title + ". Use the buttons below to rotate or zoom.");
+    renderer.domElement.setAttribute("aria-label", sketch.title + (compact ? ". Drag to turn." : ". Use the buttons below to rotate or zoom."));
     const scene = new THREE.Scene();
     const pmrem = new THREE.PMREMGenerator(renderer);
     const room = new RoomEnvironment();
@@ -45,6 +49,7 @@ export default function SketchViewer({ sketch, modelUrl, compact = false, downlo
     const light = new THREE.DirectionalLight(0xffead0, 3); light.position.set(4,6,5); light.castShadow=true; light.shadow.mapSize.set(1024,1024); light.shadow.normalBias=.02; light.shadow.radius=4; scene.add(light);
     const rim = new THREE.DirectionalLight(0xd8e7ff, 2); rim.position.set(-3,3,-4); scene.add(rim);
     let disposed = false;
+    let contextLost = false;
     const disposeGroup = (root: THREE.Object3D) => root.traverse(object => { if (object instanceof THREE.Mesh) { object.geometry.dispose(); const materials = Array.isArray(object.material) ? object.material : [object.material]; materials.forEach(material => material.dispose()); } });
     const box = new THREE.Box3().setFromObject(group), center = modelUrl ? new THREE.Vector3() : box.getCenter(new THREE.Vector3());
     const size = Math.max(box.getSize(new THREE.Vector3()).length(), 1);
@@ -55,13 +60,13 @@ export default function SketchViewer({ sketch, modelUrl, compact = false, downlo
     controls.update(); controls.saveState();
     const render = () => renderer.render(scene,camera);
     const resize = () => { const { width, height } = element.getBoundingClientRect(); if (!width || !height) return; renderer.setSize(width,height); camera.aspect=width/height; camera.updateProjectionMatrix(); render(); };
-    const lost = (event: Event) => { event.preventDefault(); setError("The 3D view paused. Reopen the studio to restore it."); };
+    const lost = (event: Event) => { event.preventDefault(); contextLost = true; setLoading(false); onReadyChange?.(false); setError("The 3D view paused. Try loading it again."); };
     renderer.domElement.addEventListener("webglcontextlost", lost);
     controls.addEventListener("change", render);
-    const observer = new ResizeObserver(resize); observer.observe(element); resize();
+    const observer = new ResizeObserver(resize); observer.observe(element); resize(); if (!modelUrl) onReadyChange?.(true);
     setLoading(!!modelUrl);
     if (modelUrl) new GLTFLoader().load(modelUrl, gltf => {
-      if (disposed) { disposeGroup(gltf.scene); return; }
+      if (disposed || contextLost) { disposeGroup(gltf.scene); return; }
       gltf.scene.traverse(o => { if (o instanceof THREE.Mesh) { o.castShadow=true; o.receiveShadow=true; } });
       group.add(gltf.scene);
       const bounds = new THREE.Box3().setFromObject(group);
@@ -75,14 +80,14 @@ export default function SketchViewer({ sketch, modelUrl, compact = false, downlo
       Object.assign(light.shadow.camera, {left:-extent,right:extent,top:extent,bottom:-extent,near:.1,far:extent*10}); light.shadow.camera.updateProjectionMatrix();
       camera.far=extent*100; camera.updateProjectionMatrix();
       controls.target.copy(target); controls.minDistance=extent*.6; controls.maxDistance=extent*6;
-      controls.update(); controls.saveState(); render(); setLoading(false);
-    }, undefined, () => { if (!disposed) { setError("This object could not load. Select it again or try another object."); setLoading(false); } });
+      controls.update(); controls.saveState(); render(); setLoading(false); onReadyChange?.(true);
+    }, undefined, () => { if (!disposed) { onReadyChange?.(false); setError("This object could not load. Check your connection and try again."); setLoading(false); } });
     actions.current = {
       move: action => { if(action === "reset") controls.reset(); else if(action === "left") controls.rotateLeft(.3); else if(action === "right") controls.rotateLeft(-.3); else if(action === "in") controls.dollyIn(1.2); else controls.dollyOut(1.2); controls.update(); render(); },
       download: async () => { try { const binary = await new GLTFExporter().parseAsync(group,{binary:true}); download(new Blob([binary as ArrayBuffer],{type:"model/gltf-binary"}),"wolverine-sketch.glb"); } catch { setError("GLB export failed. Try downloading the scene JSON."); } },
     };
     return () => { disposed=true; actions.current=null; observer.disconnect(); controls.dispose(); renderer.domElement.removeEventListener("webglcontextlost",lost); disposeGroup(group); floor.geometry.dispose(); floor.material.dispose(); environment.dispose(); light.shadow.dispose(); renderer.dispose(); renderer.domElement.remove(); };
-  },[sketch, modelUrl]);
-  return <><div className="sketch-canvas" ref={host} role="img" aria-label={sketch.title} />{loading && <p role="status">Loading object…</p>}{error && <p role="alert">{error}</p>}{!compact && <><div className="sketch-controls">{[["left","Rotate left"],["right","Rotate right"],["in","Zoom in"],["out","Zoom out"],["reset","Reset view"]].map(([action,label]) => <button type="button" key={action} aria-label={label} title={label} onClick={() => actions.current?.move(action)}><span className="viewer-control-symbol" aria-hidden="true">{{left:"↶",right:"↷",in:"+",out:"−",reset:"⟲"}[action]}</span><span className="viewer-control-label">{label}</span></button>)}</div><p className="sketch-hint">Drag to turn · Pinch to zoom</p>{downloads && <div className="sketch-controls"><button type="button" onClick={() => actions.current?.download()} disabled={!!error || loading}>Download GLB</button>{!modelUrl && <button type="button" onClick={() => download(new Blob([JSON.stringify(sketch,null,2)],{type:"application/json"}),"wolverine-sketch.json")}>Download scene JSON</button>}</div>}</>}</>;
+  },[sketch, modelUrl, compact, attempt, onReadyChange]);
+  return <><div className="sketch-canvas" ref={host} role="img" aria-label={sketch.title} />{loading && !compact && !onReadyChange && <p role="status">Loading object…</p>}{error && <div className="viewer-recovery"><p role="status">{compact ? "Showing the preview image." : error}</p><button type="button" className="quiet-button" onClick={() => setAttempt(value => value + 1)}>Retry 3D</button></div>}{!compact && <><div className="sketch-controls">{[["left","Rotate left"],["right","Rotate right"],["in","Zoom in"],["out","Zoom out"],["reset","Reset view"]].map(([action,label]) => <button type="button" key={action} aria-label={label} title={label} disabled={loading || !!error} onClick={() => actions.current?.move(action)}><span className="viewer-control-symbol" aria-hidden="true">{{left:"↶",right:"↷",in:"+",out:"−",reset:"⟲"}[action]}</span><span className="viewer-control-label">{label}</span></button>)}</div><p className="sketch-hint">Drag to turn · Pinch to zoom</p>{downloads && <div className="sketch-controls"><button type="button" onClick={() => actions.current?.download()} disabled={!!error || loading}>Download GLB</button>{!modelUrl && <button type="button" onClick={() => download(new Blob([JSON.stringify(sketch,null,2)],{type:"application/json"}),"wolverine-sketch.json")}>Download scene JSON</button>}</div>}</>}</>;
 }
 function download(blob: Blob, name: string) { const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download=name; a.click(); setTimeout(() => URL.revokeObjectURL(url),10000); }

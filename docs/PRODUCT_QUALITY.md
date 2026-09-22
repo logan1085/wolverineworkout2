@@ -73,3 +73,10 @@ The session endpoint now reports actual bounded authentication-service reachabil
 - A steps-only record no longer implies the app has enough current sleep/wellbeing context for its daily direction. Explicit self-reported sleep continues to take precedence over wearable sleep, matching the primary card.
 - Spark bars now use seven calendar days with missing days preserved, excluding stale and future records. Zero and absent values no longer draw positive-height bars. These remain decorative summaries, not clinical recovery scores.
 - Four regression cases passed alongside the existing eight health tests, covering stale dates, wearable-only evidence, partial measurements, stress attribution, zero/missing values and calendar boundaries. The expanded evidence disclosure was also checked in the browser using labelled sample data, then returned to the personal view.
+
+### Companion loading and recovery — September 22
+
+- Added a shared poster-first asset preview for the daily character and character picker. The local Blender portrait is available before the renderer chunk loads; its reserved frame remains while the interactive model loads. The poster hides only after a successful render.
+- Model-load and WebGL-context failures restore the poster and expose Retry 3D. Rotation/zoom controls disable while loading or unavailable. Fallback copy no longer promises downloads that are absent from the compact/picker UI.
+- Browser evidence: reload exposed the Moss preview before the viewer mounted; the completed view then contained a canvas, marked itself ready, hid the poster and preserved the 112px mobile frame. The picker rendered correctly and Rotate left produced no console error.
+- Error branches were reviewed in code. GPU-context-loss and failed-network recovery have not yet been exercised on a physical phone; no mobile performance score is claimed.
