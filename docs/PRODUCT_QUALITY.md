@@ -58,3 +58,11 @@ The session endpoint now reports actual bounded authentication-service reachabil
 - Save errors appear inside the open dialog. The check-in fields and dialog dismissal are disabled while a save is pending. Successful saves remember the personal view for reloads.
 - Failed history loads now expose a retry action and block saves until a successful load, protecting records from being replaced by the temporary empty state.
 - Browser evidence: isolated localhost origin (separate from the user's 127.0.0.1 storage) showed the personal empty dashboard; opening its first-check-in action showed four blank required fields. Attempting an empty save kept the dialog open with native missing-value validation. No synthetic health records were saved. Cloud persistence and injected storage/network failures still require dedicated runtime acceptance.
+
+### Dialog keyboard acceptance — September 22
+
+- Extracted the shared native dialog into `src/components/health/Modal.tsx` with explicit trigger restoration. Pointer activation is tracked because some browsers do not focus clicked buttons; transitions from More retain the stable menu trigger.
+- Tab and Shift+Tab wrap over currently enabled, rendered controls. Busy dialogs expose `aria-busy` and retain focus even when controls are disabled. Escape and backdrop dismissal remain blocked during saves.
+- Backdrop dismissal now requires both a press and release outside the dialog bounds. Interior padding and drags beginning inside no longer count as backdrop clicks.
+- Browser verification with the current bundle: Escape and the Close button return focus to Daily check-in; reverse-tab from Close lands on Save my check-in; forward-tab from Save lands on Close; More → Choose character keeps exactly one open dialog with focus inside, then Escape returns to More.
+- Native screen-reader and physical-device testing remain open. The pointer-boundary and busy-state guards were inspected in code; those specific branches were not fault-injected in this browser pass.

@@ -1,5 +1,5 @@
 "use client";
-import { FormEvent, useEffect, useRef, useState, useId } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import CharacterPicker from "./CharacterPicker";
@@ -20,6 +20,7 @@ import {
 import "./health.css";
 import HealthObject from "./HealthObject";
 import HealthIcon from "./HealthIcon";
+import Modal from "./Modal";
 import "./sketch.css";
 import "./refinement.css";
 import MemoryPanel from "./MemoryPanel";
@@ -77,61 +78,13 @@ function Spark({ values }: { values: (number | undefined)[] }) {
     </div>
   );
 }
-function Modal({
-  title,
-  onClose,
-  children,
-  error,
-  pending = false,
-}: {
-  error?: string;
-  pending?: boolean;
-  title: string;
-  onClose: () => void;
-  children: React.ReactNode;
-}) {
-  const ref = useRef<HTMLDialogElement>(null);
-  const headingId = useId();
-  useEffect(() => {
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    ref.current?.showModal();
-    return () => {
-      document.body.style.overflow = previousOverflow;
-    };
-  }, []);
-  return (
-    <dialog
-      ref={ref}
-      className="health-dialog"
-      aria-labelledby={headingId}
-      onCancel={(e) => { if (pending) e.preventDefault(); else onClose(); }}
-      onClick={(e) => {
-        if (!pending && e.target === ref.current) onClose();
-      }}
-    >
-      <div className="dialog-heading">
-        <h2 id={headingId}>{title}</h2>
-        <button
-          className="icon-button"
-          aria-label="Close dialog"
-          disabled={pending}
-          onClick={onClose}
-        >
-          ×
-        </button>
-      </div>
-      {error && <p className="form-error" role="alert">{error}</p>}
-      {children}
-    </dialog>
-  );
-}
 export default function HealthDashboard() {
   const { user, signIn, signUp, signOut } = useAuth();
   const companion = useCharacter(user?.id);
   const [tab, setTab] = useState<Tab>("Today");
   const [moreOpen, setMoreOpen] = useState(false);
   const { root, keyboardOpen } = useMobileViewport();
+  const dialogTrigger = useRef<HTMLElement | null>(null);
   const chatLog = useRef<HTMLDivElement>(null);
   const composerInput = useRef<HTMLTextAreaElement>(null);
   const followChat = useRef(true);
@@ -717,6 +670,11 @@ export default function HealthDashboard() {
   return (
     <div
       ref={root}
+      onClickCapture={event => {
+        if (!modal && !moreOpen && event.target instanceof Element) {
+          dialogTrigger.current = event.target.closest<HTMLElement>("button");
+        }
+      }}
       className={`health-app ${tab === "Your agent" ? "mobile-chat" : ""} ${keyboardOpen ? "keyboard-open" : ""}`}
     >
       <aside className="rail">
@@ -1841,6 +1799,7 @@ export default function HealthDashboard() {
               : ""
           }
           aria-haspopup="dialog"
+          data-dialog-return
           aria-expanded={moreOpen}
           onClick={() => setMoreOpen(true)}
         >
@@ -1849,7 +1808,7 @@ export default function HealthDashboard() {
         </button>
       </nav>
       {moreOpen && (
-        <Modal title="Your space" onClose={() => setMoreOpen(false)}>
+        <Modal returnFocusRef={dialogTrigger} title="Your space" onClose={() => setMoreOpen(false)}>
           <button className="studio-launch" onClick={() => {setMoreOpen(false);setModal("character");}}>Choose character</button>
           <button className="studio-launch" onClick={() => { setMoreOpen(false); setModal("studio"); }}>◇ Create a 3D sketch</button>
           <div className="mobile-menu">
@@ -1896,10 +1855,10 @@ export default function HealthDashboard() {
           </div>
         </Modal>
       )}
-      {modal === "character" && <Modal title="Meet your companion." onClose={() => setModal(null)}><CharacterPicker selected={companion.character.id} onChoose={companion.choose} disabled={!companion.ready} error={companion.error}/></Modal>}
-      {modal === "studio" && (<Modal title="Make something yours." onClose={() => setModal(null)}><SketchStudio key={`${user?.id || "local"}:${objectId || "catalog"}`} initialId={objectId} /></Modal>)}
+      {modal === "character" && <Modal returnFocusRef={dialogTrigger} title="Meet your companion." onClose={() => setModal(null)}><CharacterPicker selected={companion.character.id} onChoose={companion.choose} disabled={!companion.ready} error={companion.error}/></Modal>}
+      {modal === "studio" && (<Modal returnFocusRef={dialogTrigger} title="Make something yours." onClose={() => setModal(null)}><SketchStudio key={`${user?.id || "local"}:${objectId || "catalog"}`} initialId={objectId} /></Modal>)}
       {modal === "context" && (
-        <Modal title="What your agent sees" onClose={() => setModal(null)}>
+        <Modal returnFocusRef={dialogTrigger} title="What your agent sees" onClose={() => setModal(null)}>
           <p>
             {sample
               ? "You’re exploring fictional sample records. Your personal memory is excluded."
@@ -1936,7 +1895,7 @@ export default function HealthDashboard() {
         </Modal>
       )}
       {modal === "checkin" && (
-        <Modal title="A moment for you." error={actionError} pending={busy} onClose={() => setModal(null)}>
+        <Modal returnFocusRef={dialogTrigger} title="A moment for you." error={actionError} pending={busy} onClose={() => setModal(null)}>
           <p className="subtle">
             How are you arriving today? {user ? "Saved privately to your account." : "Saved on this device. No account needed."}{sample && " This is your own check-in, separate from the sample."}
           </p>
@@ -2034,7 +1993,7 @@ export default function HealthDashboard() {
         </Modal>
       )}
       {modal === "activity" && (
-        <Modal title="Every bit counts." error={actionError} pending={busy} onClose={() => setModal(null)}>
+        <Modal returnFocusRef={dialogTrigger} title="Every bit counts." error={actionError} pending={busy} onClose={() => setModal(null)}>
           <form onSubmit={submitActivity}>
             <label>
               Activity name
@@ -2101,7 +2060,7 @@ export default function HealthDashboard() {
         </Modal>
       )}
       {modal === "profile" && (
-        <Modal title="Make this yours." error={actionError} pending={busy} onClose={() => setModal(null)}>
+        <Modal returnFocusRef={dialogTrigger} title="Make this yours." error={actionError} pending={busy} onClose={() => setModal(null)}>
           <form onSubmit={submitProfile}>
             <label>
               What should we call you?
@@ -2140,6 +2099,7 @@ export default function HealthDashboard() {
       )}
       {modal === "delete" && (
         <Modal
+          returnFocusRef={dialogTrigger}
           title="Clear your health history?"
           error={actionError}
           pending={busy}
