@@ -197,3 +197,24 @@
 .health-app :is(.activity-summary strong small,.activity-row p,.activity-row strong small,.distance,.empty-inline,.health-dialog label small) { color:#6b7384; }
 
 .health-app .asset-poster img { width:100%; height:var(--asset-height); max-height:var(--asset-height); object-fit:contain; }
+/* Keep conversation space usable on the narrowest supported phones. */
+@media(max-width:360px) {
+ .health-app.mobile-chat .chat-title { padding:8px 10px; gap:6px; }
+ .health-app.mobile-chat .chat-title p { display:none; }
+ .health-app.mobile-chat .character-avatar { width:36px; height:36px; }
+ .health-app.mobile-chat .chat-title h2 { font-size:15px; }
+ .health-app.mobile-chat .chat-title > .quiet-button { padding:4px; }
+ .health-app.mobile-chat .memory-chat-bar { padding:4px 10px; margin:6px 0; }
+ .health-app.mobile-chat .memory-chat-bar .quiet-button { flex:0 0 78px; }
+ .health-app.mobile-chat .chat-log { padding:10px; }
+ .health-app.mobile-chat .character-welcome,.health-app.mobile-chat .character-welcome img { width:60px; height:60px; }
+ .health-app.mobile-chat .chat-welcome h2 { font-size:21px; margin:6px 0; }
+ .health-app.mobile-chat .chat-welcome p { font-size:13px; }
+}
+/* A short landscape window needs document scrolling; do not trap the composer. */
+@media(max-width:760px) and (max-height:500px) {
+ .health-app.mobile-chat:not(.keyboard-open) { position:relative; top:auto; height:auto; min-height:100dvh; }
+ .health-app.mobile-chat:not(.keyboard-open) .chat-layout { flex:none; }
+ .health-app.mobile-chat:not(.keyboard-open) .chat-log { flex:none; height:clamp(160px,50dvh,240px); }
+ .health-app.mobile-chat:not(.keyboard-open) .mobile-dock { position:sticky; bottom:0; }
+}
