@@ -45,3 +45,7 @@ Shipped `63f21fb` to GitHub branch `feat/personal-health-agent` and Vercel Previ
 https://wolverineworkout2-mdst37bsm-logan-horowitzs-projects.vercel.app
 
 Replaced the forest theme with warm white surfaces, navy typography, and soft blue accents across the health app. Simplified first-use Today, enlarged the companion, unified dialogs and navigation, and bundled licensed fonts locally after Google Fonts broke the local build. Browser review covered mobile Today, check-in, character picker, agent, activity, journal, and More, plus desktop Today, memory, and connections. The mobile check-in has no horizontal overflow. Production build, lint, and type validation passed; Vercel reports Ready. Production promotion and previously documented account integration blockers remain unchanged.
+
+## Anime companion — September 22, 2026
+
+`909bee2` is live on Vercel Preview at https://wolverineworkout2-ix1ft8zjb-logan-horowitzs-projects.vercel.app (Ready). Adds Kai, an original static anime-style Blender character, to Today, agent avatars, and the picker. Existing mascot preferences remain available; Kai is the default for new preferences. Eight catalog checks and the production build passed. Browser checks confirmed selection persistence, shared chat identity, and a contained loading poster. No skeletal or facial animation is included.
