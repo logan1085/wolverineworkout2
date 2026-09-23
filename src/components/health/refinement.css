@@ -195,3 +195,13 @@
 .health-app :is(.memory-setting p,.memory-setting small,.memory-suggestions p,.journal-aside p,.empty-state p,.agent-mark,.connection-badge.connected) { color:#637194; }
 .health-app input:not([type="checkbox"]) { background:#f8f9fc; color:var(--ink); border-color:#d9dfeb; }
 .health-app :is(.activity-summary strong small,.activity-row p,.activity-row strong small,.distance,.empty-inline,.health-dialog label small) { color:#6b7384; }
+
+/* Human companions use a portrait studio and a responsive selection grid. */
+.health-app .companion-kai .companion-portrait { background:radial-gradient(ellipse at 50% 40%,#f8f9ff,#e3e8fa); }
+.health-app .companion-choices { grid-template-columns:repeat(4,minmax(0,1fr)); }
+@media(max-width:760px) { .health-app .companion-choices { grid-template-columns:repeat(2,minmax(0,1fr)); } .health-app .companion-choices button { display:grid; grid-template-columns:56px 1fr; text-align:left; gap:3px 8px; padding:8px; } .health-app .companion-choices img { grid-row:span 2; width:56px; } .health-app .companion-choices strong { align-self:end; } .health-app .companion-choices small { align-self:start; } }
+.health-app .asset-poster img { width:100%; height:var(--asset-height); max-height:var(--asset-height); object-fit:contain; }
+@media(max-width:760px) {
+ .health-app .companion-kai .asset-preview { --asset-height:260px; }
+ .health-app .companion-kai .sketch-canvas { height:260px; }
+}

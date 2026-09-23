@@ -13,3 +13,7 @@ The generator writes compressed Blender sources here and web-ready GLB, transpar
 The viewer loads a single selected GLB on demand and disposes GPU resources when it closes. Original models have no scripts, external URLs or textures. Keep exported models under 500 KB each and run `node --test tests/catalog.test.mjs` after rebuilding. GLB uses glTF's Y-up conversion from Blender's Z-up scene.
 
 Ownership: original Wolverine project artwork, available for use and modification in this application. Not an anatomical, medical or manufacturing model.
+
+## Anime companion
+
+Kai is an original stylized human companion with sculpted indigo hair, layered amber eyes, jacket seams, cuffs, and sneakers. Regenerate using `blender --background --python scripts/blender/build_anime.py -- "$PWD"`. The editable source is `characters/kai.blend`; the web GLB is approximately 619 KB. It is a static, orbitable model, without a skeleton or facial animation. The script retains the other catalog entries. New visitors default to Kai; existing character choices remain saved.
