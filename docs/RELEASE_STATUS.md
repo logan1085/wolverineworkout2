@@ -1,6 +1,6 @@
 # Wolverine release status
 
-Last audited September 22, 2026, against application commit `e33079f` and its Ready Vercel Preview deployment.
+Latest visual/asset/build verification: September 23, 2026. The account and device acceptance requirements below remain open; see the dated release entries for the verified revisions.
 
 **Not ready to claim a complete connected health product.** The current preview supports local check-ins, activity records, device-local memory, characters, 3D objects and the implemented UI. Its configured account service is unavailable, and neither wearable integration is configured. A passing build does not remove those blockers.
 
@@ -8,7 +8,7 @@ Last audited September 22, 2026, against application commit `e33079f` and its Re
 
 | Requested outcome | Current evidence | Remaining acceptance |
 | --- | --- | --- |
-| Refined mobile app | Browser review at 390×844; Today, agent, companion selection, modal keyboard boundaries and focus return; latest production build passed | Physical iOS/Android keyboard, large text, landscape and home-screen walkthrough in `mobile/USAGE.md` |
+| Refined mobile app | Browser review at 390×844; Today, agent, companion selection, modal keyboard boundaries and focus return; latest production build passed | Physical iOS/Android keyboard, large text, landscape and home-screen walkthrough in `docs/mobile/USAGE.md` |
 | Personal health agent | Live fictional HTTP suite; 14 targeted checks pass on prompt `wolverine-health-2026-09-22.2`; outputs and qualitative review retained | Repeated/multi-turn review; profile available-time wording remains imperfect; no clinical validation claimed |
 | Inspectable memory | Local confirmed facts and chat history; edit/forget/expiry flows; bounded context brief and source discrepancies; relevant unit tests | Real two-account isolation, deployed migrations/RLS, cross-tab and account-switch acceptance |
 | Public soul and memory documents | Runtime-generated `public/SOUL.md`, policy-only `public/MEMORY.md`, `/transparency` | Continue regeneration when behavior changes; never publish personal health records |
@@ -49,3 +49,11 @@ Replaced the forest theme with warm white surfaces, navy typography, and soft bl
 ## Anime companion — September 22, 2026
 
 `909bee2` is live on Vercel Preview at https://wolverineworkout2-ix1ft8zjb-logan-horowitzs-projects.vercel.app (Ready). Adds Kai, an original static anime-style Blender character, to Today, agent avatars, and the picker. Existing mascot preferences remain available; Kai is the default for new preferences. Eight catalog checks and the production build passed. Browser checks confirmed selection persistence, shared chat identity, and a contained loading poster. No skeletal or facial animation is included.
+
+## Mascot direction and public identity — September 23, 2026
+
+The human-character exploration was rejected. `1c2ee1f` restores Moss, Sunny, and Pebble, with Moss as the default and fallback for a saved Kai choice. The live app retains the soft, round, non-human direction; Kai is absent from the selection catalog. The corrected preview was verified Ready.
+
+`cb2f710` aligns the public soul/memory page, manifest colors, browser icon, and generated Apple home-screen icon with the light app design. Vercel Preview is Ready at https://wolverineworkout2-pmt3qawp1-logan-horowitzs-projects.vercel.app. Browser review verified the public page, memory anchor, no horizontal overflow at the reviewed mobile-sized viewport, return navigation, theme metadata, and current icon link. The generated Apple PNG was visually inspected. All 53 unit tests and the production build (including lint/types) passed. The local environment check was skipped because local account configuration is absent; this is not hosted integration acceptance.
+
+A fresh hosted session check still returns `auth:false, authStatus:"unavailable"`. Connected accounts, wearable lifecycle verification, and physical-device acceptance remain incomplete. The goal is not complete.
