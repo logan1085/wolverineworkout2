@@ -14,6 +14,6 @@ The viewer loads a single selected GLB on demand and disposes GPU resources when
 
 Ownership: original Wolverine project artwork, available for use and modification in this application. Not an anatomical, medical or manufacturing model.
 
-## Anime companion
+## Archived human-character exploration
 
-Kai is an original stylized human companion with sculpted indigo hair, layered amber eyes, jacket seams, cuffs, and sneakers. Regenerate using `blender --background --python scripts/blender/build_anime.py -- "$PWD"`. The editable source is `characters/kai.blend`; the web GLB is approximately 619 KB. It is a static, orbitable model, without a skeleton or facial animation. The script retains the other catalog entries. New visitors default to Kai; existing character choices remain saved.
+Kai is an original stylized human companion with sculpted indigo hair, layered amber eyes, jacket seams, cuffs, and sneakers. Regenerate using `blender --background --python scripts/blender/build_anime.py -- "$PWD"`. The editable source is `characters/kai.blend`; the web GLB is approximately 619 KB. It is a static, orbitable model, without a skeleton or facial animation. The script retains the other catalog entries. Kai is excluded from the app catalog. Moss is the default; the approved direction is soft, round, non-human mascots.

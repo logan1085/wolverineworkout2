@@ -3,7 +3,7 @@ from pathlib import Path
 exec(Path('scripts/blender/build_catalog.py').read_text().split('items=[')[0])
 OUT=ROOT/'public/models/characters';SOURCE=ROOT/'assets/blender/characters'
 OUT.mkdir(parents=True,exist_ok=True);SOURCE.mkdir(parents=True,exist_ok=True)
-manifest=[c for c in json.loads((OUT/"catalog.json").read_text()) if c["id"] not in ["moss","sunny","pebble"]] if (OUT/"catalog.json").exists() else []
+manifest=[]
 for slug,title,description,color in [('moss','Moss','A little forest companion.',(.16,.34,.22)),('sunny','Sunny','A warm, round ray of sunshine.',(.88,.42,.075)),('pebble','Pebble','A quiet companion, one day at a time.',(.27,.36,.48))]:
     bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
     body=mat(title,color);dark=mat('Eyes',(.018,.03,.025));cream=mat('Soft cream',(.9,.85,.7));pink=mat('Cheeks',(.8,.35,.28))

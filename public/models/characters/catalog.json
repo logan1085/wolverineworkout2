@@ -1,12 +1,5 @@
 [
   {
-    "id": "kai",
-    "title": "Kai",
-    "description": "An original anime-style companion. One step, together.",
-    "model": "/models/characters/kai.glb",
-    "thumbnail": "/models/characters/kai-portrait.png"
-  },
-  {
     "id": "moss",
     "title": "Moss",
     "description": "A little forest companion.",

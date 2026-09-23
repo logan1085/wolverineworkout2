@@ -11,4 +11,6 @@ The health app uses warm white surfaces, navy text, soft blue accents, and paste
 
 Visual review covers a 390px mobile viewport, the character picker, agent screen, More menu, and a desktop layout. Build validation is recorded in the release notes when shipped.
 
-The companion picker includes Kai, an original anime-style human built in Blender, alongside the three mascots. Kai is the default for new preferences. The selected character appears in Today and the agent avatar/welcome. Mobile selection tiles use two columns and the human preview receives a taller frame. Poster images are explicitly constrained to their reserved frame during GLB loading.
+## Character direction
+
+Use original soft, round, non-human companions: simple silhouettes, expressive eyes, tiny limbs, and a playful Kirby-esque feel. Moss, Sunny, and Pebble remain selectable; Moss is the default. Avoid human anime characters. The selected mascot appears consistently in Today and the agent avatar/welcome. Preserve the constrained loading-poster frame. Kai was an unaccepted exploration and is excluded from the app catalog; its editable source remains in repository history/workspace for reference.
