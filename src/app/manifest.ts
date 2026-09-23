@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     start_url: "/?tab=Today",
     scope: "/",
     display: "standalone",
-    background_color: "#111916",
-    theme_color: "#111916",
+    background_color: "#f8f9fc",
+    theme_color: "#f8f9fc",
     icons: [
       {
         src: "/wolverine-icon.svg",

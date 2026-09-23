@@ -1,8 +1,8 @@
 .transparency {
-  --paper: #eaf0df;
-  --soft: #a9b5a3;
-  --accent: #d3f78b;
-  background: #111916;
+  --paper: #202a3e;
+  --soft: #6b7384;
+  --accent: #344da9;
+  background: #f8f9fc;
   color: var(--paper);
   min-height: 100dvh;
   padding: 0 max(24px, calc((100vw - 1120px) / 2));
@@ -25,7 +25,7 @@
   justify-content: space-between;
   gap: 20px;
   min-height: 100px;
-  border-bottom: 1px solid #354331;
+  border-bottom: 1px solid #e0e5ef;
 }
 .transparency header a {
   min-height: 44px;
@@ -34,7 +34,7 @@
   font-size: 14px;
 }
 .transparency .transparency-brand {
-  font-weight: 750;
+  font-weight: 700;
   font-size: 23px;
   text-decoration: none;
   color: var(--paper);
@@ -65,7 +65,8 @@
   margin: 0 0 28px;
 }
 .transparency em {
-  font-family: Georgia, serif;
+  font-family: var(--font-inter), sans-serif;
+  font-style: normal;
   font-weight: 400;
   color: var(--accent);
 }
@@ -73,7 +74,7 @@
   max-width: 700px;
   font-size: 20px;
   line-height: 1.75;
-  color: #b6c3ae;
+  color: #626d85;
 }
 .transparency-actions {
   display: flex;
@@ -85,7 +86,7 @@
   display: inline-flex;
   align-items: center;
   padding: 14px 20px;
-  border: 1px solid #506543;
+  border: 1px solid #dce2ef;
   border-radius: 10px;
   text-decoration: none;
   min-height: 48px;
@@ -93,7 +94,7 @@
 }
 .transparency-actions a:first-child {
   background: var(--accent);
-  color: #20311a;
+  color: #ffffff;
   border-color: var(--accent);
 }
 .public-boundary {
@@ -101,9 +102,9 @@
   align-items: flex-start;
   gap: 20px;
   padding: 26px;
-  border: 1px solid #4b6340;
+  border: 1px solid #dce2ef;
   border-radius: 16px;
-  background: #263525;
+  background: #e9edff;
 }
 .public-boundary > span {
   color: var(--accent);
@@ -116,12 +117,12 @@
 .public-boundary p {
   margin: 8px 0 0;
   line-height: 1.7;
-  color: #c0cdb6;
+  color: #626d85;
   font-size: 15px;
 }
 .transparency-section {
   padding: 70px 0;
-  border-bottom: 1px solid #354331;
+  border-bottom: 1px solid #e0e5ef;
   scroll-margin-top: 24px;
 }
 .transparency-section-heading {
@@ -138,7 +139,7 @@
   font-size: 14px;
 }
 .transparency h2 {
-  font-weight: 450;
+  font-weight: 500;
   font-size: clamp(28px, 3.4vw, 42px);
   line-height: 1.25;
   letter-spacing: -1px;
@@ -158,12 +159,12 @@
 }
 .principles article {
   padding: 28px;
-  border: 1px solid #354331;
+  border: 1px solid #e0e5ef;
   border-radius: 14px;
-  background: #18231a;
+  background: #ffffff;
 }
 .principles article > span {
-  color: #8ca576;
+  color: #6379b3;
   font-size: 13px;
 }
 .transparency h3 {
@@ -175,16 +176,16 @@
 .principles p,
 .memory-flow p,
 .memory-facts p {
-  color: #aebda4;
+  color: #626d85;
   font-size: 16px;
   line-height: 1.8;
   margin: 0;
 }
 .public-file {
   margin-top: 30px;
-  border: 1px solid #4a5e3f;
+  border: 1px solid #dce2ef;
   border-radius: 12px;
-  background: #151f17;
+  background: #ffffff;
   overflow: hidden;
 }
 .public-file summary {
@@ -194,7 +195,7 @@
 }
 .public-file summary small {
   display: block;
-  color: #9daf8e;
+  color: #6b7384;
   margin: 8px 0 0 20px;
   font-size: 12px;
   overflow-wrap: anywhere;
@@ -203,18 +204,18 @@
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   margin: 0;
-  border-top: 1px solid #354331;
+  border-top: 1px solid #e0e5ef;
   padding: 28px;
   font-family: ui-monospace, monospace;
   font-size: 14px;
   line-height: 1.85;
-  color: #c6d5bd;
+  color: #35435c;
   max-height: 70dvh;
   overflow-y: auto;
   tab-size: 2;
 }
 .transparency-note {
-  color: #9dae8f;
+  color: #6b7384;
   font-size: 14px;
   line-height: 1.8;
 }
@@ -226,8 +227,8 @@
 }
 .memory-flow article {
   padding: 24px;
-  border-left: 2px solid #9cbc71;
-  background: #20301f;
+  border-left: 2px solid #8b9dd8;
+  background: #eef1fc;
   border-radius: 0 12px 12px 0;
 }
 .memory-flow article > span {
@@ -236,7 +237,8 @@
   letter-spacing: 1px;
 }
 .memory-flow h3 {
-  font-family: Georgia, serif;
+  font-family: var(--font-inter), sans-serif;
+  font-style: normal;
   font-weight: 400;
   font-size: 25px;
 }
@@ -250,7 +252,7 @@
 }
 .sharing-section > p:not(.transparency-eyebrow) {
   max-width: 850px;
-  color: #b7c5ac;
+  color: #626d85;
   font-size: 17px;
   line-height: 1.9;
 }
@@ -269,7 +271,7 @@
 }
 .transparency footer p {
   max-width: 600px;
-  color: #9cad8f;
+  color: #6b7384;
   font-size: 13px;
   line-height: 1.8;
   margin: 0;

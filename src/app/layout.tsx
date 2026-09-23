@@ -17,6 +17,7 @@ const robotoCondensed = localFont({
 export const metadata: Metadata = {
   title: "Wolverine — Your personal health agent",
   applicationName: "Wolverine",
+  icons: { icon: { url: "/wolverine-icon.svg", type: "image/svg+xml" } },
   appleWebApp: {
     capable: true,
     title: "Wolverine",
