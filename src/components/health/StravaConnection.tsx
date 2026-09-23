@@ -111,21 +111,8 @@ export default function StravaConnection({ signedIn }: { signedIn: boolean }) {
                 : "Setup required"}
         </span>
       </div>
-      <h2>
-        Your activities.
-        <br />
-        <em>A conversation away.</em>
-      </h2>
-      <p>
-        Ask about your recent training through Strava’s official live connector.
-        Read-only access to your own account, with a separate permission for
-        each question.
-      </p>
-      <div className="data-scopes">
-        <span>↗ Live activity</span>
-        <span>◉ Read only</span>
-        <span>⌁ No saved history</span>
-      </div>
+      <h2>Ask about your training</h2>
+      <p>Read-only answers from your personal Strava account. You approve sharing for each question.</p>
       {status?.connected ? (
         <>
           <form onSubmit={ask} className="strava-question">

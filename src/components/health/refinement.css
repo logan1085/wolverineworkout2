@@ -218,3 +218,81 @@
  .health-app.mobile-chat:not(.keyboard-open) .chat-log { flex:none; height:clamp(160px,50dvh,240px); }
  .health-app.mobile-chat:not(.keyboard-open) .mobile-dock { position:sticky; bottom:0; }
 }
+/* Quiet page hierarchy: records first, optional tools in native disclosures. */
+.health-app .health-main { max-width:1440px; }
+.health-app .greeting { padding:28px 0 24px; }
+.health-app .greeting h1 { font-size:32px; letter-spacing:-1px; margin:0; }
+.health-app .greeting > div > .eyebrow { display:none; }
+.health-app .today-greeting > div > .eyebrow { display:block; margin-bottom:10px; }
+.health-app .greeting p:not(.eyebrow) { margin-top:8px; font-size:13px; }
+.health-app .today-greeting p:not(.eyebrow) { display:none; }
+.health-app .briefing { min-height:280px; padding:28px; border-radius:20px; }
+.health-app .briefing h2 { font-size:36px; max-width:440px; }
+.health-app .briefing .health-object-live .sketch-canvas { height:200px; }
+.health-app .briefing .health-object-live .asset-preview { --asset-height:200px; }
+.health-app .signals-empty { padding:20px 0; margin:12px 0; background:none; border:0; border-radius:0; }
+.health-app .signals-empty .eyebrow,.health-app .signals-icon { display:none; }
+.health-app .signals-empty h2 { font-size:16px; }
+.health-app .signals-empty .secondary { margin-left:auto; }
+.health-app .view-disclosure { border:0; border-top:1px solid var(--line); padding:0; margin:16px 0; background:transparent; border-radius:0; min-width:0; }
+.health-app .view-disclosure > summary { display:flex; align-items:center; justify-content:space-between; gap:16px; min-height:56px; padding:14px 0; cursor:pointer; color:#526078; font-size:14px; font-weight:500; list-style:none; }
+.health-app .view-disclosure > summary::-webkit-details-marker { display:none; }
+.health-app .view-disclosure > summary::after { content:'+'; font-size:20px; font-weight:400; }
+.health-app .view-disclosure[open] > summary::after { content:'−'; }
+.health-app .view-disclosure > .panel { border:0; padding:8px 0 20px; margin:0; background:none; }
+.health-app .view-disclosure > .daily-section-heading { display:none; }
+.health-app .daily-plan .section-heading h2 { font-size:16px; }
+.health-app .panel { border-radius:16px; box-shadow:none; }
+.health-app .journal-grid,.health-app .memory-layout { grid-template-columns:minmax(0,1fr); gap:16px; }
+.health-app .journal-entry { padding:22px 0; }
+.health-app .activity-summary { padding:20px 0; margin-bottom:16px; background:none; border:0; }
+.health-app .activity-summary strong { font-size:36px; }
+.health-app .activity-summary p { margin-bottom:0; }
+.health-app .workout-link { margin-top:16px; }
+.health-app .workout-link h2 { font-family:var(--font-inter),sans-serif; font-size:18px; }
+.health-app .memory-setting { padding:20px; }
+.health-app .memory-setting h2 { font-size:18px; }
+.health-app .memory-history > .eyebrow,.health-app .memory-history > h2 { display:none; }
+.health-app .memory-history { padding-bottom:16px; }
+.health-app .connections-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; }
+.health-app .connections-grid .account-card { order:-1; grid-column:1/-1; }
+.health-app .connections-grid :is(.privacy-card,.history-tools) { order:2; grid-column:1/-1; margin:0; }
+.health-app .connections-grid .privacy-card h2,.health-app .connections-grid .privacy-card > .eyebrow { display:none; }
+.health-app .connections-grid :is(.garmin-card,.strava-card) h2 { font-size:22px; margin:20px 0 12px; letter-spacing:-.6px; }
+.health-app .connections-grid :is(.garmin-card,.strava-card) > p { font-size:13px; line-height:1.7; }
+.health-app .chat-layout { grid-template-columns:minmax(0,1fr); }
+.health-app .chat-layout > .context-panel { display:none; }
+.health-app .mobile-chat-context { display:block; margin-left:auto; }
+.health-app .chat-welcome h2 { font-size:26px; }
+.health-app .rail-bottom > p { display:none; }
+@media(max-width:760px) {
+ .health-app .greeting { padding:22px 0; }
+ .health-app .greeting h1 { font-size:28px; }
+ .health-app .briefing { padding:22px; min-height:0; }
+ .health-app .briefing h2 { font-size:27px; }
+ .health-app .briefing .health-object-live .sketch-canvas { height:140px; }
+ .health-app .briefing .health-object-live .asset-preview { --asset-height:140px; }
+ .health-app .signals-empty .secondary { margin-left:0; }
+ .health-app .connections-grid { grid-template-columns:minmax(0,1fr); gap:16px; }
+ .health-app .greeting > .primary { margin-top:14px; }
+ .health-app .view-disclosure > summary { font-size:13px; }
+}
+.health-app .empty-state { padding:32px 16px; min-height:0; }
+.health-app .empty-state > .agent-mark { display:none; }
+.health-app .empty-state h3 { font-size:20px; margin:0 0 10px; }
+.health-app .empty-state p { font-size:13px; max-width:350px; margin:0 auto; }
+.health-app .memory-history .journal-rule { margin:20px 0; }
+.health-app .activity-summary { display:flex; flex-direction:row; align-items:center; justify-content:space-between; gap:16px; }
+.health-app .activity-summary strong small { display:block; font-size:13px; margin:4px 0; }
+.health-app .activity-summary .range-toggle { flex-shrink:0; }
+.health-app .memory-setting { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:start; gap:16px; }
+.health-app .memory-switch { display:flex; gap:8px; align-items:center; background:none; padding:0; min-height:44px; color:#526078; }
+.health-app .memory-switch input { appearance:none; position:relative; width:40px; height:24px; flex:0 0 40px; border:0; border-radius:24px; background:#c8cedd; margin:0; cursor:pointer; }
+.health-app .memory-switch input::before { content:''; position:absolute; width:18px; height:18px; border-radius:50%; top:3px; left:3px; background:#fff; box-shadow:0 1px 3px #17223b22; }
+.health-app .memory-switch input:checked { background:#425cc5; }
+.health-app .memory-switch input:checked::before { transform:translateX(16px); }
+.health-app .memory-switch input:disabled { opacity:.5; cursor:default; }
+@media(max-width:360px) { .health-app .memory-switch > span { display:none; } .health-app .activity-summary { gap:8px; } .health-app .range-toggle button { padding:8px; } }
+.health-app .topbar.topbar-quiet { display:none; }
+.health-app .memory-layout > .panel .section-heading > .subtle { display:none; }
+.health-app .chat-welcome { max-width:560px; margin-left:auto; margin-right:auto; }

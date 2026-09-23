@@ -108,11 +108,10 @@ export default function MemoryPanel({
         <div>
           <p className="eyebrow">A LITTLE LESS STARTING OVER</p>
           <h1>
-            What makes you <em>you.</em>
+            Memory
           </h1>
           <p>
-            Your goals, preferences, and real-life constraints. Remembered on
-            your terms.
+            Review what your agent remembers.
           </p>
         </div>
         <button
@@ -136,14 +135,13 @@ export default function MemoryPanel({
           )}
         </div>
       )}
-      {ready && <ContextBrief health={health} memory={state} onEdit={id => { const entry = state.entries.find(e => e.id === id); if (entry) { setEditing(entry); setShowForm(true); } }} />}
       <section className="panel memory-setting">
         <div>
           <h2>Memory is {state.enabled ? "on" : "off"}</h2>
           <p>
             {state.enabled
-              ? "Saved facts can inform new conversations. Chats are saved so you can pick up where you left off."
-              : "Your existing memories stay saved, but aren’t sent to the agent. New chats won’t be saved."}
+              ? "Use saved facts in replies and save new chats."
+              : "Saved facts are paused. New chats aren’t saved."}
           </p>
           <small>
             {cloud
@@ -239,7 +237,7 @@ export default function MemoryPanel({
             </h2>
             <span className="subtle">Only what you choose to keep</span>
           </div>
-          <div className="memory-filters">
+          {state.entries.length > 0 && <div className="memory-filters">
             <input
               aria-label="Search memories"
               placeholder="Find a memory…"
@@ -259,7 +257,7 @@ export default function MemoryPanel({
               ))}
               <option value="review">Needs review</option>
             </select>
-          </div>
+          </div>}
           {shown.length ? (
             shown.map((entry) => (
               <article className="memory-card" key={entry.id}>
@@ -332,7 +330,7 @@ export default function MemoryPanel({
             </div>
           )}
         </section>
-        <aside className="panel memory-history">
+        <details className="view-disclosure memory-history"><summary>Conversations & backups ({state.conversations.length})</summary>
           <span className="eyebrow">PICK UP WHERE YOU LEFT OFF</span>
           <h2>Conversations</h2>
           <p className="subtle">
@@ -462,8 +460,9 @@ export default function MemoryPanel({
             Deleting here prevents future app recall. It cannot retract
             information already sent to the AI service.
           </p>
-        </aside>
+        </details>
       </div>
+      {ready && <details className="view-disclosure"><summary>What your agent knows</summary><ContextBrief health={health} memory={state} onEdit={id => { const entry = state.entries.find(e => e.id === id); if (entry) { setEditing(entry); setShowForm(true); } }} /></details>}
     </>
   );
 }

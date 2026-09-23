@@ -730,7 +730,7 @@ export default function HealthDashboard() {
         </div>
       </aside>
       <main className="health-main">
-        <header className="topbar">
+        <header className={`topbar ${tab !== "Today" && !sample ? "topbar-quiet" : ""}`}>
           <span>
             {tab === "Today" ? "YOUR DAILY PICTURE" : tab.toUpperCase()}
           </span>
@@ -786,11 +786,11 @@ export default function HealthDashboard() {
                 <h1>
                   {data.profile.name && !sample ? (
                     <>
-                      Hey {name}. <em>How are you, really?</em>
+                      Hi, {name}.
                     </>
                   ) : (
                     <>
-                      Your day, <em>at your pace.</em>
+                      Today
                     </>
                   )}
                 </h1>
@@ -810,7 +810,7 @@ export default function HealthDashboard() {
             <section className="briefing">
               <div className="briefing-copy">
                 <span className="eyebrow">
-                  YOUR DAILY DIRECTION{sample ? " · SAMPLE" : ""}
+                  TODAY’S FOCUS{sample ? " · SAMPLE" : ""}
                 </span>
                 <h2>{briefing.title}</h2>
                 <p>{briefing.description}</p>
@@ -894,20 +894,14 @@ export default function HealthDashboard() {
               ))}
             </div> : <section className="signals-empty">
               <div className="signals-icon"><HealthIcon name="activity" /></div>
-              <div><span className="eyebrow">YOUR DAILY SIGNALS</span><h2>A little context. A clearer picture.</h2><p>Your sleep, movement, and energy come together here as you check in or connect a wearable.</p></div>
+              <div><span className="eyebrow">YOUR DAILY SIGNALS</span><h2>Your health, in one place.</h2><p>Connect a wearable to see sleep and movement here.</p></div>
               <button className="secondary" onClick={() => navigate("Connections")}>Connect your apps <span aria-hidden="true">↗</span></button>
             </section>}
-            <div className="section-heading daily-section-heading"><h2>Make a little space for you</h2><span className="subtle">One small step at a time</span></div>
-            <div className="daily-objects">
-              <HealthObject id="bottle" title="A moment to reset" description="Make room for a small daily ritual." onOpen={openObject} action="Plan my day" onAction={() => ask("Help me choose one manageable daily habit based on my context.")} />
-              <HealthObject id="moon" title="Make space for rest" description="Reflect on your sleep and energy." onOpen={openObject} action="Check in" onAction={startCheckin} />
-            </div>
-            <div className="bottom-grid">
+            <details className="view-disclosure daily-plan"><summary>Your daily plan</summary>
               <section className="panel">
                 <div className="section-heading">
                   <div>
-                    <span className="eyebrow">A PLAN THAT FITS YOUR DAY</span>
-                    <h2>Small things. Real progress.</h2>
+                    <h2>Small steps for today</h2>
                   </div>
                   <button
                     className="quiet-button"
@@ -962,30 +956,10 @@ export default function HealthDashboard() {
                   );
                 })}
               </section>
-              <section className="panel agent-teaser">
-                <span className="eyebrow">YOUR PERSONAL HEALTH AGENT</span>
-                <span className="agent-mark" aria-hidden="true">
-                  ✳
-                </span>
-                <h2>
-                  The whole picture.
-                  <br />A clearer next step.
-                </h2>
-                <p>
-                  Bring your questions, goals, and real life. We’ll put them in
-                  context.
-                </p>
-                <button
-                  className="secondary"
-                  onClick={() => setTab("Your agent")}
-                >
-                  Talk to Wolverine ↗
-                </button>
-              </section>
-            </div>
-            <section className="panel recent-panel">
+            </details>
+            {current.activities.length > 0 &&             <section className="panel recent-panel">
               <div className="section-heading">
-                <h2>Recently, in your world</h2>
+                <h2>Recent activity</h2>
                 <button
                   className="quiet-button"
                   onClick={() => setTab("Activity")}
@@ -1010,7 +984,13 @@ export default function HealthDashboard() {
                   </button>
                 </div>
               )}
-            </section>
+            </section>}
+            <details className="view-disclosure"><summary>Explore rest & daily rituals</summary>            <div className="section-heading daily-section-heading"><h2>Make a little space for you</h2><span className="subtle">One small step at a time</span></div>
+            <div className="daily-objects">
+              <HealthObject id="bottle" title="A moment to reset" description="Make room for a small daily ritual." onOpen={openObject} action="Plan my day" onAction={() => ask("Help me choose one manageable daily habit based on my context.")} />
+              <HealthObject id="moon" title="Make space for rest" description="Reflect on your sleep and energy." onOpen={openObject} action="Check in" onAction={startCheckin} />
+            </div>
+            </details>
           </>
         )}
         {tab === "Your agent" && (
@@ -1019,7 +999,7 @@ export default function HealthDashboard() {
               <div>
                 <p className="eyebrow">LESS GUESSWORK. MORE CONTEXT.</p>
                 <h1>
-                  A conversation <em>about you.</em>
+                  Your agent
                 </h1>
                 <p>
                   {sample
@@ -1314,7 +1294,7 @@ export default function HealthDashboard() {
               <div>
                 <p className="eyebrow">YOUR MOVEMENT, OVER TIME</p>
                 <h1>
-                  Every bit <em>counts.</em>
+                  Activity
                 </h1>
                 <p>A record of showing up, in whatever way works for you.</p>
               </div>
@@ -1322,7 +1302,7 @@ export default function HealthDashboard() {
                 ＋ Log activity
               </button>
             </div>
-            <HealthObject id="dumbbell" title="Movement that fits your day" description="Build around your time, preferences and current energy." onOpen={openObject} action="Talk through a plan" onAction={() => ask("Help me plan movement that fits my available time, preferences and how I feel today.")} />
+
             <div className="activity-summary">
               <div>
                 <span className="eyebrow">
@@ -1347,7 +1327,7 @@ export default function HealthDashboard() {
                 ))}
               </div>
             </div>
-            <section className="panel trend-panel">
+            {visibleActivities.length > 0 && <section className="panel trend-panel">
               <div className="section-heading">
                 <h2>Movement adds up</h2>
                 <span className="subtle">Minutes per day</span>
@@ -1394,7 +1374,7 @@ export default function HealthDashboard() {
                   );
                 })}
               </div>
-            </section>
+            </section>}
             <section className="panel">
               <div className="section-heading">
                 <h2>Your activity log</h2>
@@ -1412,13 +1392,13 @@ export default function HealthDashboard() {
                 ))
               ) : (
                 <Empty
-                  title="Start with your last walk."
+                  title="No activity yet"
                   text="Log a workout, run, or walk. Connect Garmin to bring in recent activities."
-                  action="Log an activity"
-                  onClick={() => setModal("activity")}
                 />
               )}
             </section>
+            <details className="view-disclosure"><summary>Movement ideas & workout coach</summary>
+            <HealthObject id="dumbbell" title="Movement that fits your day" description="Build around your time, preferences and current energy." onOpen={openObject} action="Talk through a plan" onAction={() => ask("Help me plan movement that fits my available time, preferences and how I feel today.")} />
             <div className="workout-link">
               <div>
                 <h2>Want a workout built around you?</h2>
@@ -1431,6 +1411,7 @@ export default function HealthDashboard() {
                 Open workout coach ↗
               </Link>
             </div>
+            </details>
           </>
         )}
         {tab === "Journal" && (
@@ -1439,17 +1420,13 @@ export default function HealthDashboard() {
               <div>
                 <p className="eyebrow">THE PART YOUR WATCH CAN’T TELL YOU</p>
                 <h1>
-                  How you feel <em>matters.</em>
+                  Journal
                 </h1>
                 <p>A minute of reflection. A little more understanding.</p>
               </div>
               <button className="primary" onClick={startCheckin}>
                 ＋ Daily check-in
               </button>
-            </div>
-            <div className="daily-objects">
-              <HealthObject id="balance-stones" title="Notice how you feel" description="Your own observations belong alongside your watch data." onOpen={openObject} action="Daily check-in" onAction={startCheckin}/>
-              <HealthObject id="yoga-mat" title="Room to recover" description="Talk through a gentler day, without a performance target." onOpen={openObject} action="Discuss recovery" onAction={() => ask("Help me think through a gentle recovery day based on my recent context. Ask if you need more information.")}/>
             </div>
             <div className="journal-grid">
               <section className="panel">
@@ -1493,35 +1470,20 @@ export default function HealthDashboard() {
                   ))
                 ) : (
                   <Empty
-                    title="Start where you are."
-                    text="Record your sleep, energy, stress, and soreness. There’s no perfect score."
-                    action="Make my first check-in"
-                    onClick={startCheckin}
+                    title="No check-ins yet"
+                    text="Your sleep, energy, and notes will appear here."
+
                   />
                 )}
               </section>
-              <aside className="panel journal-aside">
-                <span className="eyebrow">YOUR OWN WORDS</span>
-                <h2>
-                  No streak to protect.
-                  <br />
-                  Just you, checking in.
-                </h2>
-                <p>
-                  Some days you’re full of energy. Some days getting outside is
-                  enough. Both belong here.
-                </p>
-                <div className="journal-rule" />
-                <small>Try asking yourself</small>
-                <p>“What gave me energy today? What took it away?”</p>
-                <button
-                  className="secondary"
-                  onClick={() => ask("Help me reflect on my latest check-in.")}
-                >
-                  Reflect with my agent ↗
-                </button>
-              </aside>
+
             </div>
+            <details className="view-disclosure"><summary>Reflect & recover</summary>
+            <div className="daily-objects">
+              <HealthObject id="balance-stones" title="Notice how you feel" description="Your own observations belong alongside your watch data." onOpen={openObject} action="Daily check-in" onAction={startCheckin}/>
+              <HealthObject id="yoga-mat" title="Room to recover" description="Talk through a gentler day, without a performance target." onOpen={openObject} action="Discuss recovery" onAction={() => ask("Help me think through a gentle recovery day based on my recent context. Ask if you need more information.")}/>
+            </div>
+<button className="quiet-button" onClick={() => ask("Help me reflect on my latest check-in.")}>Reflect with my agent ↗</button></details>
           </>
         )}
         {tab === "Memory" && (
@@ -1552,7 +1514,7 @@ export default function HealthDashboard() {
               <div>
                 <p className="eyebrow">ONE PICTURE. YOUR PERMISSION.</p>
                 <h1>
-                  Your health, <em>connected.</em>
+                  Connections
                 </h1>
                 <p>You choose what to connect and when to share.</p>
               </div>
@@ -1573,18 +1535,10 @@ export default function HealthDashboard() {
                         : "Setup required"}
                   </span>
                 </div>
-                <h2>Bring your everyday health into focus.</h2>
+                <h2>Health & activity sync</h2>
                 <p>
-                  Import sleep duration, resting heart rate, steps, and
-                  activities from Garmin Connect. You sign in with Garmin and
-                  choose your permissions.
+                  Bring sleep, heart rate, steps, and activities into your daily view.
                 </p>
-                <div className="data-scopes">
-                  <span>☾ Sleep</span>
-                  <span>♡ Heart rate</span>
-                  <span>↗ Activity</span>
-                  <span>◉ Steps</span>
-                </div>
                 {connection.connected ? (
                   <>
                     <p className="subtle">
@@ -1646,7 +1600,7 @@ export default function HealthDashboard() {
                 key={user?.id || "signed-out"}
                 signedIn={!!user}
               />
-              <section className="panel privacy-card">
+              <details className="view-disclosure privacy-card"><summary>Privacy & sharing</summary>
                 <span className="eyebrow">BUILT AROUND YOUR CONSENT</span>
                 <h2>
                   Your data.
@@ -1665,8 +1619,8 @@ export default function HealthDashboard() {
                   Without sign-in, your check-ins stay in this browser. On a
                   shared device, clear your history when you’re done.
                 </p>
-              </section>
-              <section className="panel">
+              </details>
+              <section className="panel account-card">
                 <div className="section-heading">
                   <h2>Your account</h2>
                   <span className="subtle">
@@ -1725,8 +1679,7 @@ export default function HealthDashboard() {
                   </>
                 )}
               </section>
-              <section className="panel">
-                <h2>Keep control of your history</h2>
+              <details className="view-disclosure history-tools"><summary>Export, restore & clear history</summary>
                 <p className="subtle">
                   Export your personal data as a Wolverine backup. Importing
                   replaces your current manual history.
@@ -1766,7 +1719,7 @@ export default function HealthDashboard() {
                 >
                   Clear my health history
                 </button>
-              </section>
+              </details>
             </div>
           </>
         )}
@@ -2190,17 +2143,17 @@ function Empty({
 }: {
   title: string;
   text: string;
-  action: string;
-  onClick: () => void;
+  action?: string;
+  onClick?: () => void;
 }) {
   return (
     <div className="empty-state">
       <span className="agent-mark">◌</span>
       <h3>{title}</h3>
       <p>{text}</p>
-      <button className="secondary" onClick={onClick}>
+      {action && <button className="secondary" onClick={onClick}>
         {action}
-      </button>
+      </button>}
     </div>
   );
 }
