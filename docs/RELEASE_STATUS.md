@@ -69,3 +69,7 @@ A fresh hosted session check still returns `auth:false, authStatus:"unavailable"
 ## Forest-green palette restored — September 25, 2026
 
 `2865e46` is Ready on Vercel Preview at https://wolverineworkout2-bp09f89bf-logan-horowitzs-projects.vercel.app. Restored forest-green surfaces, sage accents, the pale daily briefing, and matching public-page and app-icon colors. Preserved the minimal view hierarchy and rounded companions. Local browser review covered Today, the agent view, and its Context dialog. Production build including lint and type validation passed; hosted build is Ready.
+
+## Blender green-palette assets — September 25, 2026
+
+`c8b6178` is Ready on Vercel Preview at https://wolverineworkout2-pqimrzmqt-logan-horowitzs-projects.vercel.app. Regenerated all three approved companions and six objects in Blender, including editable sources, GLB materials, and transparent renders. Object images now use 640px, 96-sample denoised Cycles rendering. Versioned asset filenames avoid stale optimized-image and model caches. Visually inspected all nine PNGs and the local companion picker; confirmed all three versioned portrait URLs loaded. Eight catalog tests and the production build passed. This changes palette/materials and render quality, not character geometry or animation.
