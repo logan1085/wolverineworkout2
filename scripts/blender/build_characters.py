@@ -1,43 +1,89 @@
-"""Build original selectable Wolverine companions using Blender."""
+"""Original soft companions. Blender source, GLB and portraits share one model."""
 from pathlib import Path
 exec(Path('scripts/blender/build_catalog.py').read_text().split('items=[')[0])
-OUT=ROOT/'public/models/characters';SOURCE=ROOT/'assets/blender/characters'
-OUT.mkdir(parents=True,exist_ok=True);SOURCE.mkdir(parents=True,exist_ok=True)
+OUT=ROOT/'public/models/characters'; SOURCE=ROOT/'assets/blender/characters'
+OUT.mkdir(parents=True,exist_ok=True); SOURCE.mkdir(parents=True,exist_ok=True)
+VERSION='soft-v1'
+
+def plush(name, color):
+    m=mat(name,color)
+    bs=m.node_tree.nodes.get('Principled BSDF')
+    bs.inputs['Roughness'].default_value=.72
+    bs.inputs['Subsurface Weight'].default_value=.055
+    bs.inputs['Sheen Weight'].default_value=.18
+    noise=m.node_tree.nodes.new('ShaderNodeTexNoise');noise.inputs['Scale'].default_value=180
+    bump=m.node_tree.nodes.new('ShaderNodeBump');bump.inputs['Strength'].default_value=.13;bump.inputs['Distance'].default_value=.012
+    m.node_tree.links.new(noise.outputs['Fac'],bump.inputs['Height']);m.node_tree.links.new(bump.outputs['Normal'],bs.inputs['Normal'])
+    return m
+
+def stroke(name, points, radius, material):
+    c=bpy.data.curves.new(name,'CURVE');c.dimensions='3D';c.resolution_u=16;c.bevel_depth=radius;c.bevel_resolution=4
+    sp=c.splines.new('BEZIER');sp.bezier_points.add(len(points)-1)
+    for p,co in zip(sp.bezier_points,points):p.co=co;p.handle_left_type='AUTO';p.handle_right_type='AUTO'
+    o=bpy.data.objects.new(name,c);bpy.context.collection.objects.link(o);o.data.materials.append(material)
+    bpy.context.view_layer.objects.active=o;o.select_set(True);bpy.ops.object.convert(target='MESH');o.select_set(False)
+    return o
+
 manifest=[]
-for slug,title,description,color in [('moss','Moss','A little forest companion.',(.19,.32,.16)),('sunny','Sunny','A warm, round ray of sunshine.',(.72,.46,.13)),('pebble','Pebble','A quiet companion, one day at a time.',(.28,.34,.28))]:
+for slug,title,description,color in [
+    ('moss','Moss','A soft forest spirit with a little leaf of optimism.',(.25,.39,.19)),
+    ('sunny','Sunny','A pocket of warmth, with a sunny little tuft.',(.74,.48,.17)),
+    ('pebble','Pebble','A calm little presence with both feet on the ground.',(.34,.40,.35)),
+]:
     bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
-    body=mat(title,color);dark=mat('Eyes',(.018,.03,.025));cream=mat('Soft cream',(.82,.79,.62));pink=mat('Cheeks',(.64,.29,.22))
-    body.node_tree.nodes.get('Principled BSDF').inputs['Roughness'].default_value=.48
-    dark.node_tree.nodes.get('Principled BSDF').inputs['Roughness'].default_value=.16
-    silhouette = (.51,.42,.69) if slug=='moss' else ((.63,.43,.57) if slug=='sunny' else (.62,.42,.56))
-    bpy.ops.mesh.primitive_uv_sphere_add(segments=64,ring_count=40,location=(0,0,.82));o=bpy.context.object;o.scale=silhouette;finish(o,'Body',body)
-    sphere('Belly',(0,-.405,.64),(.27,.055,.21),cream)
-    for x in [-.23,.23]:
-        sphere('Foot',(x,-.04,.17),(.23,.29,.15),cream)
-        sphere('Eye',(x*.78,-.378,1),(.05,.035,.072),dark)
-        sphere('Eye glint',(x*.78-.014,-.409,1.027),(.012,.009,.018),cream)
-        sphere('Cheek',(x*1.45,-.34,.84),(.07,.025,.045),pink)
-        sphere('Arm',(x*2.25,0,.72),(.14,.17,.23),body)
-    sphere('Smile',(0,-.443,.9),(.045,.018,.018),dark)
+    body=plush(title+' soft shell',color)
+    face=plush('Warm linen face',(.88,.80,.62))
+    dark=mat('Espresso eyes',(.025,.034,.022));dark.node_tree.nodes.get('Principled BSDF').inputs['Roughness'].default_value=.36
+    blush=plush('Subtle peach',(.70,.39,.28))
+    leaf=plush('Leaf accent',(.12,.25,.09))
+    # Merge overlapping volumes into a single smooth silhouette, no toy-like seams.
+    parts=[]
+    wide=1.09 if slug=='pebble' else 1
+    parts.append(sphere('Torso',(0,0,.91),(.52*wide,.37,.69),body))
+    parts.append(sphere('Head',(0,-.015,1.35),(.435*wide,.345,.40),body))
+    for sign in [-1,1]:
+        arm=sphere('Relaxed arm',(sign*.50,0,.76),(.135,.16,.34),body)
+        arm.rotation_euler[1]=sign*-.22;parts.append(arm)
+        parts.append(sphere('Little foot',(sign*.235,-.025,.22),(.185,.245,.22),body))
+    bpy.ops.object.select_all(action='DESELECT')
+    for o in parts:o.select_set(True)
+    bpy.context.view_layer.objects.active=parts[0];bpy.ops.object.join();o=bpy.context.object
+    bpy.ops.object.transform_apply(location=False,rotation=False,scale=True)
+    mod=o.modifiers.new('Continuous soft form','REMESH');mod.mode='VOXEL';mod.voxel_size=.035;mod.use_smooth_shade=True;bpy.ops.object.modifier_apply(modifier=mod.name)
+    mod=o.modifiers.new('Relax surface','SMOOTH');mod.factor=1.25;mod.iterations=5;bpy.ops.object.modifier_apply(modifier=mod.name)
+    mod=o.modifiers.new('Silky surface','SUBSURF');mod.levels=1;bpy.ops.object.modifier_apply(modifier=mod.name)
+    mod=o.modifiers.new('Mobile geometry budget','DECIMATE');mod.ratio=.45;bpy.ops.object.modifier_apply(modifier=mod.name)
+    o.name=title+' continuous body'
+    # Small face high on the head; no separate belly or large animal features.
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=64,ring_count=40,location=(0,-.324,1.39))
+    panel=bpy.context.object;panel.scale=(.30,.055,.245);finish(panel,'Linen face panel',face)
+    for sign in [-1,1]:
+        sphere('Eye',(sign*.125,-.365,1.43),(.023,.014,.034),dark)
+        sphere('Blush',(sign*.206,-.349,1.355),(.038,.009,.018),blush)
+    stroke('Gentle smile',[(-.047,-.372,1.345),(0,-.378,1.323),(.047,-.372,1.345)],.009,dark)
     if slug=='moss':
-        for x,tilt in [(-.16,-.55),(.16,.55)]:
-            o=sphere('Leaf',(x,0,1.56),(.13,.07,.27),body);o.rotation_euler[1]=tilt
-            vein=sphere('Leaf vein',(x,-.06,1.56),(.016,.014,.20),cream);vein.rotation_euler[1]=tilt
+        stem=stroke('Sprout stem',[(.04,0,1.68),(.06,0,1.80),(.13,0,1.87)],.018,leaf)
+        sprout=sphere('Single leaf',(.17,0,1.84),(.17,.047,.080),leaf);sprout.rotation_euler[1]=-.4
     elif slug=='sunny':
-        for i in range(7):
-            a=i*math.pi/6; o=sphere('Petal',(.55*math.cos(a),.04,.98+.5*math.sin(a)),(.12,.1,.22),body);o.rotation_euler[1]=math.pi/2-a
+        for x,z,angle in [(-.13,1.71,-.5),(0,1.78,0),(.13,1.71,.5)]:
+            tuft=sphere('Sun tuft',(x,.01,z),(.09,.085,.14),body);tuft.rotation_euler[1]=angle
     else:
-        sphere('Soft cap',(0,.02,1.4),(.46,.34,.10),cream)
-        for x in [-.1,0,.1]: sphere('Cap detail',(x,-.19,1.45),(.025,.1,.013),body)
+        sphere('Little crown pebble',(.085,.025,1.735),(.145,.12,.070),body)
     bpy.ops.object.select_all(action='DESELECT')
     for o in bpy.context.scene.objects:
         if o.type=='MESH':o.select_set(True);o.asset_mark()
-    bpy.ops.export_scene.gltf(filepath=str(OUT/(slug+'-green.glb')),export_format='GLB',use_selection=True,export_apply=True)
-    scene=bpy.context.scene;scene.render.engine='CYCLES';scene.cycles.samples=96;scene.view_settings.view_transform='AgX';scene.cycles.use_denoising=True;scene.render.resolution_x=640;scene.render.resolution_y=640;scene.render.resolution_percentage=100;scene.render.image_settings.file_format='PNG';scene.render.film_transparent=True;scene.world.color=(.12,.12,.12)
-    bpy.ops.object.camera_add(location=(1.3,-5,2.1));cam=bpy.context.object;cam.rotation_euler=(Vector((0,0,.9))-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.type='ORTHO';cam.data.ortho_scale=2.5;scene.camera=cam
-    for loc,power in [((2,-3,5),320),((-3,-2,2),90),((1,3,4),380)]:
-        bpy.ops.object.light_add(type='AREA',location=loc);o=bpy.context.object;o.data.energy=power;o.data.size=4;o.rotation_euler=(Vector((0,0,.8))-o.location).to_track_quat('-Z','Y').to_euler()
+    filename=slug+'-'+VERSION
+    bpy.ops.export_scene.gltf(filepath=str(OUT/(filename+'.glb')),export_format='GLB',use_selection=True,export_apply=True)
+    scene=bpy.context.scene;scene.render.engine='CYCLES';scene.cycles.samples=128;scene.cycles.use_denoising=True
+    scene.view_settings.view_transform='AgX';scene.view_settings.look='AgX - Medium High Contrast'
+    scene.render.resolution_x=768;scene.render.resolution_y=768;scene.render.resolution_percentage=100
+    scene.render.image_settings.file_format='PNG';scene.render.film_transparent=True
+    scene.world.use_nodes=True;scene.world.node_tree.nodes.get('Background').inputs[0].default_value=(.68,.75,.65,1);scene.world.node_tree.nodes.get('Background').inputs[1].default_value=.25
+    bpy.ops.object.camera_add(location=(1.0,-7,2.30));cam=bpy.context.object;cam.rotation_euler=(Vector((0,0,.97))-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.type='ORTHO';cam.data.ortho_scale=2.32;scene.camera=cam
+    for loc,power,size in [((-3,-4,5),240,4),((3,-2,2),65,3),((1,3,4),280,3)]:
+        bpy.ops.object.light_add(type='AREA',location=loc);o=bpy.context.object;o.data.energy=power;o.data.size=size;o.rotation_euler=(Vector((0,0,1))-o.location).to_track_quat('-Z','Y').to_euler()
+    scene.render.filepath=str(OUT/(filename+'.png'))
     bpy.ops.wm.save_as_mainfile(filepath=str(SOURCE/(slug+'.blend')),compress=True)
-    scene.render.filepath=str(OUT/(slug+'-portrait-green.png'));bpy.ops.render.render(write_still=True)
-    manifest.append(dict(id=slug,title=title,description=description,model='/models/characters/'+slug+'-green.glb',thumbnail='/models/characters/'+slug+'-portrait-green.png'))
+    bpy.ops.render.render(write_still=True)
+    manifest.append(dict(id=slug,title=title,description=description,model='/models/characters/'+filename+'.glb',thumbnail='/models/characters/'+filename+'.png'))
 (OUT/'catalog.json').write_text(json.dumps(manifest,indent=2)+'\n')

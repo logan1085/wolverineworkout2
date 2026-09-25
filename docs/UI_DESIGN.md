@@ -22,3 +22,7 @@ Each primary view uses a short title and one primary action. Today shows the bri
 ## Color preference — September 25
 
 Restored the original forest-green palette across the health views, dialogs, public documents, and installed-app identity. Preserve the simplified layouts and non-human companions. Today uses the pale sage briefing against the dark green canvas.
+
+## Soft companion revision — September 25
+
+Reference research: Meta's official Muse page (https://ai.meta.com/muse/) and visual inspection of the installed Muse avatar. The useful direction is a compact soft body, small facial features, quiet expression, and relaxed limbs. Original Wolverine models use a continuous remeshed body, warm face panel, tiny smile, and their own leaf/sun/stone accents. Remove the earlier rabbit ears, separate belly and oversized shoes. These are original Blender models, not copied Meta assets. Portraits use a subtle procedural surface texture; web GLBs use mobile-friendly smooth geometry and matte materials. No facial animation or Muse realtime-avatar capability is implied.
