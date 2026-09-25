@@ -1,6 +1,6 @@
 # Wolverine interface
 
-The health app uses warm white surfaces, navy text, soft blue accents, and pastel 3D companion portraits. The shared theme is in `src/components/health/refinement.css`; layout and interaction rules remain in `health.css`.
+The health app uses forest-green surfaces, warm paper text, sage accents, and 3D companion portraits. The shared theme is in `src/components/health/refinement.css`; layout and interaction rules remain in `health.css`.
 
 - One clear primary action in the first-use daily briefing.
 - Show a useful explanation and connection action before daily signals exist. Never fill empty health metrics with invented values.
@@ -18,3 +18,7 @@ Use original soft, round, non-human companions: simple silhouettes, expressive e
 ## Minimal view hierarchy — September 23
 
 Each primary view uses a short title and one primary action. Today shows the briefing and available signals, with the daily plan and ritual objects in disclosures. Activity shows totals and the log; the chart appears only with records, and movement ideas/legacy coach live in a disclosure. Journal prioritizes check-ins with reflection tools below. The agent uses a single conversation column; Context remains available through its button. Memory prioritizes the on/off control and saved facts, with context inspection and conversation/backups in disclosures; empty stores have no redundant search/filter fields. Connections leads with account state and concise provider cards, then privacy and history tools. Optional detail is accessible through keyboard-operable native disclosures. Primary consent and provider availability remain visible.
+
+## Color preference — September 25
+
+Restored the original forest-green palette across the health views, dialogs, public documents, and installed-app identity. Preserve the simplified layouts and non-human companions. Today uses the pale sage briefing against the dark green canvas.
