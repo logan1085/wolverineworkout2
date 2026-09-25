@@ -56,7 +56,7 @@ for slug,title,category,description in items:
     bpy.ops.object.select_all(action='DESELECT')
     for o in bpy.context.scene.objects:
         if o.type=='MESH':o.select_set(True)
-    bpy.ops.export_scene.gltf(filepath=str(OUT/(slug+'.glb')),export_format='GLB',use_selection=True,export_apply=True)
+    bpy.ops.export_scene.gltf(filepath=str(OUT/(slug+'-green.glb')),export_format='GLB',use_selection=True,export_apply=True)
     for o in bpy.context.selected_objects:o.asset_mark()
     scene=bpy.context.scene;scene.render.engine='CYCLES';scene.cycles.samples=96;scene.cycles.use_denoising=True;scene.view_settings.view_transform='AgX'
     scene.render.resolution_x=640;scene.render.resolution_y=640;scene.render.resolution_percentage=100
@@ -66,7 +66,7 @@ for slug,title,category,description in items:
     for loc,power,size in [((2,-3,5),450,4),((-3,-1,2),280,3),((0,3,4),400,3)]:
         bpy.ops.object.light_add(type='AREA',location=loc);light=bpy.context.object;light.data.energy=power;light.data.shape='DISK';light.data.size=size;light.rotation_euler=(Vector((0,0,.8))-light.location).to_track_quat('-Z','Y').to_euler()
     bpy.ops.wm.save_as_mainfile(filepath=str(SOURCE/(slug+'.blend')),compress=True)
-    scene.render.filepath=str(OUT/(slug+'.png'));bpy.ops.render.render(write_still=True)
-    manifest.append(dict(id=slug,title=title,category=category,description=description,model='/models/wolverine/'+slug+'.glb',thumbnail='/models/wolverine/'+slug+'.png',bytes=(OUT/(slug+'.glb')).stat().st_size))
+    scene.render.filepath=str(OUT/(slug+'-green.png'));bpy.ops.render.render(write_still=True)
+    manifest.append(dict(id=slug,title=title,category=category,description=description,model='/models/wolverine/'+slug+'-green.glb',thumbnail='/models/wolverine/'+slug+'-green.png',bytes=(OUT/(slug+'-green.glb')).stat().st_size))
 (OUT/'catalog.json').write_text(json.dumps(manifest,indent=2)+'\n')
 print('WOLVERINE_CATALOG_COMPLETE',len(manifest))

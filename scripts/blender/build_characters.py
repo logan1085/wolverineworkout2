@@ -32,12 +32,12 @@ for slug,title,description,color in [('moss','Moss','A little forest companion.'
     bpy.ops.object.select_all(action='DESELECT')
     for o in bpy.context.scene.objects:
         if o.type=='MESH':o.select_set(True);o.asset_mark()
-    bpy.ops.export_scene.gltf(filepath=str(OUT/(slug+'.glb')),export_format='GLB',use_selection=True,export_apply=True)
+    bpy.ops.export_scene.gltf(filepath=str(OUT/(slug+'-green.glb')),export_format='GLB',use_selection=True,export_apply=True)
     scene=bpy.context.scene;scene.render.engine='CYCLES';scene.cycles.samples=96;scene.view_settings.view_transform='AgX';scene.cycles.use_denoising=True;scene.render.resolution_x=640;scene.render.resolution_y=640;scene.render.resolution_percentage=100;scene.render.image_settings.file_format='PNG';scene.render.film_transparent=True;scene.world.color=(.12,.12,.12)
     bpy.ops.object.camera_add(location=(1.3,-5,2.1));cam=bpy.context.object;cam.rotation_euler=(Vector((0,0,.9))-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.type='ORTHO';cam.data.ortho_scale=2.5;scene.camera=cam
     for loc,power in [((2,-3,5),320),((-3,-2,2),90),((1,3,4),380)]:
         bpy.ops.object.light_add(type='AREA',location=loc);o=bpy.context.object;o.data.energy=power;o.data.size=4;o.rotation_euler=(Vector((0,0,.8))-o.location).to_track_quat('-Z','Y').to_euler()
     bpy.ops.wm.save_as_mainfile(filepath=str(SOURCE/(slug+'.blend')),compress=True)
-    scene.render.filepath=str(OUT/(slug+'-portrait.png'));bpy.ops.render.render(write_still=True)
-    manifest.append(dict(id=slug,title=title,description=description,model='/models/characters/'+slug+'.glb',thumbnail='/models/characters/'+slug+'-portrait.png'))
+    scene.render.filepath=str(OUT/(slug+'-portrait-green.png'));bpy.ops.render.render(write_still=True)
+    manifest.append(dict(id=slug,title=title,description=description,model='/models/characters/'+slug+'-green.glb',thumbnail='/models/characters/'+slug+'-portrait-green.png'))
 (OUT/'catalog.json').write_text(json.dumps(manifest,indent=2)+'\n')

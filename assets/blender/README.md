@@ -20,4 +20,4 @@ Kai is an original stylized human companion with sculpted indigo hair, layered a
 
 ## Green palette — September 25
 
-Re-rendered all nine approved assets in Blender with a coordinated sage, forest, warm clay, and porcelain palette. Moss is sage, Sunny muted honey, and Pebble warm gray-green. Object thumbnails now use 640px transparent PNGs and 96-sample denoised Cycles renders with AgX color management, matching companion resolution. Editable sources and GLB materials are regenerated together; existing catalog paths update every consuming app view.
+Re-rendered all nine approved assets in Blender with a coordinated sage, forest, warm clay, and porcelain palette. Moss is sage, Sunny muted honey, and Pebble warm gray-green. Object thumbnails now use 640px transparent PNGs and 96-sample denoised Cycles renders with AgX color management, matching companion resolution. Editable sources and GLB materials are regenerated together; versioned catalog paths refresh cached images and models in every consuming app view.

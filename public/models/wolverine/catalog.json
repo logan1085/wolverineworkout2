@@ -4,8 +4,8 @@
     "title": "Sage kettlebell",
     "category": "Movement",
     "description": "A rounded cast-weight silhouette with a satin handle.",
-    "model": "/models/wolverine/kettlebell.glb",
-    "thumbnail": "/models/wolverine/kettlebell.png",
+    "model": "/models/wolverine/kettlebell-green.glb",
+    "thumbnail": "/models/wolverine/kettlebell-green.png",
     "bytes": 74240
   },
   {
@@ -13,8 +13,8 @@
     "title": "Everyday dumbbell",
     "category": "Movement",
     "description": "Soft-edged plates and a brushed metal grip.",
-    "model": "/models/wolverine/dumbbell.glb",
-    "thumbnail": "/models/wolverine/dumbbell.png",
+    "model": "/models/wolverine/dumbbell-green.glb",
+    "thumbnail": "/models/wolverine/dumbbell-green.png",
     "bytes": 86968
   },
   {
@@ -22,8 +22,8 @@
     "title": "Hydration bottle",
     "category": "Daily rituals",
     "description": "A warm clay bottle with a contrasting loop cap.",
-    "model": "/models/wolverine/bottle.glb",
-    "thumbnail": "/models/wolverine/bottle.png",
+    "model": "/models/wolverine/bottle-green.glb",
+    "thumbnail": "/models/wolverine/bottle-green.png",
     "bytes": 106864
   },
   {
@@ -31,8 +31,8 @@
     "title": "Morning mat",
     "category": "Recovery",
     "description": "A forest-green mat with a rolled edge and carry strap.",
-    "model": "/models/wolverine/yoga-mat.glb",
-    "thumbnail": "/models/wolverine/yoga-mat.png",
+    "model": "/models/wolverine/yoga-mat-green.glb",
+    "thumbnail": "/models/wolverine/yoga-mat-green.png",
     "bytes": 72508
   },
   {
@@ -40,8 +40,8 @@
     "title": "Balance stones",
     "category": "Recovery",
     "description": "Three smooth river stones on a quiet plinth.",
-    "model": "/models/wolverine/balance-stones.glb",
-    "thumbnail": "/models/wolverine/balance-stones.png",
+    "model": "/models/wolverine/balance-stones-green.glb",
+    "thumbnail": "/models/wolverine/balance-stones-green.png",
     "bytes": 89644
   },
   {
@@ -49,8 +49,8 @@
     "title": "Moonlight",
     "category": "Rest",
     "description": "A sculptural crescent on a small bedside pedestal.",
-    "model": "/models/wolverine/moon.glb",
-    "thumbnail": "/models/wolverine/moon.png",
+    "model": "/models/wolverine/moon-green.glb",
+    "thumbnail": "/models/wolverine/moon-green.png",
     "bytes": 118588
   }
 ]

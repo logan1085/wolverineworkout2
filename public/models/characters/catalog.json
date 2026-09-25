@@ -3,21 +3,21 @@
     "id": "moss",
     "title": "Moss",
     "description": "A little forest companion.",
-    "model": "/models/characters/moss.glb",
-    "thumbnail": "/models/characters/moss-portrait.png"
+    "model": "/models/characters/moss-green.glb",
+    "thumbnail": "/models/characters/moss-portrait-green.png"
   },
   {
     "id": "sunny",
     "title": "Sunny",
     "description": "A warm, round ray of sunshine.",
-    "model": "/models/characters/sunny.glb",
-    "thumbnail": "/models/characters/sunny-portrait.png"
+    "model": "/models/characters/sunny-green.glb",
+    "thumbnail": "/models/characters/sunny-portrait-green.png"
   },
   {
     "id": "pebble",
     "title": "Pebble",
     "description": "A quiet companion, one day at a time.",
-    "model": "/models/characters/pebble.glb",
-    "thumbnail": "/models/characters/pebble-portrait.png"
+    "model": "/models/characters/pebble-green.glb",
+    "thumbnail": "/models/characters/pebble-portrait-green.png"
   }
 ]
