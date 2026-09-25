@@ -17,3 +17,7 @@ Ownership: original Wolverine project artwork, available for use and modificatio
 ## Archived human-character exploration
 
 Kai is an original stylized human companion with sculpted indigo hair, layered amber eyes, jacket seams, cuffs, and sneakers. Regenerate using `blender --background --python scripts/blender/build_anime.py -- "$PWD"`. The editable source is `characters/kai.blend`; the web GLB is approximately 619 KB. It is a static, orbitable model, without a skeleton or facial animation. The script retains the other catalog entries. Kai is excluded from the app catalog. Moss is the default; the approved direction is soft, round, non-human mascots.
+
+## Green palette — September 25
+
+Re-rendered all nine approved assets in Blender with a coordinated sage, forest, warm clay, and porcelain palette. Moss is sage, Sunny muted honey, and Pebble warm gray-green. Object thumbnails now use 640px transparent PNGs and 96-sample denoised Cycles renders with AgX color management, matching companion resolution. Editable sources and GLB materials are regenerated together; existing catalog paths update every consuming app view.

@@ -4,9 +4,9 @@ exec(Path('scripts/blender/build_catalog.py').read_text().split('items=[')[0])
 OUT=ROOT/'public/models/characters';SOURCE=ROOT/'assets/blender/characters'
 OUT.mkdir(parents=True,exist_ok=True);SOURCE.mkdir(parents=True,exist_ok=True)
 manifest=[]
-for slug,title,description,color in [('moss','Moss','A little forest companion.',(.16,.34,.22)),('sunny','Sunny','A warm, round ray of sunshine.',(.88,.42,.075)),('pebble','Pebble','A quiet companion, one day at a time.',(.27,.36,.48))]:
+for slug,title,description,color in [('moss','Moss','A little forest companion.',(.19,.32,.16)),('sunny','Sunny','A warm, round ray of sunshine.',(.72,.46,.13)),('pebble','Pebble','A quiet companion, one day at a time.',(.28,.34,.28))]:
     bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
-    body=mat(title,color);dark=mat('Eyes',(.018,.03,.025));cream=mat('Soft cream',(.9,.85,.7));pink=mat('Cheeks',(.8,.35,.28))
+    body=mat(title,color);dark=mat('Eyes',(.018,.03,.025));cream=mat('Soft cream',(.82,.79,.62));pink=mat('Cheeks',(.64,.29,.22))
     body.node_tree.nodes.get('Principled BSDF').inputs['Roughness'].default_value=.48
     dark.node_tree.nodes.get('Principled BSDF').inputs['Roughness'].default_value=.16
     silhouette = (.51,.42,.69) if slug=='moss' else ((.63,.43,.57) if slug=='sunny' else (.62,.42,.56))
@@ -33,7 +33,7 @@ for slug,title,description,color in [('moss','Moss','A little forest companion.'
     for o in bpy.context.scene.objects:
         if o.type=='MESH':o.select_set(True);o.asset_mark()
     bpy.ops.export_scene.gltf(filepath=str(OUT/(slug+'.glb')),export_format='GLB',use_selection=True,export_apply=True)
-    scene=bpy.context.scene;scene.render.engine='CYCLES';scene.cycles.samples=96;scene.cycles.use_denoising=True;scene.render.resolution_x=640;scene.render.resolution_y=640;scene.render.resolution_percentage=100;scene.render.image_settings.file_format='PNG';scene.render.film_transparent=True;scene.world.color=(.12,.12,.12)
+    scene=bpy.context.scene;scene.render.engine='CYCLES';scene.cycles.samples=96;scene.view_settings.view_transform='AgX';scene.cycles.use_denoising=True;scene.render.resolution_x=640;scene.render.resolution_y=640;scene.render.resolution_percentage=100;scene.render.image_settings.file_format='PNG';scene.render.film_transparent=True;scene.world.color=(.12,.12,.12)
     bpy.ops.object.camera_add(location=(1.3,-5,2.1));cam=bpy.context.object;cam.rotation_euler=(Vector((0,0,.9))-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.type='ORTHO';cam.data.ortho_scale=2.5;scene.camera=cam
     for loc,power in [((2,-3,5),320),((-3,-2,2),90),((1,3,4),380)]:
         bpy.ops.object.light_add(type='AREA',location=loc);o=bpy.context.object;o.data.energy=power;o.data.size=4;o.rotation_euler=(Vector((0,0,.8))-o.location).to_track_quat('-Z','Y').to_euler()

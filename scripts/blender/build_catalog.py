@@ -23,11 +23,11 @@ def box(name,loc,scale,m,bevel=.1):
     b=o.modifiers.new('Rounded edges','BEVEL');b.width=bevel;b.segments=5;return o
 def ring(name,loc,major,minor,m,rot=(math.pi/2,0,0)):
     bpy.ops.mesh.primitive_torus_add(major_segments=48,minor_segments=12,major_radius=major,minor_radius=minor,location=loc,rotation=rot);return finish(bpy.context.object,name,m)
-items=[('kettlebell','Lime kettlebell','Movement','A rounded cast-weight silhouette with a satin handle.'),('dumbbell','Everyday dumbbell','Movement','Soft-edged plates and a brushed metal grip.'),('bottle','Hydration bottle','Daily rituals','A warm coral bottle with a contrasting loop cap.'),('yoga-mat','Morning mat','Recovery','A forest-green mat with a rolled edge and carry strap.'),('balance-stones','Balance stones','Recovery','Three smooth river stones on a quiet plinth.'),('moon','Moonlight','Rest','A sculptural crescent on a small bedside pedestal.')]
+items=[('kettlebell','Sage kettlebell','Movement','A rounded cast-weight silhouette with a satin handle.'),('dumbbell','Everyday dumbbell','Movement','Soft-edged plates and a brushed metal grip.'),('bottle','Hydration bottle','Daily rituals','A warm clay bottle with a contrasting loop cap.'),('yoga-mat','Morning mat','Recovery','A forest-green mat with a rolled edge and carry strap.'),('balance-stones','Balance stones','Recovery','Three smooth river stones on a quiet plinth.'),('moon','Moonlight','Rest','A sculptural crescent on a small bedside pedestal.')]
 manifest=[]
 for slug,title,category,description in items:
     bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
-    lime=mat('Wolverine lime',(.63,.78,.31)); forest=mat('Forest',(.075,.20,.14)); coral=mat('Terracotta',(.72,.30,.19)); cream=mat('Warm porcelain',(.85,.80,.65)); metal=mat('Brushed steel',(.43,.5,.46),.7)
+    lime=mat('Wolverine lime',(.48,.59,.29)); forest=mat('Forest',(.055,.13,.075)); coral=mat('Terracotta',(.48,.24,.15)); cream=mat('Warm porcelain',(.82,.79,.62)); metal=mat('Brushed steel',(.43,.5,.46),.7)
     if slug=='kettlebell':
         sphere('Cast body',(0,0,.65),(.67,.5,.65),lime);cyl('Flat foot',(0,0,.11),.4,.16,forest);ring('Grip',(0,0,1.36),.39,.105,forest)
     elif slug=='dumbbell':
@@ -58,8 +58,8 @@ for slug,title,category,description in items:
         if o.type=='MESH':o.select_set(True)
     bpy.ops.export_scene.gltf(filepath=str(OUT/(slug+'.glb')),export_format='GLB',use_selection=True,export_apply=True)
     for o in bpy.context.selected_objects:o.asset_mark()
-    scene=bpy.context.scene;scene.render.engine='CYCLES';scene.cycles.samples=24
-    scene.render.resolution_x=400;scene.render.resolution_y=400;scene.render.resolution_percentage=100
+    scene=bpy.context.scene;scene.render.engine='CYCLES';scene.cycles.samples=96;scene.cycles.use_denoising=True;scene.view_settings.view_transform='AgX'
+    scene.render.resolution_x=640;scene.render.resolution_y=640;scene.render.resolution_percentage=100
     scene.render.image_settings.file_format='PNG';scene.render.film_transparent=True
     scene.world.color=(.3,.3,.3)
     bpy.ops.object.camera_add(location=(3,-4,2.7));cam=bpy.context.object;cam.rotation_euler=(Vector((0,0,.8))-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.type='ORTHO';cam.data.ortho_scale=3.1;scene.camera=cam

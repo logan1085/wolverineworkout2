@@ -1,12 +1,12 @@
 [
   {
     "id": "kettlebell",
-    "title": "Lime kettlebell",
+    "title": "Sage kettlebell",
     "category": "Movement",
     "description": "A rounded cast-weight silhouette with a satin handle.",
     "model": "/models/wolverine/kettlebell.glb",
     "thumbnail": "/models/wolverine/kettlebell.png",
-    "bytes": 74236
+    "bytes": 74240
   },
   {
     "id": "dumbbell",
@@ -21,10 +21,10 @@
     "id": "bottle",
     "title": "Hydration bottle",
     "category": "Daily rituals",
-    "description": "A warm coral bottle with a contrasting loop cap.",
+    "description": "A warm clay bottle with a contrasting loop cap.",
     "model": "/models/wolverine/bottle.glb",
     "thumbnail": "/models/wolverine/bottle.png",
-    "bytes": 106860
+    "bytes": 106864
   },
   {
     "id": "yoga-mat",
@@ -33,7 +33,7 @@
     "description": "A forest-green mat with a rolled edge and carry strap.",
     "model": "/models/wolverine/yoga-mat.glb",
     "thumbnail": "/models/wolverine/yoga-mat.png",
-    "bytes": 72504
+    "bytes": 72508
   },
   {
     "id": "balance-stones",
@@ -42,7 +42,7 @@
     "description": "Three smooth river stones on a quiet plinth.",
     "model": "/models/wolverine/balance-stones.glb",
     "thumbnail": "/models/wolverine/balance-stones.png",
-    "bytes": 89640
+    "bytes": 89644
   },
   {
     "id": "moon",
