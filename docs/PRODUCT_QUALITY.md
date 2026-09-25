@@ -84,3 +84,7 @@ The session endpoint now reports actual bounded authentication-service reachabil
 ### Live agent behavior review — September 22
 
 Ran three sequential synthetic HTTP evaluation passes against the current runtime. Added conflicting-sleep and incomplete-week cases and strengthened checks after qualitative review found failures that prior regexes missed. The final `wolverine-health-2026-09-22.2` run passes 14 targeted checks; all outputs were read and a remaining profile-time-versus-goal wording issue is documented in `evals/results/REVIEW.md`. Prior failing captures are retained. This is evidence of specific improvements, not a clinical or production-readiness certification. Runtime prompt, public SOUL/MEMORY artifacts and generated prompt documentation are aligned.
+
+### Resumed launch audit — September 25
+
+The green-theme revision passed a 390×844 browser review of Today, check-in, and More; see mobile/USAGE.md. A fresh authenticated Vercel CLI request to the deployed `/api/health/session` returned `local:false, ai:true, auth:false, authStatus:"unavailable"`. Therefore hosted identity/isolation and wearable lifecycle acceptance remain unproven. Physical iPhone/Android and screen-reader acceptance also remain pending. The preview build is Ready, but the full product bar is not yet met.

@@ -41,3 +41,7 @@ Inspected the live local app at a 390×844 browser viewport. Found and fixed an 
 At 320×667, the chat header wrapped enough to leave only a small conversation window. Reduced narrow-header spacing and avatar size, hid the redundant subtitle, and reduced the welcome portrait. The conversation viewport now measures about 138px with the composer/consent/navigation visible; no horizontal overflow was detected.
 
 At 667×320, the fixed chat layout placed Send below the viewport (bottom 432px). Short landscape windows now use document scrolling with a bounded conversation region when the keyboard is closed. The reviewed page can scroll through its 683px content; focusing the composer uses the existing keyboard layout, with Send fully inside the viewport (245–293px). These are browser viewport checks, not physical keyboard acceptance. No messages or health records were submitted.
+
+## Green-theme browser review — September 25
+
+Reviewed Today, the first-check-in sheet, and More at 390×844 after restoring forest-green colors. Text, fields, navigation, and sheet close controls are readable against the dark surfaces; the pale briefing keeps dark text. Opened and dismissed the check-in without saving records, then restored the default viewport. This does not replace physical phone, keyboard, or screen-reader acceptance.
