@@ -26,3 +26,7 @@ Restored the original forest-green palette across the health views, dialogs, pub
 ## Soft companion revision — September 25
 
 Reference research: Meta's official Muse page (https://ai.meta.com/muse/) and visual inspection of the installed Muse avatar. The useful direction is a compact soft body, small facial features, quiet expression, and relaxed limbs. Original Wolverine models use a continuous remeshed body, warm face panel, tiny smile, and their own leaf/sun/stone accents. Remove the earlier rabbit ears, separate belly and oversized shoes. These are original Blender models, not copied Meta assets. Portraits use a subtle procedural surface texture; web GLBs use mobile-friendly smooth geometry and matte materials. No facial animation or Muse realtime-avatar capability is implied.
+
+## Companion clarity — September 25
+
+Soft-v2 adds modeled face stitches, eye catchlights and leaf veins, while keeping the approved silhouette. Blender portraits are 1024px at 160 Cycles samples. Posters and choice thumbnails request quality 95; picker posters request an appropriate 360–480px display width. The live viewer uses AgX for companions, tighter framing, and up to 3× device density within a 1.5-million-pixel buffer budget. The mobile picker gives the model a 240px frame. Each companion GLB remains under 800 KB. Procedural fabric detail is in the Blender portrait; the live model uses matte surfaces and modeled details, not a baked fabric texture.

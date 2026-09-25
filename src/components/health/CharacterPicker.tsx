@@ -7,7 +7,7 @@ export default function CharacterPicker({selected,onChoose,disabled,error}: {sel
   const character=characters.find(c=>c.id===selected) || characters[0];
   return <section className={`companion-picker companion-${character.id}`}>
     <div className="companion-portrait"><div className="companion-heading"><span>YOUR EVERYDAY COMPANION</span><h3>{character.title}</h3><p>{traits[character.id]}</p></div><AssetPreview asset={character}/></div>
-    <div className="companion-choices" aria-label="Choose companion">{characters.map(c=><button type="button" key={c.id} aria-pressed={selected===c.id} disabled={disabled} onClick={()=>onChoose(c.id)}><Image src={c.thumbnail} alt="" width={160} height={160}/><strong>{c.title}</strong><small>{selected===c.id?"Your companion":"Choose"}</small></button>)}</div>
+    <div className="companion-choices" aria-label="Choose companion">{characters.map(c=><button type="button" key={c.id} aria-pressed={selected===c.id} disabled={disabled} onClick={()=>onChoose(c.id)}><Image src={c.thumbnail} alt="" width={160} height={160} quality={95} sizes="120px"/><strong>{c.title}</strong><small>{selected===c.id?"Your companion":"Choose"}</small></button>)}</div>
     <p className="companion-note" role="status">{error || "Yours on this device. The same thoughtful Wolverine, whichever companion you choose."}</p>
   </section>;
 }

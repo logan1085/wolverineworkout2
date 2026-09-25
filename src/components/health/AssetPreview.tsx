@@ -15,7 +15,7 @@ export default function AssetPreview({ asset, compact = false }: {
   const ready = readyModel === asset.model;
   return <div className={`asset-preview ${ready ? "asset-ready" : ""} ${compact ? "asset-compact" : ""}`}>
     <div className="asset-poster" aria-hidden={ready}>
-      <Image src={asset.thumbnail} alt={`${asset.title} preview`} width={640} height={640} sizes="(max-width:760px) 180px, 300px" priority={compact}/>
+      <Image src={asset.thumbnail} alt={`${asset.title} preview`} width={1024} height={1024} quality={95} sizes={compact ? "(max-width:760px) 160px, 300px" : "(max-width:760px) 360px, 480px"} priority={compact}/>
     </div>
     <Viewer sketch={sketch} modelUrl={asset.model} compact={compact} downloads={false} onReadyChange={onReadyChange}/>
   </div>;

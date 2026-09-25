@@ -3,7 +3,7 @@ from pathlib import Path
 exec(Path('scripts/blender/build_catalog.py').read_text().split('items=[')[0])
 OUT=ROOT/'public/models/characters'; SOURCE=ROOT/'assets/blender/characters'
 OUT.mkdir(parents=True,exist_ok=True); SOURCE.mkdir(parents=True,exist_ok=True)
-VERSION='soft-v1'
+VERSION='soft-v2'
 
 def plush(name, color):
     m=mat(name,color)
@@ -17,7 +17,7 @@ def plush(name, color):
     return m
 
 def stroke(name, points, radius, material):
-    c=bpy.data.curves.new(name,'CURVE');c.dimensions='3D';c.resolution_u=16;c.bevel_depth=radius;c.bevel_resolution=4
+    c=bpy.data.curves.new(name,'CURVE');c.dimensions='3D';c.resolution_u=10;c.bevel_depth=radius;c.bevel_resolution=3
     sp=c.splines.new('BEZIER');sp.bezier_points.add(len(points)-1)
     for p,co in zip(sp.bezier_points,points):p.co=co;p.handle_left_type='AUTO';p.handle_right_type='AUTO'
     o=bpy.data.objects.new(name,c);bpy.context.collection.objects.link(o);o.data.materials.append(material)
@@ -34,6 +34,7 @@ for slug,title,description,color in [
     body=plush(title+' soft shell',color)
     face=plush('Warm linen face',(.88,.80,.62))
     dark=mat('Espresso eyes',(.025,.034,.022));dark.node_tree.nodes.get('Principled BSDF').inputs['Roughness'].default_value=.36
+    glint=mat('Eye catchlight',(.92,.94,.83))
     blush=plush('Subtle peach',(.70,.39,.28))
     leaf=plush('Leaf accent',(.12,.25,.09))
     # Merge overlapping volumes into a single smooth silhouette, no toy-like seams.
@@ -52,18 +53,30 @@ for slug,title,description,color in [
     mod=o.modifiers.new('Continuous soft form','REMESH');mod.mode='VOXEL';mod.voxel_size=.035;mod.use_smooth_shade=True;bpy.ops.object.modifier_apply(modifier=mod.name)
     mod=o.modifiers.new('Relax surface','SMOOTH');mod.factor=1.25;mod.iterations=5;bpy.ops.object.modifier_apply(modifier=mod.name)
     mod=o.modifiers.new('Silky surface','SUBSURF');mod.levels=1;bpy.ops.object.modifier_apply(modifier=mod.name)
-    mod=o.modifiers.new('Mobile geometry budget','DECIMATE');mod.ratio=.45;bpy.ops.object.modifier_apply(modifier=mod.name)
+    mod=o.modifiers.new('Mobile geometry budget','DECIMATE');mod.ratio=.34;bpy.ops.object.modifier_apply(modifier=mod.name)
     o.name=title+' continuous body'
     # Small face high on the head; no separate belly or large animal features.
     bpy.ops.mesh.primitive_uv_sphere_add(segments=64,ring_count=40,location=(0,-.324,1.39))
     panel=bpy.context.object;panel.scale=(.30,.055,.245);finish(panel,'Linen face panel',face)
     for sign in [-1,1]:
-        sphere('Eye',(sign*.125,-.365,1.43),(.023,.014,.034),dark)
+        sphere('Eye',(sign*.125,-.371,1.43),(.025,.017,.037),dark)
+        sphere('Eye catchlight',(sign*.125-.007,-.387,1.443),(.006,.004,.007),glint)
         sphere('Blush',(sign*.206,-.349,1.355),(.038,.009,.018),blush)
     stroke('Gentle smile',[(-.047,-.372,1.345),(0,-.378,1.323),(.047,-.372,1.345)],.009,dark)
+    # Delicate stitched edge follows the face panel, with individually modeled stitches.
+    thread=plush('Linen stitching',(.65,.58,.42))
+    for i in range(28):
+        a=2*math.pi*i/28
+        x=.278*math.cos(a);z=1.39+.226*math.sin(a)
+        bpy.ops.mesh.primitive_uv_sphere_add(segments=12,ring_count=8,location=(x,-.349,z))
+        stitch=bpy.context.object;stitch.scale=(.006,.004,.012);finish(stitch,'Face stitch',thread)
+        stitch.rotation_euler[1]=math.pi/2-a
     if slug=='moss':
         stem=stroke('Sprout stem',[(.04,0,1.68),(.06,0,1.80),(.13,0,1.87)],.018,leaf)
         sprout=sphere('Single leaf',(.17,0,1.84),(.17,.047,.080),leaf);sprout.rotation_euler[1]=-.4
+        stroke('Leaf midrib',[(.055,-.043,1.80),(.16,-.050,1.84),(.29,-.037,1.89)],.008,body)
+        for x,z in [(.12,1.824),(.20,1.854)]:
+            stroke('Leaf vein',[(x,-.046,z),(x+.01,-.047,z+.032)],.005,body)
     elif slug=='sunny':
         for x,z,angle in [(-.13,1.71,-.5),(0,1.78,0),(.13,1.71,.5)]:
             tuft=sphere('Sun tuft',(x,.01,z),(.09,.085,.14),body);tuft.rotation_euler[1]=angle
@@ -74,9 +87,9 @@ for slug,title,description,color in [
         if o.type=='MESH':o.select_set(True);o.asset_mark()
     filename=slug+'-'+VERSION
     bpy.ops.export_scene.gltf(filepath=str(OUT/(filename+'.glb')),export_format='GLB',use_selection=True,export_apply=True)
-    scene=bpy.context.scene;scene.render.engine='CYCLES';scene.cycles.samples=128;scene.cycles.use_denoising=True
+    scene=bpy.context.scene;scene.render.engine='CYCLES';scene.cycles.samples=160;scene.cycles.use_denoising=True
     scene.view_settings.view_transform='AgX';scene.view_settings.look='AgX - Medium High Contrast'
-    scene.render.resolution_x=768;scene.render.resolution_y=768;scene.render.resolution_percentage=100
+    scene.render.resolution_x=1024;scene.render.resolution_y=1024;scene.render.resolution_percentage=100
     scene.render.image_settings.file_format='PNG';scene.render.film_transparent=True
     scene.world.use_nodes=True;scene.world.node_tree.nodes.get('Background').inputs[0].default_value=(.68,.75,.65,1);scene.world.node_tree.nodes.get('Background').inputs[1].default_value=.25
     bpy.ops.object.camera_add(location=(1.0,-7,2.30));cam=bpy.context.object;cam.rotation_euler=(Vector((0,0,.97))-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.type='ORTHO';cam.data.ortho_scale=2.32;scene.camera=cam

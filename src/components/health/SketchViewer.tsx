@@ -22,9 +22,8 @@ export default function SketchViewer({ sketch, modelUrl, compact = false, downlo
     try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); }
     catch { setLoading(false); setError("Interactive 3D is unavailable on this device."); return; }
     setError("");
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
     const companion = !!modelUrl?.includes("/characters/");
+    renderer.toneMapping = companion ? THREE.AgXToneMapping : THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = companion ? .95 : 1.05;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -60,7 +59,8 @@ export default function SketchViewer({ sketch, modelUrl, compact = false, downlo
     controls.target.copy(center); controls.enablePan = false; controls.minDistance = size*.6; controls.maxDistance = size*6;
     controls.update(); controls.saveState();
     const render = () => renderer.render(scene,camera);
-    const resize = () => { const { width, height } = element.getBoundingClientRect(); if (!width || !height) return; renderer.setSize(width,height); camera.aspect=width/height; camera.updateProjectionMatrix(); render(); };
+    // Resolve small canvases crisply on phones, with a 1.5M-pixel GPU budget.
+    const resize = () => { const { width, height } = element.getBoundingClientRect(); if (!width || !height) return; renderer.setPixelRatio(Math.min(window.devicePixelRatio, 3, Math.sqrt(1500000 / (width * height)))); renderer.setSize(width,height); camera.aspect=width/height; camera.updateProjectionMatrix(); render(); };
     const lost = (event: Event) => { event.preventDefault(); contextLost = true; setLoading(false); onReadyChange?.(false); setError("The 3D view paused. Try loading it again."); };
     renderer.domElement.addEventListener("webglcontextlost", lost);
     controls.addEventListener("change", render);
@@ -74,7 +74,7 @@ export default function SketchViewer({ sketch, modelUrl, compact = false, downlo
       const target = bounds.getCenter(new THREE.Vector3());
       const extent = Math.max(bounds.getSize(new THREE.Vector3()).length(), 1);
       const dimensions = bounds.getSize(new THREE.Vector3());
-      const distance = Math.max(dimensions.y, dimensions.x / camera.aspect) / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov/2))) * 1.35;
+      const distance = Math.max(dimensions.y, dimensions.x / camera.aspect) / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov/2))) * (companion ? 1.18 : 1.35);
       camera.position.copy(target).add(new THREE.Vector3(.22,.13,1).normalize().multiplyScalar(distance));
       floor.position.y = bounds.min.y - .015;
       light.target.position.copy(target); scene.add(light.target);

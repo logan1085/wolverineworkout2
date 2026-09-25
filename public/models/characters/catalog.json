@@ -3,21 +3,21 @@
     "id": "moss",
     "title": "Moss",
     "description": "A soft forest spirit with a little leaf of optimism.",
-    "model": "/models/characters/moss-soft-v1.glb",
-    "thumbnail": "/models/characters/moss-soft-v1.png"
+    "model": "/models/characters/moss-soft-v2.glb",
+    "thumbnail": "/models/characters/moss-soft-v2.png"
   },
   {
     "id": "sunny",
     "title": "Sunny",
     "description": "A pocket of warmth, with a sunny little tuft.",
-    "model": "/models/characters/sunny-soft-v1.glb",
-    "thumbnail": "/models/characters/sunny-soft-v1.png"
+    "model": "/models/characters/sunny-soft-v2.glb",
+    "thumbnail": "/models/characters/sunny-soft-v2.png"
   },
   {
     "id": "pebble",
     "title": "Pebble",
     "description": "A calm little presence with both feet on the ground.",
-    "model": "/models/characters/pebble-soft-v1.glb",
-    "thumbnail": "/models/characters/pebble-soft-v1.png"
+    "model": "/models/characters/pebble-soft-v2.glb",
+    "thumbnail": "/models/characters/pebble-soft-v2.png"
   }
 ]

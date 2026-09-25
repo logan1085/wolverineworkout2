@@ -311,3 +311,9 @@
 .health-app .briefing :focus-visible { outline-color:#38513e; }
 .health-app .memory-switch input::before { background:#edf0e8; }
 .health-app .memory-switch input:checked::before { background:#203426; }
+
+/* Give the companion enough pixels for facial detail in the selection sheet. */
+@media(max-width:760px) {
+ .health-app .companion-picker .asset-preview { --asset-height:240px; }
+}
+.health-app .companion-picker .sketch-canvas { height:var(--asset-height); }
