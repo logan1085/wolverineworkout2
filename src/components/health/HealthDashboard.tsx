@@ -20,6 +20,8 @@ import {
 } from "@/lib/health/model";
 import "./health.css";
 import HealthObject from "./HealthObject";
+import FocusSpace from "./FocusSpace";
+import HomeCalendar from "./HomeCalendar";
 import HealthIcon from "./HealthIcon";
 import Modal from "./Modal";
 import "./sketch.css";
@@ -127,8 +129,6 @@ export default function HealthDashboard() {
   });
   const [notice, setNotice] = useState("");
   const [actionError, setActionError] = useState("");
-  const [objectId, setObjectId] = useState<string | undefined>();
-  function openObject(id: string) { setObjectId(id); setModal("studio"); }
   const [busy, setBusy] = useState(false);
   const [modal, setModal] = useState<
     "checkin" | "activity" | "profile" | "delete" | "context" | "studio" | "character" | null
@@ -607,7 +607,7 @@ export default function HealthDashboard() {
   }
   function ask(text: string) {
     setDraft(text);
-    setTab("Your agent");
+    navigate("Your agent");
   }
   async function garminAction(action: "connect" | "sync" | "disconnect") {
     await act(async () => {
@@ -707,7 +707,7 @@ export default function HealthDashboard() {
         </nav>
         <div className="rail-bottom">
           <button className="studio-launch" onClick={() => setModal("character")}>Choose character</button>
-          <button className="studio-launch" onClick={() => setModal("studio")}>◇ 3D studio</button>
+          <button className="studio-launch" onClick={() => setModal("studio")}>Object collection</button>
           <div className="mini-orb" />
           <p>
             A little more in tune.
@@ -832,9 +832,11 @@ export default function HealthDashboard() {
                   · Rules-based daily guide
                 </details>
               </div>
-              <HealthObject id={companion.character.id} title={`${companion.character.title} · ${briefing.label}`} openLabel="Choose character" description="Your daily companion. Drag to turn." onOpen={() => setModal("character")} live />
+              <HealthObject id={companion.character.id} title={`${companion.character.title} · ${briefing.label}`} openLabel="Choose character" description="Your daily companion." onOpen={() => setModal("character")} live />
             </section>
-            {(check || latest) ? <div className="metrics">
+            <HomeCalendar state={current} today={today} sample={sample} onCheckIn={startCheckin}/>
+            <FocusSpace onAsk={ask}/>
+            {(check || latest) ? <details className="view-disclosure"><summary>Today’s signals</summary><div className="metrics">
               {[
                 {
                   name: "Sleep",
@@ -892,7 +894,7 @@ export default function HealthDashboard() {
                   <Spark values={m.values} />
                 </article>
               ))}
-            </div> : <section className="signals-empty">
+            </div></details> : <section className="signals-empty">
               <div className="signals-icon"><HealthIcon name="activity" /></div>
               <div><span className="eyebrow">YOUR DAILY SIGNALS</span><h2>Your health, in one place.</h2><p>Connect a wearable to see sleep and movement here.</p></div>
               <button className="secondary" onClick={() => navigate("Connections")}>Connect your apps <span aria-hidden="true">↗</span></button>
@@ -957,40 +959,8 @@ export default function HealthDashboard() {
                 })}
               </section>
             </details>
-            {current.activities.length > 0 &&             <section className="panel recent-panel">
-              <div className="section-heading">
-                <h2>Recent activity</h2>
-                <button
-                  className="quiet-button"
-                  onClick={() => setTab("Activity")}
-                >
-                  All activity ↗
-                </button>
-              </div>
-              {current.activities.length ? (
-                current.activities
-                  .slice(0, 3)
-                  .map((a) => (
-                    <ActivityRow key={a.id} item={a} sample={sample} />
-                  ))
-              ) : (
-                <div className="empty-inline">
-                  <p>Your first activity starts the story.</p>
-                  <button
-                    className="secondary"
-                    onClick={() => setModal("activity")}
-                  >
-                    Log an activity
-                  </button>
-                </div>
-              )}
-            </section>}
-            <details className="view-disclosure"><summary>Explore rest & daily rituals</summary>            <div className="section-heading daily-section-heading"><h2>Make a little space for you</h2><span className="subtle">One small step at a time</span></div>
-            <div className="daily-objects">
-              <HealthObject id="bottle" title="A moment to reset" description="Make room for a small daily ritual." onOpen={openObject} action="Plan my day" onAction={() => ask("Help me choose one manageable daily habit based on my context.")} />
-              <HealthObject id="moon" title="Make space for rest" description="Reflect on your sleep and energy." onOpen={openObject} action="Check in" onAction={startCheckin} />
-            </div>
-            </details>
+
+
           </>
         )}
         {tab === "Your agent" && (
@@ -1189,7 +1159,7 @@ export default function HealthDashboard() {
                 <div
                   className={`chat-compose-area ${consent ? "has-consent" : ""}`}
                 >
-                  <div className="composer-tools"><button className="studio-launch" onClick={() => setModal("studio")}>◇ 3D studio</button>{thinking && <button className="quiet-button" onClick={stopReply}>Stop response</button>}</div>
+                  <div className="composer-tools"><button className="studio-launch" onClick={() => setModal("studio")}>Object collection</button>{thinking && <button className="quiet-button" onClick={stopReply}>Stop response</button>}</div>
                   {(!online || chatError) && <div className="chat-recovery" role="status">{!online ? "You’re offline. Reconnect to send; your draft stays here." : chatError}</div>}
                   <label className="consent">
                     <input
@@ -1303,6 +1273,7 @@ export default function HealthDashboard() {
               </button>
             </div>
 
+            <FocusSpace kind="movement" onAsk={ask}/>
             <div className="activity-summary">
               <div>
                 <span className="eyebrow">
@@ -1398,7 +1369,7 @@ export default function HealthDashboard() {
               )}
             </section>
             <details className="view-disclosure"><summary>Movement ideas & workout coach</summary>
-            <HealthObject id="dumbbell" title="Movement that fits your day" description="Build around your time, preferences and current energy." onOpen={openObject} action="Talk through a plan" onAction={() => ask("Help me plan movement that fits my available time, preferences and how I feel today.")} />
+
             <div className="workout-link">
               <div>
                 <h2>Want a workout built around you?</h2>
@@ -1428,6 +1399,7 @@ export default function HealthDashboard() {
                 ＋ Daily check-in
               </button>
             </div>
+            <FocusSpace kind="reflection" onAsk={ask}/>
             <div className="journal-grid">
               <section className="panel">
                 <div className="section-heading">
@@ -1478,12 +1450,7 @@ export default function HealthDashboard() {
               </section>
 
             </div>
-            <details className="view-disclosure"><summary>Reflect & recover</summary>
-            <div className="daily-objects">
-              <HealthObject id="balance-stones" title="Notice how you feel" description="Your own observations belong alongside your watch data." onOpen={openObject} action="Daily check-in" onAction={startCheckin}/>
-              <HealthObject id="yoga-mat" title="Room to recover" description="Talk through a gentler day, without a performance target." onOpen={openObject} action="Discuss recovery" onAction={() => ask("Help me think through a gentle recovery day based on my recent context. Ask if you need more information.")}/>
-            </div>
-<button className="quiet-button" onClick={() => ask("Help me reflect on my latest check-in.")}>Reflect with my agent ↗</button></details>
+
           </>
         )}
         {tab === "Memory" && (
@@ -1811,7 +1778,7 @@ export default function HealthDashboard() {
         </Modal>
       )}
       {modal === "character" && <Modal returnFocusRef={dialogTrigger} title="Meet your companion." onClose={() => setModal(null)}><CharacterPicker selected={companion.character.id} onChoose={companion.choose} disabled={!companion.ready} error={companion.error}/></Modal>}
-      {modal === "studio" && (<Modal returnFocusRef={dialogTrigger} title="Make something yours." onClose={() => setModal(null)}><SketchStudio key={`${user?.id || "local"}:${objectId || "catalog"}`} initialId={objectId} /></Modal>)}
+      {modal === "studio" && (<Modal returnFocusRef={dialogTrigger} title="Make something yours." onClose={() => setModal(null)}><SketchStudio key={user?.id || "local"} /></Modal>)}
       {modal === "context" && (
         <Modal returnFocusRef={dialogTrigger} title="What your agent sees" onClose={() => setModal(null)}>
           <p>

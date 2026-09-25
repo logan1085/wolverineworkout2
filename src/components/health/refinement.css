@@ -317,3 +317,63 @@
  .health-app .companion-picker .asset-preview { --asset-height:240px; }
 }
 .health-app .companion-picker .sketch-canvas { height:var(--asset-height); }
+
+/* Authored portraits stay visible until someone explicitly enters the 3D view. */
+.health-app .asset-still { min-height:var(--asset-height); }
+.health-app .asset-still:not(.asset-compact) { padding-top:var(--asset-height); min-height:0; }
+.health-app .asset-mode { display:block; margin:10px auto 0; min-height:44px; font-size:12px; }
+.health-app .asset-still .asset-poster { pointer-events:auto; }
+.health-app .focus-space { margin:24px 0; padding:24px; border:1px solid #35483c; border-radius:22px; background:radial-gradient(ellipse at 18% 60%,#344d3a88,transparent 60%),#17251d; }
+.health-app .focus-space-heading { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+.health-app .focus-space-heading > .eyebrow { font-size:10px; color:#b0bca8; letter-spacing:.12em; }
+.health-app .focus-switch { display:flex; gap:4px; }
+.health-app .focus-switch button { min-height:44px; padding:10px 14px; font-size:12px; border-radius:24px; border:1px solid transparent; background:transparent; color:#b8c6b6; }
+.health-app .focus-switch button[aria-pressed="true"] { background:#dce5cf; color:#24372c; }
+.health-app .focus-space-body { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:28px; align-items:center; }
+.health-app .focus-art { min-width:0; }
+.health-app .focus-art .asset-preview { --asset-height:220px; }
+.health-app .focus-art .sketch-canvas { height:var(--asset-height); margin:0; background:transparent; }
+.health-app .focus-art .sketch-controls { justify-content:center; }
+.health-app .focus-art .sketch-hint { text-align:center; }
+.health-app .focus-copy h2 { font:400 clamp(26px,3vw,38px)/1.1 Georgia,serif; letter-spacing:-.8px; margin:10px 0 14px; color:#eef0df; }
+.health-app .focus-copy > p { font-size:14px; line-height:1.7; color:#b8c6b6; max-width:320px; margin:0 0 22px; }
+.health-app .home-calendar { margin:28px 0; padding:24px; background:#18261e; border:1px solid #35483c; border-radius:22px; }
+.health-app .calendar-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; }
+.health-app .calendar-header h2 { font:400 27px/1.2 Georgia,serif; margin:6px 0; }
+.health-app .calendar-header .eyebrow { color:#b0bca8; font-size:10px; }
+.health-app .calendar-layout { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,.85fr); gap:30px; }
+.health-app .calendar-month { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+.health-app .calendar-month h3 { font:500 14px/1.4 var(--font-inter),sans-serif; margin:0; }
+.health-app .calendar-month button { min-width:44px; min-height:44px; font-size:24px; color:#e0e8d4; background:transparent; border:1px solid #405144; border-radius:50%; }
+.health-app .calendar-weekdays,.health-app .calendar-days { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:4px; text-align:center; }
+.health-app .calendar-weekdays { color:#95a58f; font-size:11px; padding:0 0 8px; }
+.health-app .calendar-days button { min-width:0; min-height:44px; border:1px solid transparent; border-radius:12px; background:transparent; color:#e4e9db; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; font-size:13px; padding:5px 0; }
+.health-app .calendar-days button[aria-current="date"] { border-color:#6c8161; }
+.health-app .calendar-days button[aria-pressed="true"] { background:#dae7c1; color:#203426; border-color:#dae7c1; }
+.health-app .calendar-days i { width:4px; height:4px; border-radius:50%; background:transparent; }
+.health-app .calendar-days i.has-record { background:#bad391; }
+.health-app .calendar-days button[aria-pressed="true"] i.has-record { background:#38513e; }
+.health-app .calendar-key { display:flex; align-items:center; gap:8px; color:#97a991; font-size:11px; margin:16px 0 0; line-height:1.5; }
+.health-app .calendar-key i { width:5px; height:5px; background:#bad391; border-radius:50%; flex-shrink:0; }
+.health-app .calendar-agenda { border-left:1px solid #35483c; padding:18px 0 18px 28px; overflow-wrap:anywhere; }
+.health-app .calendar-agenda h3 { margin:10px 0 20px; font:400 23px/1.2 Georgia,serif; }
+.health-app .calendar-agenda p { color:#aebda5; font-size:13px; line-height:1.7; }
+.health-app .calendar-agenda article { padding:12px 0; border-top:1px solid #35483c; }
+.health-app .calendar-agenda article strong { font-size:13px; font-weight:500; }
+.health-app .calendar-agenda article p { margin:6px 0; }
+.health-app .calendar-agenda .secondary { margin-top:12px; }
+@media(max-width:760px) {
+ .health-app .focus-space,.health-app .home-calendar { padding:18px; border-radius:18px; margin:20px 0; }
+ .health-app .focus-space-heading { flex-direction:column; align-items:flex-start; gap:8px; }
+ .health-app .focus-switch { width:100%; }
+ .health-app .focus-switch button { flex:1; padding:10px 8px; }
+ .health-app .focus-space-body { grid-template-columns:minmax(0,1fr); gap:4px; }
+ .health-app .focus-art .asset-preview { --asset-height:170px; }
+ .health-app .focus-copy { text-align:center; padding:4px 0 12px; }
+ .health-app .focus-copy > .eyebrow { display:none; }
+ .health-app .focus-copy h2 { font-size:28px; }
+ .health-app .focus-copy > p { margin:0 auto 18px; }
+ .health-app .calendar-layout { grid-template-columns:minmax(0,1fr); gap:18px; }
+ .health-app .calendar-agenda { border-left:0; border-top:1px solid #35483c; padding:20px 0 0; }
+ .health-app .calendar-days,.health-app .calendar-weekdays { gap:2px; }
+}

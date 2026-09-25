@@ -34,3 +34,11 @@ Soft-v2 adds modeled face stitches, eye catchlights and leaf veins, while keepin
 ## Blender sculpt and material pass — September 25
 
 The atelier revision replaces Moss's oval leaf with a tapered, cupped surface and finer veins; gives the body a relaxed asymmetric arm pose; projects the face panel onto the actual body surface; and sinks finer stitches into its edge. A 256px tangent-space fabric normal is baked in Blender and embedded in each GLB, so the web version retains material detail. The renderer disposes uploaded texture resources on unmount. Review the source from front, three-quarter and profile angles with `scripts/blender/review_character.py`; the regeneration script supports `--only moss` for focused iteration. Original artwork and the green palette remain intact.
+
+## Companion-led focus spaces and Home calendar — September 25
+
+The Blender portrait is now the stable default everywhere AssetPreview is used. A view no longer loads WebGL automatically and replaces the authored lighting with a flatter live render. Full previews expose an explicit Explore in 3D / Back to portrait control; compact Home portraits stay still. Changing assets resets the interactive view, and exiting it releases the canvas and textures.
+
+Home includes Your rhythm: a Monday-first month calendar with selectable day agendas from existing check-ins, activities, Garmin daily metrics and completed daily steps. It supports month navigation, Today, sample labels, empty days and a today-only check-in action. This is a recorded-history calendar, not an external calendar connection or a future scheduling system. Dates are local calendar dates at noon to avoid UTC shifts.
+
+Movement, Rest and Reflection focus spaces integrate the original Blender objects into the page itself, with one contextual next action. Home can switch among all three; Activity opens Movement and Journal opens Reflection. Their actions prepare an agent message for review, without sending it. The optional object collection remains available for browsing and creating objects. No decorative WebGL scenes load until requested.
