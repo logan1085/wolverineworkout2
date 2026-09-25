@@ -50,7 +50,19 @@ export default function SketchViewer({ sketch, modelUrl, compact = false, downlo
     const rim = new THREE.DirectionalLight(0xd8e7ff, companion ? 1.2 : 2); rim.position.set(-3,3,-4); scene.add(rim);
     let disposed = false;
     let contextLost = false;
-    const disposeGroup = (root: THREE.Object3D) => root.traverse(object => { if (object instanceof THREE.Mesh) { object.geometry.dispose(); const materials = Array.isArray(object.material) ? object.material : [object.material]; materials.forEach(material => material.dispose()); } });
+    const disposeGroup = (root: THREE.Object3D) => {
+      const textures = new Set<THREE.Texture>();
+      root.traverse(object => {
+        if (!(object instanceof THREE.Mesh)) return;
+        object.geometry.dispose();
+        const materials = Array.isArray(object.material) ? object.material : [object.material];
+        materials.forEach(material => {
+          Object.values(material).forEach(value => { if (value instanceof THREE.Texture) textures.add(value); });
+          material.dispose();
+        });
+      });
+      textures.forEach(texture => { texture.dispose(); const image = texture.source.data; if (typeof ImageBitmap !== "undefined" && image instanceof ImageBitmap) image.close(); });
+    };
     const box = new THREE.Box3().setFromObject(group), center = modelUrl ? new THREE.Vector3() : box.getCenter(new THREE.Vector3());
     const size = Math.max(box.getSize(new THREE.Vector3()).length(), 1);
     const camera = new THREE.PerspectiveCamera(38,1,.01,size*100);

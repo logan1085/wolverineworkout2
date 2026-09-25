@@ -30,3 +30,7 @@ Reference research: Meta's official Muse page (https://ai.meta.com/muse/) and vi
 ## Companion clarity — September 25
 
 Soft-v2 adds modeled face stitches, eye catchlights and leaf veins, while keeping the approved silhouette. Blender portraits are 1024px at 160 Cycles samples. Posters and choice thumbnails request quality 95; picker posters request an appropriate 360–480px display width. The live viewer uses AgX for companions, tighter framing, and up to 3× device density within a 1.5-million-pixel buffer budget. The mobile picker gives the model a 240px frame. Each companion GLB remains under 800 KB. Procedural fabric detail is in the Blender portrait; the live model uses matte surfaces and modeled details, not a baked fabric texture.
+
+## Blender sculpt and material pass — September 25
+
+The atelier revision replaces Moss's oval leaf with a tapered, cupped surface and finer veins; gives the body a relaxed asymmetric arm pose; projects the face panel onto the actual body surface; and sinks finer stitches into its edge. A 256px tangent-space fabric normal is baked in Blender and embedded in each GLB, so the web version retains material detail. The renderer disposes uploaded texture resources on unmount. Review the source from front, three-quarter and profile angles with `scripts/blender/review_character.py`; the regeneration script supports `--only moss` for focused iteration. Original artwork and the green palette remain intact.
