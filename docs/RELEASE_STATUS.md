@@ -83,3 +83,9 @@ Rebuilt Moss, Sunny, and Pebble in Blender with continuous soft bodies, small li
 ## Companion detail and clarity — September 25, 2026
 
 `e19388b` is live at https://wolverineworkout2.vercel.app (production READY, deployment `dpl_9G8pkQYVDa4A9a8s7ga95Zgjzwa4`). Adds modeled facial stitches, eye catchlights and leaf veins, 1024px Blender portraits, quality-95 responsive image requests, tighter live framing, AgX companion tone mapping, and a larger mobile picker canvas. Live rendering supports up to 3× density capped at 1.5M pixels. All eight catalog checks and local/hosted builds pass. Browser review verified the picker and canvas buffer sizes; production loads `moss-soft-v2.png` at quality 95. The approved soft silhouette is preserved. Physical-device performance and prior account/provider acceptance remain open.
+
+## Focused Blender refinement — September 25, 2026
+
+`744fd74` is live at https://wolverineworkout2.vercel.app (production READY, `dpl_Gr54S1VN4SGME279dU3JLwL9Zo5t`). Rebuilt the face as a surface conforming to the body, refined stitching, relaxed the arm pose, and replaced Moss's primitive leaf with a tapered cupped mesh and corrected stem. Baked fabric normals now ship inside all three GLBs; texture resources are released when viewers unmount. Editable Blender sources and 1024px portraits share the exported geometry.
+
+Reviewed front, three-quarter, and profile Blender renders; all three final portraits; local mobile picker, character switches, and rotation/reset; and the live production picker using atelier-v2 assets. Nine catalog tests and local/hosted production builds passed. Models are 681–796 KB. This art release does not resolve prior account/provider or physical-device acceptance work.
