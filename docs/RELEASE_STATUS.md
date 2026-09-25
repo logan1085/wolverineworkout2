@@ -65,3 +65,7 @@ A fresh hosted session check still returns `auth:false, authStatus:"unavailable"
 ## Minimal views — September 23, 2026
 
 `15133ce` is Ready on Vercel Preview at https://wolverineworkout2-1s050hnnp-logan-horowitzs-projects.vercel.app. Simplified all six main health views: shorter titles, removed promotional duplication, compact empty states, record-first Activity/Journal, focused chat with accessible Context, memory facts and toggle first, concise provider summaries, and native disclosures for secondary tools. Existing companions and object library remain accessible. Reviewed local mobile Today/Activity/Journal/Memory/Connections and desktop agent; confirmed Context opens, the daily plan exposes all three actions, and the normal browser viewport was restored. Local build and final lint/type validation passed; hosted build is Ready. Existing account/provider acceptance blockers remain open.
+
+## Forest-green palette restored — September 25, 2026
+
+`2865e46` is Ready on Vercel Preview at https://wolverineworkout2-bp09f89bf-logan-horowitzs-projects.vercel.app. Restored forest-green surfaces, sage accents, the pale daily briefing, and matching public-page and app-icon colors. Preserved the minimal view hierarchy and rounded companions. Local browser review covered Today, the agent view, and its Context dialog. Production build including lint and type validation passed; hosted build is Ready.
