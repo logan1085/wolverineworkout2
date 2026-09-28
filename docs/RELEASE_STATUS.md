@@ -115,3 +115,9 @@ Passed 22 targeted tests (7 routine, 12 health, 3 calendar) and local/hosted bui
 `b873c25` is live at https://wolverineworkout2.vercel.app (production READY, `dpl_GqC1peeZyZ7Vds61GzsRvntqXGC7`). Adds idle cross-tab/focus refresh, stale snapshot checks for saves/deletes, shared Web Lock serialization where supported, and identity guards on late save/sync responses. Open forms preserve their base snapshot and reject conflicting saves; dismissal refreshes current records. Tests do not certify real cloud-account isolation.
 
 Passed 22 targeted tests (3 local storage, 7 routine, 12 health), lint, and local/hosted builds. Two isolated localhost tabs verified that a stale routine save cannot erase the other tab's task completion, closing the form refreshes progress, and subsequent undo propagates without reload. Production Home loads after deployment. The owner's health preferences were untouched; previous external-account and physical-device acceptance remains open.
+
+## Original apple companion family — September 28, 2026
+
+`5e272aa` is live at https://wolverineworkout2.vercel.app (production READY, `dpl_21eQ6Dkpc5NyNi7bWrYPFNTvigfj`). Replaces the selectable family with Pip, Sprout, and Honey: original Blender apple characters with lobed bodies, indented tops, bent stems, cupped leaves, seed-shaped eyes, waving mitten hands, and small shoes. Includes editable Blender sources, a reproducible generator, versioned apple-v2 GLBs and 1024px transparent portraits. Retired saved character IDs fall back to Pip. Home, chat, onboarding, and the picker use the shared catalog; interactive 3D remains opt-in.
+
+All nine catalog checks and local/hosted production builds including lint/types passed. Local mobile browser review covered Home, character switching, chat, and interactive rotation. Production verification confirms Pip's apple-v2 portrait loads at quality 95. Existing account/provider and physical-device acceptance remains separate and incomplete.
