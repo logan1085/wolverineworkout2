@@ -127,3 +127,9 @@ All nine catalog checks and local/hosted production builds including lint/types 
 `5948175` is live at https://wolverineworkout2.vercel.app (production READY, `dpl_7mR1J7CEgrmcWYZPoCcyU9y9z6iH`). Four Blender render/critique passes replaced the literal apple with a continuous rounded sprout creature, refined limb joins and waving pose, and polished the silhouette. Pip, Sprout and Honey share versioned sprite-v4 portraits and GLBs. The user approved this direction; the reference and iteration studies are saved in `docs/studio/COMPANION_DESIGN.md`.
 
 Nine asset checks and local/hosted production builds passed. Reviewed all three final renders, the mobile picker, and the matching interactive 3D appearance. Each GLB remains below 800 KB. Existing account/provider acceptance remains separate.
+
+## Researched training-plan release — September 28, 2026
+
+`c0d10a2` is live at https://wolverineworkout2.vercel.app (production READY, `dpl_uTNPthP9xKHuHJcDZenogujXtEDR`). Includes the earlier week-first Home plus a four-week consistency block with current-comfort setup, preview before activation, optional familiar strength, recovery spacing, saved session details, completion/undo, skip/reopen, recovery substitution, and collision-aware rescheduling. Research and execution notes are in `docs/RUNNA_DIRECTION.md`.
+
+Passed 37 targeted training/health/routine/local-storage/context/calendar checks and local/hosted builds. Isolated 390px browser review verified save/reload, status changes, direct session details, successful rescheduling and visible collision feedback. Production verification opened the new setup flow; no plan was saved for the owner. Device persistence is verified; existing signed-in account/provider acceptance remains open. One active block only; race progression, archives and watch workout delivery are not included.
