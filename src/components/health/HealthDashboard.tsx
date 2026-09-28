@@ -844,7 +844,7 @@ export default function HealthDashboard() {
               <HealthObject id={companion.character.id} title={`${companion.character.title} · ${briefing.label}`} openLabel="Choose character" description="Your daily companion." onOpen={() => setModal("character")} live />
             </section>
             {!sample && <DailyRoutine state={data} today={today} disabled={!loaded || busy || !!historyError} onSetup={()=>setModal("onboarding")} onAction={id=>{if(id==="reflection")startCheckin();else if(id==="movement")setModal("activity");else ask("Help me choose a simple wind-down ritual for tonight based on my routine and recent context.");}} onToggle={id=>void act(async()=>{const key=`${today}:routine-${id}`;await save({...data,completed:data.completed.includes(key)?data.completed.filter(c=>c!==key):[...data.completed,key].slice(-1500)});})}/>}
-            <HomeCalendar state={current} today={today} sample={sample} onCheckIn={startCheckin}/>
+            <HomeCalendar state={current} today={today} sample={sample} disabled={!loaded || busy || !!historyError} onCheckIn={startCheckin}/>
             <FocusSpace onAsk={ask}/>
             {(check || latest) ? <details className="view-disclosure"><summary>Today’s signals</summary><div className="metrics">
               {[
@@ -1729,7 +1729,7 @@ export default function HealthDashboard() {
         </Modal>
       )}
       {modal === "character" && <Modal returnFocusRef={dialogTrigger} title="Meet your companion." onClose={() => setModal(null)}><CharacterPicker selected={companion.character.id} onChoose={companion.choose} disabled={!companion.ready} error={companion.error}/></Modal>}
-      {modal === "onboarding" && <Modal returnFocusRef={dialogTrigger} title="Make it yours." onClose={()=>{if(!busy)setModal(null);}}><RoutineOnboarding profile={data.profile} characterId={companion.character.id} busy={busy} onSave={async(profile,characterId)=>{setBusy(true);try{await save({...data,profile});companion.choose(characterId);setModal(null);setNotice("Your daily routine is ready.");}finally{setBusy(false);}}}/></Modal>}
+      {modal === "onboarding" && <Modal returnFocusRef={dialogTrigger} title="Make it yours." pending={busy} onClose={()=>{if(!busy)setModal(null);}}><RoutineOnboarding profile={data.profile} characterId={companion.character.id} busy={busy} onSave={async(profile,characterId)=>{setBusy(true);try{await save({...data,profile});companion.choose(characterId);setModal(null);setNotice("Your daily routine is ready.");}finally{setBusy(false);}}}/></Modal>}
       {modal === "studio" && (<Modal returnFocusRef={dialogTrigger} title="Make something yours." onClose={() => setModal(null)}><SketchStudio key={user?.id || "local"} /></Modal>)}
       {modal === "context" && (
         <Modal returnFocusRef={dialogTrigger} title="What your agent sees" onClose={() => setModal(null)}>

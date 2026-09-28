@@ -88,3 +88,11 @@ Ran three sequential synthetic HTTP evaluation passes against the current runtim
 ### Resumed launch audit — September 25
 
 The green-theme revision passed a 390×844 browser review of Today, check-in, and More; see mobile/USAGE.md. A fresh authenticated Vercel CLI request to the deployed `/api/health/session` returned `local:false, ai:true, auth:false, authStatus:"unavailable"`. Therefore hosted identity/isolation and wearable lifecycle acceptance remain unproven. Physical iPhone/Android and screen-reader acceptance also remain pending. The preview build is Ready, but the full product bar is not yet met.
+
+## Routine integration audit — September 28
+
+Previous goal turn: progress (onboarding, streaks and Blender revisions shipped). This pass inspected current runtime and code instead of treating that ship as complete-product acceptance. Production account status still returns `auth:false, authStatus:"unavailable"`; the owner has been asked to restore/access the existing Wolverine Supabase project. No replacement account, provider configuration or physical-device verification is implied.
+
+Found and fixed a disagreement between the routine and briefing: the routine previously ignored high stress and short current sleep. Both now share the same pacing rule, including explicit self-reported sleep precedence and stale-date exclusion. Wind-down duration respects a five-minute preference. Onboarding keeps existing time choices, blocks all editing/dismissal while saving, and moves focus to the new heading on each step. The Home calendar follows the current local day until a history day is explicitly selected; its check-in action waits for history loading to finish.
+
+The full product remains unproven: real identity/isolation, Garmin/Strava lifecycle acceptance, physical mobile behavior, accessibility and qualitative multi-day agent review remain open. The release-status summary was updated to distinguish authorized production publishing from completion of these requirements.

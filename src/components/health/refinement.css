@@ -439,3 +439,7 @@
 .health-app .routine-week > div { text-align:center; color:#92a48a; font-size:11px; }
 .health-app .routine-week b { display:grid; place-items:center; width:30px; height:30px; margin:7px auto 0; border:1px solid #485b3f; border-radius:50%; font-size:14px; }
 .health-app .routine-week .earned b { background:#d9e9b0; color:#263a25; border-color:#d9e9b0; }
+.health-app .routine-onboarding > .onboarding-fields { padding:0; margin:0; border:0; min-width:0; }
+.health-app .onboarding-fields > p:not(.eyebrow) { color:#b6c3af; line-height:1.7; font-size:14px; }
+.health-app .onboarding-fields:disabled { opacity:.75; }
+.health-app .onboarding-fields h3:focus { outline:none; }

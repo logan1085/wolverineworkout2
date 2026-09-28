@@ -1,8 +1,8 @@
 # Wolverine release status
 
-Latest visual/asset/build verification: September 23, 2026. The account and device acceptance requirements below remain open; see the dated release entries for the verified revisions.
+Latest shipped visual/asset/build verification: September 28, 2026. The account and device acceptance requirements below remain open; see the dated release entries for the verified revisions.
 
-**Not ready to claim a complete connected health product.** The current preview supports local check-ins, activity records, device-local memory, characters, 3D objects and the implemented UI. Its configured account service is unavailable, and neither wearable integration is configured. A passing build does not remove those blockers.
+**Not ready to claim a complete connected health product.** The production app supports local check-ins, activity records, device-local memory, personal routines/streaks, a history calendar, characters and contextual 3D objects. Its configured account service is unavailable, and neither wearable integration has passed real-account acceptance. A passing build does not remove those blockers.
 
 ## Requirement evidence
 
@@ -11,21 +11,23 @@ Latest visual/asset/build verification: September 23, 2026. The account and devi
 | Refined mobile app | Browser review at 390×844; Today, agent, companion selection, modal keyboard boundaries and focus return; latest production build passed | Physical iOS/Android keyboard, large text, landscape and home-screen walkthrough in `docs/mobile/USAGE.md` |
 | Personal health agent | Live fictional HTTP suite; 14 targeted checks pass on prompt `wolverine-health-2026-09-22.2`; outputs and qualitative review retained | Repeated/multi-turn review; profile available-time wording remains imperfect; no clinical validation claimed |
 | Inspectable memory | Local confirmed facts and chat history; edit/forget/expiry flows; bounded context brief and source discrepancies; relevant unit tests | Real two-account isolation, deployed migrations/RLS, cross-tab and account-switch acceptance |
+| Personalized onboarding and streaks | Three-step setup, saved preferences, daily actions, deduplicated local-day streaks and seven-day strip; local browser persistence/undo verified | Authenticated persistence and two-account isolation |
+| Home calendar | Month navigation and recorded-day agendas; local browser and calendar tests | Physical screen-reader/touch acceptance |
 | Public soul and memory documents | Runtime-generated `public/SOUL.md`, policy-only `public/MEMORY.md`, `/transparency` | Continue regeneration when behavior changes; never publish personal health records |
 | Blender object catalog throughout app | Editable Blender sources, GLB models, portrait assets, integrated activity/journal/Today cards and studio | Independent GLB viewer and physical touch/GPU checks |
 | Choose a character | Moss, Sunny, Pebble; saved per-device/account scope; selection verified across Today/chat and reload | Cloud preference sync is not implemented or claimed |
-| Smooth 3D experience | Poster visible before chunk/model; successful renderer handoff and rotation verified; retry/error handling implemented | GPU loss and network-failure fault testing on phones; no performance score claimed |
+| Smooth 3D experience | Detailed portrait remains the default; explicit 3D entry/return and rotation verified; retry/error handling implemented | GPU loss and network-failure fault testing on phones; no performance score claimed |
 | Garmin account connection | OAuth/import/encrypted-token implementation, synthetic tests and HTTP guards | Approved provider configuration, restored Supabase, migrations, real connect/sync/refresh/disconnect |
 | Strava account connection | Separate owner-only live connector implementation and guards | Eligible registered client, configured tools/credentials and real lifecycle verification; not general multi-user availability |
-| GitHub and Vercel delivery | `feat/personal-health-agent` pushed; latest Preview Ready; stable preview alias below | Production promotion follows connected-account and device acceptance |
+| GitHub and Vercel delivery | `feat/personal-health-agent` pushed; production Ready at https://wolverineworkout2.vercel.app; dated ships below | Connected-account and physical-device acceptance still pending despite authorized production publishing |
 
-## Current external evidence
+## Current and historical external evidence
 
-- Hosted `/api/health/session` returned `local:false`, `ai:true`, `auth:false`, `authStatus:"unavailable"` during this audit.
-- Vercel Preview environment inventory contains only `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `OPENAI_API_KEY`. No credential values were printed. Garmin, Strava, server service-role and connector-encryption configuration are absent.
+- Hosted `/api/health/session` returned `local:false`, `ai:true`, `auth:false`, `authStatus:"unavailable"` on September 28, 2026.
+- September 23 inventory (not rechecked in this pass): Vercel Preview environment contained only `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `OPENAI_API_KEY`. No credential values were printed. Garmin, Strava, server service-role and connector-encryption configuration are absent.
 - Earlier configured-host DNS and auth-settings checks failed with `ENOTFOUND`; this audit confirms account unavailability persists. No database records have been read or changed.
 - The Supabase dashboard currently presents a sign-in screen. No authenticated administrative session is available to inspect whether Wolverine's project can be restored.
-- All 53 current unit tests pass. The last build passes lint, types and compilation with the existing Supabase realtime dynamic-dependency warning.
+- Test/build evidence is recorded per release below. Those checks do not establish real account isolation or provider lifecycle acceptance.
 
 ## Unblocking sequence
 
@@ -33,7 +35,7 @@ Latest visual/asset/build verification: September 23, 2026. The account and devi
 2. Configure the approved project and secrets through the provider dashboards, apply the three checked-in migrations, and verify sign-in plus isolation with two dedicated test accounts.
 3. Configure and authorize an eligible Garmin app/account (or the supported personal Strava flow). Follow `../CONNECTIONS.md`; do not advertise a connector merely because its code exists.
 4. Complete the secure-deployment physical-phone checklist, including failure recovery and keyboard use. Local development authentication must remain loopback-only.
-5. Resolve remaining evaluation findings, review the release evidence and promote the verified revision to production.
+5. Resolve remaining evaluation findings and publish the verified connected-account revision. The current local-first product is already on production by user request.
 
 No passwords, API keys or health exports should be sent through chat. The requested next user action is signing into the existing Supabase account, not creating or purchasing a new project.
 

@@ -120,14 +120,19 @@ export function dailyTrends(state: HealthState, today = dayKey()) {
     };
   });
 }
+/** Shared conservative pacing rule for the briefing and the personal routine. */
+export function dayNeedsRest(state: HealthState, today = dayKey()) {
+  const check = state.checkIns.find(x => x.date === today);
+  const metric = state.metrics.find(x => x.date === today);
+  const sleep = check?.sleepHours ?? metric?.sleepHours;
+  return (!!check && (check.energy <= 2 || check.soreness >= 4 || check.stress >= 4)) ||
+    (sleep !== undefined && sleep < 6);
+}
 export function dailyBriefing(state: HealthState, today = dayKey()) {
   const check = state.checkIns.find((x) => x.date === today);
   const metric = state.metrics.find((x) => x.date === today);
   const sleep = check?.sleepHours ?? metric?.sleepHours;
-  const easy =
-    (!!check &&
-      (check.energy <= 2 || check.soreness >= 4 || check.stress >= 4)) ||
-    (sleep !== undefined && sleep < 6);
+  const easy = dayNeedsRest(state, today);
   const hasData = !!check || sleep !== undefined;
   return {
     title: !hasData

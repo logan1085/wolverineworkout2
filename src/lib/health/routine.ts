@@ -1,15 +1,15 @@
-import type { HealthState, RoutineGoal } from "./model";
+import { dayNeedsRest, type HealthState, type RoutineGoal } from "./model";
 export type DailyTask = { id:RoutineGoal; title:string; detail:string; action:string; done:boolean; automatic:boolean };
 const key=(d:Date)=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
 export function dailyTasks(state:HealthState,today:string):DailyTask[] {
   const routine=state.profile.routine;
   if(!routine) return [];
   const check=state.checkIns.find(c=>c.date===today);
-  const easy=routine.pace==="gentle" || !!check && (check.energy<=2 || check.soreness>=4);
+  const easy=routine.pace==="gentle" || dayNeedsRest(state,today);
   const minutes=easy ? Math.min(state.profile.minutes,10) : state.profile.minutes;
   const definitions:Record<RoutineGoal,{title:string;detail:string;action:string;automatic:boolean}>={
-    movement:{title:easy ? "Choose comfortable movement or rest" : `${minutes} minutes of movement`,detail:easy ? "Keep it comfortable. Choosing rest counts too." : "A walk, a workout, or movement you enjoy.",action:"Log movement",automatic:state.activities.some(a=>a.date===today)},
-    rest:{title:"Make space to wind down",detail:routine.pace==="gentle" ? "Take two quiet minutes away from your screen." : "Set aside ten quiet minutes before bed.",action:"Plan my wind-down",automatic:false},
+    movement:{title:easy ? "Choose comfortable movement or rest" : `${minutes} minutes of movement`,detail:easy ? `Up to ${minutes} comfortable minutes, or choose rest.` : "A walk, a workout, or movement you enjoy.",action:"Log movement",automatic:state.activities.some(a=>a.date===today)},
+    rest:{title:"Make space to wind down",detail:routine.pace==="gentle" ? "Take two quiet minutes away from your screen." : `Set aside ${Math.min(state.profile.minutes,10)} quiet minutes before bed.`,action:"Plan my wind-down",automatic:false},
     reflection:{title:"Check in with yourself",detail:"Notice your sleep, energy and how today feels.",action:"Open check-in",automatic:!!check},
   };
   return routine.goals.map(id=>({...definitions[id],id,done:definitions[id].automatic || state.completed.includes(`${today}:routine-${id}`)}));
