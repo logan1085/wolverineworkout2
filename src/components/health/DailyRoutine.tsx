@@ -1,0 +1,14 @@
+"use client";
+import { HealthState, RoutineGoal, dayKey } from "@/lib/health/model";
+import { dailyTasks, routineStreak } from "@/lib/health/routine";
+export default function DailyRoutine({state,today,disabled,onSetup,onToggle,onAction}: {state:HealthState;today:string;disabled:boolean;onSetup:()=>void;onToggle:(id:RoutineGoal)=>void;onAction:(id:RoutineGoal)=>void}) {
+  const tasks=dailyTasks(state,today),streak=routineStreak(state,today);
+  if(!state.profile.routine)return <section className="routine-invite"><span className="eyebrow">MADE FOR YOUR EVERYDAY</span><h2>Let’s find your rhythm.</h2><p>Choose what matters to you. We’ll turn it into a few small daily steps.</p><button className="primary" disabled={disabled} onClick={onSetup}>Build my routine <span aria-hidden="true">↗</span></button><small>About a minute · Change it anytime</small></section>;
+  const done=tasks.filter(t=>t.done).length;
+  return <section className="daily-routine" aria-label="Your daily routine"><div className="routine-top"><div><span className="eyebrow">YOUR DAILY ROUTINE</span><h2>{done===tasks.length ? "You made space for yourself." : "A little progress, your way."}</h2></div><button className="quiet-button" onClick={onSetup} disabled={disabled}>Edit routine</button></div>
+    <div className="routine-score"><strong>{streak.current}<span> day streak</span></strong><span>{done}/{tasks.length} steps today · Best {streak.best}</span></div><progress aria-label="Daily routine progress" max={tasks.length} value={done}/>
+    <div className="routine-week" aria-label="Your last seven days">{Array.from({length:7},(_,i)=>{const d=new Date(today+"T12:00:00");d.setDate(d.getDate()-6+i);const earned=streak.days.includes(dayKey(d));return <div key={i} className={earned?"earned":""} aria-label={`${d.toLocaleDateString(undefined,{month:"short",day:"numeric"})}: ${earned?"day earned":"no day earned"}`}><span>{d.toLocaleDateString(undefined,{weekday:"narrow"})}</span><b aria-hidden="true">{earned?"✓":"·"}</b></div>;})}</div>
+    <div className="routine-tasks">{tasks.map(task=><article key={task.id} className={task.done?"task-done":""}><button type="button" className="routine-check" aria-label={`${task.automatic?"Completed":task.done?"Undo":"Complete"} ${task.title}`} aria-pressed={task.done} disabled={disabled || task.automatic} onClick={()=>onToggle(task.id)}>{task.done?"✓":"○"}</button><div><h3>{task.title}</h3><p>{task.detail}</p>{task.automatic?<small>Completed from your saved {task.id==="reflection"?"check-in":"activity"}</small>:<button className="quiet-button" disabled={disabled} onClick={()=>onAction(task.id)}>{task.action} ↗</button>}</div></article>)}</div>
+    <p className="routine-explanation" role="status">{done===tasks.length ? "All set for today. There’s nothing extra to earn." : "A completed step, check-in or logged activity earns a day. Rest counts; missed days never erase your best."}</p>
+  </section>;
+}

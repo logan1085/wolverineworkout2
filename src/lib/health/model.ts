@@ -24,7 +24,9 @@ export type Activity = {
   distanceKm?: number;
   source: "garmin" | "manual";
 };
-export type HealthProfile = { name: string; goal: string; minutes: number };
+export type RoutineGoal = "movement" | "rest" | "reflection";
+export type Routine = { goals: RoutineGoal[]; pace: "gentle" | "steady"; startedAt: string };
+export type HealthProfile = { name: string; goal: string; minutes: number; routine?: Routine };
 export type HealthState = {
   profile: HealthProfile;
   checkIns: CheckIn[];
@@ -204,6 +206,9 @@ export function validateHealth(value: unknown): HealthState {
     /^\d{4}-\d{2}-\d{2}$/.test(x) &&
     !Number.isNaN(Date.parse(x)) &&
     new Date(x).toISOString().slice(0, 10) === x;
+  const routine = s.profile.routine;
+  if (routine !== undefined && (!routine || !Array.isArray(routine.goals) || routine.goals.length < 1 || routine.goals.length > 3 || new Set(routine.goals).size !== routine.goals.length || !routine.goals.every(g => ["movement", "rest", "reflection"].includes(g)) || !["gentle", "steady"].includes(routine.pace) || !date(routine.startedAt)))
+    throw new Error("Choose your routine goals and pace.");
   const num = (x: unknown, min: number, max: number) =>
     typeof x === "number" && Number.isFinite(x) && x >= min && x <= max;
   for (const c of s.checkIns)
@@ -254,6 +259,7 @@ export function validateHealth(value: unknown): HealthState {
       name: s.profile.name,
       goal: s.profile.goal,
       minutes: s.profile.minutes,
+      ...(routine ? { routine: { goals: [...routine.goals], pace: routine.pace, startedAt: routine.startedAt } } : {}),
     },
     checkIns: s.checkIns
       .map(({ id, date, energy, stress, sleepHours, soreness, note }) => ({

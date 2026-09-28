@@ -34,7 +34,7 @@ export default function SketchViewer({ sketch, modelUrl, compact = false, downlo
     const room = new RoomEnvironment();
     const environment = pmrem.fromScene(room, .04);
     scene.environment = environment.texture;
-    scene.environmentIntensity = companion ? .35 : .55;
+    scene.environmentIntensity = companion ? .18 : .55;
     room.dispose(); pmrem.dispose();
     const floor = new THREE.Mesh(new THREE.PlaneGeometry(200,200), new THREE.ShadowMaterial({opacity:.20}));
     floor.rotation.x = -Math.PI/2; floor.receiveShadow = true; scene.add(floor);
@@ -45,8 +45,8 @@ export default function SketchViewer({ sketch, modelUrl, compact = false, downlo
       const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ color: o.color, roughness: .45, metalness: .12 }));
       mesh.position.fromArray(o.position); mesh.rotation.set(o.rotation[0],o.rotation[1],o.rotation[2]); mesh.scale.fromArray(o.scale); group.add(mesh);
     }
-    scene.add(new THREE.HemisphereLight(0xe8f4ff, 0x465041, companion ? .6 : .8));
-    const light = new THREE.DirectionalLight(0xffead0, companion ? 1.8 : 3); light.position.set(4,6,5); light.castShadow=true; light.shadow.mapSize.set(1024,1024); light.shadow.normalBias=.02; light.shadow.radius=4; scene.add(light);
+    scene.add(new THREE.HemisphereLight(0xe8f4ff, 0x465041, companion ? .35 : .8));
+    const light = new THREE.DirectionalLight(0xffead0, companion ? 2.6 : 3); light.position.set(4,6,5); light.castShadow=true; light.shadow.mapSize.set(1024,1024); light.shadow.normalBias=.02; light.shadow.radius=4; scene.add(light);
     const rim = new THREE.DirectionalLight(0xd8e7ff, companion ? 1.2 : 2); rim.position.set(-3,3,-4); scene.add(rim);
     let disposed = false;
     let contextLost = false;

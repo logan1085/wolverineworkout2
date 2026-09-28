@@ -377,3 +377,65 @@
  .health-app .calendar-agenda { border-left:0; border-top:1px solid #35483c; padding:20px 0 0; }
  .health-app .calendar-days,.health-app .calendar-weekdays { gap:2px; }
 }
+
+/* Personal routines: one quiet invitation, then clear daily steps. */
+.health-app .routine-invite,.health-app .daily-routine { margin:24px 0; padding:28px; border:1px solid #43513b; border-radius:22px; background:linear-gradient(120deg,#243b2b,#19271e); }
+.health-app :is(.routine-invite,.daily-routine) h2 { font:400 30px/1.15 Georgia,serif; margin:10px 0 16px; }
+.health-app .routine-invite p { max-width:420px; color:#b6c3af; font-size:14px; line-height:1.7; }
+.health-app .routine-invite > small { display:block; margin-top:12px; color:#aebda5; font-size:11px; }
+.health-app .routine-top,.health-app .routine-score { display:flex; justify-content:space-between; align-items:center; gap:16px; }
+.health-app .routine-top > div { min-width:0; }
+.health-app .routine-top > button { flex-shrink:0; }
+.health-app .routine-score { margin:16px 0; }
+.health-app .routine-score strong { font-size:32px; color:#e1edb9; }
+.health-app .routine-score strong span,.health-app .routine-score > span { font-size:12px; font-weight:400; color:#c2cdb7; }
+.health-app .daily-routine progress { display:block; width:100%; height:5px; border:0; border-radius:8px; overflow:hidden; background:#3c4c37; accent-color:#d4e6a6; }
+.health-app .daily-routine progress::-webkit-progress-bar { background:#3c4c37; }
+.health-app .daily-routine progress::-webkit-progress-value { background:#d4e6a6; }
+.health-app .routine-tasks article { display:flex; align-items:flex-start; gap:16px; padding:22px 0; border-bottom:1px solid #3b4b36; }
+.health-app .routine-check { flex:0 0 44px; min-height:44px; border:1px solid #768767; border-radius:50%; background:transparent; color:#dceab7; font-size:22px; padding:0; }
+.health-app .routine-check[aria-pressed="true"] { background:#dceab7; color:#263b29; opacity:1; }
+.health-app .routine-tasks h3 { font-size:15px; margin:2px 0 6px; font-weight:500; }
+.health-app .routine-tasks p { font-size:13px; line-height:1.6; color:#b6c3af; margin:0; }
+.health-app .routine-tasks small { display:block; color:#c1d39e; margin-top:10px; font-size:11px; }
+.health-app .routine-tasks .quiet-button { padding-left:0; font-size:12px; }
+.health-app .routine-explanation { color:#aebda5; font-size:12px; line-height:1.7; margin:18px 0 0; }
+.health-app .routine-onboarding h3 { font:400 32px/1.1 Georgia,serif; margin:24px 0 12px; }
+.health-app .routine-onboarding > p:not(.eyebrow) { color:#b6c3af; line-height:1.7; font-size:14px; }
+.health-app .routine-onboarding label { display:block; margin:20px 0; font-size:14px; }
+.health-app .routine-onboarding label span { color:#94a48c; }
+.health-app .routine-onboarding input { display:block; width:100%; margin-top:8px; padding:12px; font-size:16px; border:1px solid #526548; border-radius:10px; background:#132219; color:#eef2e2; }
+.health-app .onboarding-progress { display:flex; gap:6px; margin-top:12px; }
+.health-app .onboarding-progress i { height:3px; flex:1; border-radius:4px; background:#354831; }
+.health-app .onboarding-progress .active { background:#d6e7a9; }
+.health-app .routine-options { display:grid; gap:10px; margin:14px 0; }
+.health-app .routine-options button { position:relative; text-align:left; padding:17px 38px 17px 16px; border:1px solid #42573c; border-radius:14px; background:#1b2b20; color:#ebefdf; }
+.health-app .routine-options button[aria-pressed="true"] { border-color:#c1d799; background:#2a3e2a; }
+.health-app .routine-options strong,.health-app .routine-options small { display:block; }
+.health-app .routine-options strong { font-size:14px; font-weight:500; }
+.health-app .routine-options small { color:#b4c3a8; margin-top:6px; font-size:12px; line-height:1.5; }
+.health-app .routine-options button > span { position:absolute; right:16px; top:18px; color:#d4e5ab; }
+.health-app .routine-onboarding fieldset { padding:0; border:0; margin:24px 0; }
+.health-app .routine-onboarding legend { font-size:14px; margin-bottom:10px; }
+.health-app .routine-chips { display:flex; gap:8px; flex-wrap:wrap; }
+.health-app .routine-chips button { min-height:44px; padding:10px 16px; border:1px solid #526548; border-radius:22px; background:transparent; color:#e1ead2; }
+.health-app .routine-chips button[aria-pressed="true"] { background:#d6e7a9; color:#243825; }
+.health-app .onboarding-companions { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin:20px 0; }
+.health-app .onboarding-companions button { min-width:0; border:1px solid #42573c; border-radius:16px; background:#1b2b20; padding:8px 4px 12px; color:#e4edd7; }
+.health-app .onboarding-companions button[aria-pressed="true"] { border-color:#d5e7ac; background:#30432d; }
+.health-app .onboarding-companions img { width:100%; height:auto; }
+.health-app .onboarding-companions strong { font-size:13px; }
+.health-app .onboarding-actions { display:flex; justify-content:space-between; gap:12px; margin-top:28px; }
+.health-app .onboarding-actions .primary { margin-left:auto; }
+@media(max-width:760px) {
+ .health-app .routine-invite,.health-app .daily-routine { padding:20px; margin:20px 0; }
+ .health-app :is(.routine-invite,.daily-routine) h2 { font-size:26px; }
+ .health-app .routine-top { align-items:flex-start; gap:8px; }
+ .health-app .routine-top > button { font-size:11px; padding:8px 0; }
+ .health-app .routine-score { flex-wrap:wrap; gap:8px; }
+ .health-app .routine-onboarding h3 { font-size:28px; }
+}
+.health-app .routine-week { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:6px; margin:20px 0 0; }
+.health-app .routine-week > div { text-align:center; color:#92a48a; font-size:11px; }
+.health-app .routine-week b { display:grid; place-items:center; width:30px; height:30px; margin:7px auto 0; border:1px solid #485b3f; border-radius:50%; font-size:14px; }
+.health-app .routine-week .earned b { background:#d9e9b0; color:#263a25; border-color:#d9e9b0; }

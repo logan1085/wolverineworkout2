@@ -4,7 +4,7 @@ from mathutils.bvhtree import BVHTree
 exec(Path('scripts/blender/build_catalog.py').read_text().split('items=[')[0])
 OUT=ROOT/'public/models/characters'; SOURCE=ROOT/'assets/blender/characters'
 OUT.mkdir(parents=True,exist_ok=True); SOURCE.mkdir(parents=True,exist_ok=True)
-VERSION='atelier-v2'
+VERSION='atelier-v3'
 ONLY=sys.argv[sys.argv.index('--only')+1] if '--only' in sys.argv else None
 
 def plush(name, color):
@@ -14,7 +14,7 @@ def plush(name, color):
     bs.inputs['Subsurface Weight'].default_value=.055
     bs.inputs['Sheen Weight'].default_value=.18
     noise=m.node_tree.nodes.new('ShaderNodeTexNoise');noise.inputs['Scale'].default_value=65
-    bump=m.node_tree.nodes.new('ShaderNodeBump');bump.inputs['Strength'].default_value=.13;bump.inputs['Distance'].default_value=.012
+    bump=m.node_tree.nodes.new('ShaderNodeBump');bump.inputs['Strength'].default_value=.08;bump.inputs['Distance'].default_value=.012
     m.node_tree.links.new(noise.outputs['Fac'],bump.inputs['Height']);m.node_tree.links.new(bump.outputs['Normal'],bs.inputs['Normal'])
     return m
 
@@ -43,12 +43,12 @@ for slug,title,description,color in [
     # Merge overlapping volumes into a single smooth silhouette, no toy-like seams.
     parts=[]
     wide=1.09 if slug=='pebble' else 1
-    parts.append(sphere('Torso',(0,0,.91),(.52*wide,.37,.69),body))
-    parts.append(sphere('Head',(0,-.015,1.35),(.435*wide,.345,.40),body))
+    parts.append(sphere('Torso',(0,0,.91),(.57*wide,.42,.66),body))
+    parts.append(sphere('Head',(0,-.015,1.35),(.46*wide,.37,.40),body))
     for sign in [-1,1]:
-        arm=sphere('Relaxed arm',(sign*(.53 if sign==1 else .50),0,.88 if sign==1 else .76),(.135,.16,.31 if sign==1 else .34),body)
+        arm=sphere('Relaxed arm',(sign*(.53 if sign==1 else .50),0,.88 if sign==1 else .76),(.13,.16,.25 if sign==1 else .27),body)
         arm.rotation_euler[1]=-.58 if sign==1 else .22;parts.append(arm)
-        parts.append(sphere('Little foot',(sign*.235,-.025,.22),(.185,.245,.22),body))
+        parts.append(sphere('Little foot',(sign*.235,-.025,.18),(.20,.25,.17),body))
     bpy.ops.object.select_all(action='DESELECT')
     for o in parts:o.select_set(True)
     bpy.context.view_layer.objects.active=parts[0];bpy.ops.object.join();o=bpy.context.object

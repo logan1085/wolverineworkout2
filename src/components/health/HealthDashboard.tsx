@@ -22,6 +22,8 @@ import "./health.css";
 import HealthObject from "./HealthObject";
 import FocusSpace from "./FocusSpace";
 import HomeCalendar from "./HomeCalendar";
+import DailyRoutine from "./DailyRoutine";
+import RoutineOnboarding from "./RoutineOnboarding";
 import HealthIcon from "./HealthIcon";
 import Modal from "./Modal";
 import "./sketch.css";
@@ -131,7 +133,7 @@ export default function HealthDashboard() {
   const [actionError, setActionError] = useState("");
   const [busy, setBusy] = useState(false);
   const [modal, setModal] = useState<
-    "checkin" | "activity" | "profile" | "delete" | "context" | "studio" | "character" | null
+    "checkin" | "activity" | "profile" | "delete" | "context" | "studio" | "character" | "onboarding" | null
   >(null);
   useEffect(() => { setActionError(""); }, [modal]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -162,7 +164,13 @@ export default function HealthDashboard() {
   const upload = useRef<HTMLInputElement>(null);
   const current = sample ? samples : data;
   const briefing = dailyBriefing(current);
-  const today = dayKey();
+  const [today, setToday] = useState(dayKey);
+  useEffect(() => {
+    const update = () => setToday(dayKey());
+    const timer = window.setInterval(update, 30000);
+    window.addEventListener("focus", update);
+    return () => { window.clearInterval(timer); window.removeEventListener("focus", update); };
+  }, []);
   const latest = current.metrics.find((x) => x.date === today);
   const check = current.checkIns.find((x) => x.date === today);
   const name = current.profile.name || "there";
@@ -485,6 +493,7 @@ export default function HealthDashboard() {
       await save({
         ...data,
         profile: {
+          ...data.profile,
           name: String(f.get("name")),
           goal: String(f.get("goal")),
           minutes: Number(f.get("minutes")),
@@ -834,6 +843,7 @@ export default function HealthDashboard() {
               </div>
               <HealthObject id={companion.character.id} title={`${companion.character.title} · ${briefing.label}`} openLabel="Choose character" description="Your daily companion." onOpen={() => setModal("character")} live />
             </section>
+            {!sample && <DailyRoutine state={data} today={today} disabled={!loaded || busy || !!historyError} onSetup={()=>setModal("onboarding")} onAction={id=>{if(id==="reflection")startCheckin();else if(id==="movement")setModal("activity");else ask("Help me choose a simple wind-down ritual for tonight based on my routine and recent context.");}} onToggle={id=>void act(async()=>{const key=`${today}:routine-${id}`;await save({...data,completed:data.completed.includes(key)?data.completed.filter(c=>c!==key):[...data.completed,key].slice(-1500)});})}/>}
             <HomeCalendar state={current} today={today} sample={sample} onCheckIn={startCheckin}/>
             <FocusSpace onAsk={ask}/>
             {(check || latest) ? <details className="view-disclosure"><summary>Today’s signals</summary><div className="metrics">
@@ -899,66 +909,7 @@ export default function HealthDashboard() {
               <div><span className="eyebrow">YOUR DAILY SIGNALS</span><h2>Your health, in one place.</h2><p>Connect a wearable to see sleep and movement here.</p></div>
               <button className="secondary" onClick={() => navigate("Connections")}>Connect your apps <span aria-hidden="true">↗</span></button>
             </section>}
-            <details className="view-disclosure daily-plan"><summary>Your daily plan</summary>
-              <section className="panel">
-                <div className="section-heading">
-                  <div>
-                    <h2>Small steps for today</h2>
-                  </div>
-                  <button
-                    className="quiet-button"
-                    onClick={() => setModal("profile")}
-                  >
-                    Adjust
-                  </button>
-                </div>
-                {briefing.plan.map((p, i) => {
-                  const done = current.completed.includes(`${today}:${p.id}`);
-                  return (
-                    <div className="plan-row" key={p.id}>
-                      <button
-                        className={`step ${done ? "done" : ""}`}
-                        disabled={busy}
-                        aria-label={`${done ? "Undo" : "Complete"} ${p.title}`}
-                        aria-pressed={done}
-                        onClick={() => {
-                          if (sample) {
-                            setSamples({
-                              ...samples,
-                              completed: done
-                                ? samples.completed.filter(
-                                    (x) => x !== `${today}:${p.id}`,
-                                  )
-                                : [...samples.completed, `${today}:${p.id}`],
-                            });
-                            return;
-                          }
-                          void act(async () => {
-                            await save({
-                              ...data,
-                              completed: done
-                                ? data.completed.filter(
-                                    (x) => x !== `${today}:${p.id}`,
-                                  )
-                                : [...data.completed, `${today}:${p.id}`].slice(
-                                    -1500,
-                                  ),
-                            });
-                          });
-                        }}
-                      >
-                        {done ? "✓" : `0${i + 1}`}
-                      </button>
-                      <div>
-                        <h3>{p.title}</h3>
-                        <p>{p.detail}</p>
-                      </div>
-                      <span>{p.kind}</span>
-                    </div>
-                  );
-                })}
-              </section>
-            </details>
+
 
 
           </>
@@ -1778,6 +1729,7 @@ export default function HealthDashboard() {
         </Modal>
       )}
       {modal === "character" && <Modal returnFocusRef={dialogTrigger} title="Meet your companion." onClose={() => setModal(null)}><CharacterPicker selected={companion.character.id} onChoose={companion.choose} disabled={!companion.ready} error={companion.error}/></Modal>}
+      {modal === "onboarding" && <Modal returnFocusRef={dialogTrigger} title="Make it yours." onClose={()=>{if(!busy)setModal(null);}}><RoutineOnboarding profile={data.profile} characterId={companion.character.id} busy={busy} onSave={async(profile,characterId)=>{setBusy(true);try{await save({...data,profile});companion.choose(characterId);setModal(null);setNotice("Your daily routine is ready.");}finally{setBusy(false);}}}/></Modal>}
       {modal === "studio" && (<Modal returnFocusRef={dialogTrigger} title="Make something yours." onClose={() => setModal(null)}><SketchStudio key={user?.id || "local"} /></Modal>)}
       {modal === "context" && (
         <Modal returnFocusRef={dialogTrigger} title="What your agent sees" onClose={() => setModal(null)}>
