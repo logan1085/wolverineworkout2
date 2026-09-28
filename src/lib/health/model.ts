@@ -1,3 +1,4 @@
+import { validateTraining, type TrainingPlan } from "./training";
 export type CheckIn = {
   id: string;
   date: string;
@@ -26,7 +27,7 @@ export type Activity = {
 };
 export type RoutineGoal = "movement" | "rest" | "reflection";
 export type Routine = { goals: RoutineGoal[]; pace: "gentle" | "steady"; startedAt: string };
-export type HealthProfile = { name: string; goal: string; minutes: number; routine?: Routine };
+export type HealthProfile = { name: string; goal: string; minutes: number; routine?: Routine; training?: TrainingPlan };
 export type HealthState = {
   profile: HealthProfile;
   checkIns: CheckIn[];
@@ -211,6 +212,7 @@ export function validateHealth(value: unknown): HealthState {
     /^\d{4}-\d{2}-\d{2}$/.test(x) &&
     !Number.isNaN(Date.parse(x)) &&
     new Date(x).toISOString().slice(0, 10) === x;
+  const training = s.profile.training === undefined ? undefined : validateTraining(s.profile.training);
   const routine = s.profile.routine;
   if (routine !== undefined && (!routine || !Array.isArray(routine.goals) || routine.goals.length < 1 || routine.goals.length > 3 || new Set(routine.goals).size !== routine.goals.length || !routine.goals.every(g => ["movement", "rest", "reflection"].includes(g)) || !["gentle", "steady"].includes(routine.pace) || !date(routine.startedAt)))
     throw new Error("Choose your routine goals and pace.");
@@ -264,6 +266,7 @@ export function validateHealth(value: unknown): HealthState {
       name: s.profile.name,
       goal: s.profile.goal,
       minutes: s.profile.minutes,
+      ...(training ? { training } : {}),
       ...(routine ? { routine: { goals: [...routine.goals], pace: routine.pace, startedAt: routine.startedAt } } : {}),
     },
     checkIns: s.checkIns

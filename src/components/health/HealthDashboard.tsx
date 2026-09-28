@@ -24,6 +24,7 @@ import FocusSpace from "./FocusSpace";
 import HomeCalendar from "./HomeCalendar";
 import DailyRoutine from "./DailyRoutine";
 import TrainingWeek from "./TrainingWeek";
+import TrainingPlanner from "./TrainingPlanner";
 import { readLocalHealth, commitLocalHealth, HEALTH_STORAGE_KEY, HEALTH_WRITE_LOCK } from "@/lib/health/local-health";
 import RoutineOnboarding from "./RoutineOnboarding";
 import HealthIcon from "./HealthIcon";
@@ -88,6 +89,7 @@ function Spark({ values }: { values: (number | undefined)[] }) {
 export default function HealthDashboard() {
   const { user, signIn, signUp, signOut } = useAuth();
   const companion = useCharacter(user?.id);
+  const [trainingSession,setTrainingSession]=useState<string|undefined>();
   const [tab, setTab] = useState<Tab>("Today");
   const [moreOpen, setMoreOpen] = useState(false);
   const { root, keyboardOpen } = useMobileViewport();
@@ -139,7 +141,7 @@ export default function HealthDashboard() {
   const [actionError, setActionError] = useState("");
   const [busy, setBusy] = useState(false);
   const [modal, setModal] = useState<
-    "checkin" | "activity" | "profile" | "delete" | "context" | "studio" | "character" | "onboarding" | null
+    "checkin" | "activity" | "profile" | "delete" | "context" | "studio" | "character" | "onboarding" | "training" | null
   >(null);
   useEffect(() => { setActionError(""); }, [modal]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -869,7 +871,7 @@ export default function HealthDashboard() {
                   : "Daily check-in"}
               </button>}
             </div>
-            <TrainingWeek state={current} today={today} sample={sample} disabled={!loaded || busy || !!historyError} onLog={()=>setModal("activity")} onSetup={()=>setModal("onboarding")}/>
+            <TrainingWeek state={current} today={today} sample={sample} disabled={!loaded || busy || !!historyError} onLog={()=>setModal("activity")} onSetup={id=>{setTrainingSession(id);setModal("training");}}/>
             {!sample && <DailyRoutine state={data} today={today} disabled={!loaded || busy || !!historyError} onSetup={()=>setModal("onboarding")} onAction={id=>{if(id==="reflection")startCheckin();else if(id==="movement")setModal("activity");else ask("Help me choose a simple wind-down ritual for tonight based on my routine and recent context.");}} onToggle={id=>void act(async()=>{const key=`${today}:routine-${id}`;await save({...data,completed:data.completed.includes(key)?data.completed.filter(c=>c!==key):[...data.completed,key].slice(-1500)});})}/>}
             <section className="briefing">
               <div className="briefing-copy">
@@ -1784,6 +1786,7 @@ export default function HealthDashboard() {
         </Modal>
       )}
       {modal === "character" && <Modal returnFocusRef={dialogTrigger} title="Meet your companion." onClose={() => setModal(null)}><CharacterPicker selected={companion.character.id} onChoose={companion.choose} disabled={!companion.ready} error={companion.error}/></Modal>}
+      {modal === "training" && <Modal returnFocusRef={dialogTrigger} title="Your training plan." pending={busy} onClose={()=>{if(!busy)setModal(null);}}><TrainingPlanner key={user?.id || "device"} plan={data.profile.training} initialSession={trainingSession} today={today} busy={busy} onSave={async(training)=>{setBusy(true);try{await save({...data,profile:{...data.profile,training}});}finally{setBusy(false);}}}/></Modal>}
       {modal === "onboarding" && <Modal returnFocusRef={dialogTrigger} title="Make it yours." pending={busy} onClose={()=>{if(!busy)setModal(null);}}><RoutineOnboarding profile={data.profile} characterId={companion.character.id} busy={busy} onSave={async(profile,characterId)=>{setBusy(true);try{await save({...data,profile});companion.choose(characterId);setModal(null);setNotice("Your daily routine is ready.");}finally{setBusy(false);}}}/></Modal>}
       {modal === "studio" && (<Modal returnFocusRef={dialogTrigger} title="Make something yours." onClose={() => setModal(null)}><SketchStudio key={user?.id || "local"} /></Modal>)}
       {modal === "context" && (

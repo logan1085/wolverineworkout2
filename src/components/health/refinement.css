@@ -468,3 +468,33 @@
 .health-app .training-totals small { font-size:13px; }
 .health-app .training-totals span { color:#aebfa3; font-size:12px; }
 @media(max-width:760px) { .health-app .training-week { padding:20px 16px; border-radius:20px; } .health-app .training-week-heading { align-items:flex-start; } .health-app .training-week h2 { font-size:24px; } .health-app .training-week-heading button { max-width:95px; padding:4px; font-size:11px; flex-shrink:0; } .health-app .training-days { gap:3px; } }
+.health-app .plan-week-nav { display:flex; align-items:center; justify-content:space-between; gap:8px; margin:12px 0; font-size:11px; color:#aebfa3; }
+.health-app .plan-week-nav button { font-size:11px; padding:10px 0; }
+.health-app .training-planner h3 { font-size:30px; line-height:1.2; margin:12px 0; }
+.health-app .training-planner p { color:#b6c3af; font-size:14px; line-height:1.65; }
+.health-app .plan-fields { border:0; padding:0; margin:20px 0; min-width:0; }
+.health-app .plan-fields:disabled { opacity:.65; }
+.health-app .plan-fields label { display:flex; flex-direction:column; gap:8px; margin:18px 0; font-size:14px; }
+.health-app .plan-fields :is(input:not([type=checkbox]),select) { width:100%; min-height:46px; padding:10px; color:#eef2df; background:#1b2b21; border:1px solid #526548; border-radius:10px; color-scheme:dark; }
+.health-app .plan-fields .plan-strength { flex-direction:row; align-items:flex-start; line-height:1.6; }
+.health-app .plan-strength input { margin-top:5px; width:20px; height:20px; flex-shrink:0; accent-color:#d9e9b0; }
+.health-app .plan-hint { font-size:12px!important; }
+.health-app .plan-day-choices { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-top:12px; }
+.health-app .plan-day-choices button { border:1px solid #526548; background:transparent; color:#dce9c6; border-radius:10px; min-height:46px; padding:4px; font-size:12px; }
+.health-app .plan-day-choices button[aria-pressed=true] { background:#d9e9b0; color:#20351f; }
+.health-app .plan-actions { display:flex; flex-wrap:wrap; gap:10px; margin:18px 0; }
+.health-app .plan-block h4 { display:flex; justify-content:space-between; font-size:15px; margin:26px 0 10px; }
+.health-app .plan-block h4 span { font-size:11px; font-weight:400; color:#aebfa3; }
+.health-app .plan-session { border:1px solid #42553e; border-radius:14px; margin:8px 0; overflow:hidden; }
+.health-app .plan-session-summary { width:100%; display:flex; flex-direction:column; align-items:flex-start; gap:7px; text-align:left; padding:16px; background:#213224; color:#e7eedc; border:0; }
+.health-app .plan-session-summary span { font-size:12px; color:#b6c3af; width:100%; }
+.health-app .plan-session-summary b { float:right; }
+.health-app .plan-completed .plan-session-summary { border-left:3px solid #d9e9b0; }
+.health-app .plan-skipped .plan-session-summary { opacity:.7; }
+.health-app .plan-session-detail { padding:4px 16px 12px; }
+.health-app .plan-session-detail ol { padding-left:20px; font-size:14px; line-height:1.7; color:#c7d1bd; }
+.health-app .plan-session-detail li { padding:5px 0; }
+.health-app .plan-move { display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap; }
+.health-app .plan-move label { flex:1; margin:0; min-width:150px; }
+.health-app .plan-progress progress { width:100%; accent-color:#d9e9b0; }
+.health-app .plan-progress span { display:block; margin-top:8px; font-size:12px; color:#b6c3af; }

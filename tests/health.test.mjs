@@ -15,7 +15,7 @@ function load(relative) {
   }).outputText;
   const compiledModule = { exports: {} };
   new Function("require", "module", "exports", source)(
-    require,
+    id => id.startsWith(".") ? load(path.resolve(path.dirname(filename), id + ".ts")) : require(id),
     compiledModule,
     compiledModule.exports,
   );
