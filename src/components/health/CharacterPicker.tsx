@@ -2,7 +2,7 @@
 import Image from "next/image";
 import {characters} from "./useCharacter";
 import AssetPreview from "./AssetPreview";
-const traits: Record<string,string> = {moss:"A little room to grow.",sunny:"Find your bright spot.",pebble:"Steady, at your own pace."};
+const traits: Record<string,string> = {pip:"Small steps. Big heart.",sprout:"A fresh start, every day.",honey:"A little sweetness in your day."};
 export default function CharacterPicker({selected,onChoose,disabled,error}: {selected:string;onChoose:(id:string)=>void;disabled:boolean;error:string}) {
   const character=characters.find(c=>c.id===selected) || characters[0];
   return <section className={`companion-picker companion-${character.id}`}>

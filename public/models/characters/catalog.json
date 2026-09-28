@@ -1,23 +1,23 @@
 [
   {
-    "id": "moss",
-    "title": "Moss",
-    "description": "A soft forest spirit with a little leaf of optimism.",
-    "model": "/models/characters/moss-atelier-v3.glb",
-    "thumbnail": "/models/characters/moss-atelier-v3.png"
+    "id": "pip",
+    "title": "Pip",
+    "description": "A tiny apple with a big heart.",
+    "model": "/models/characters/pip-apple-v2.glb",
+    "thumbnail": "/models/characters/pip-apple-v2.png"
   },
   {
-    "id": "sunny",
-    "title": "Sunny",
-    "description": "A pocket of warmth, with a sunny little tuft.",
-    "model": "/models/characters/sunny-atelier-v3.glb",
-    "thumbnail": "/models/characters/sunny-atelier-v3.png"
+    "id": "sprout",
+    "title": "Sprout",
+    "description": "Fresh green energy, at your own pace.",
+    "model": "/models/characters/sprout-apple-v2.glb",
+    "thumbnail": "/models/characters/sprout-apple-v2.png"
   },
   {
-    "id": "pebble",
-    "title": "Pebble",
-    "description": "A calm little presence with both feet on the ground.",
-    "model": "/models/characters/pebble-atelier-v3.glb",
-    "thumbnail": "/models/characters/pebble-atelier-v3.png"
+    "id": "honey",
+    "title": "Honey",
+    "description": "A little golden company for your day.",
+    "model": "/models/characters/honey-apple-v2.glb",
+    "thumbnail": "/models/characters/honey-apple-v2.png"
   }
 ]

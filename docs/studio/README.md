@@ -22,7 +22,9 @@ Today replaces the CSS orb with a live, demand-rendered Blender object: balance 
 
 ## Selectable companions
 
-Moss, Sunny and Pebble are original Blender companions. Choose character from Today, the chat avatar, the desktop rail or mobile More. The choice updates the daily 3D figure and chat welcome/avatar; Moss is the default. It is an appearance preference only, scoped to the signed-in account (or signed-out device) in localStorage, never part of health memory or AI requests. Cross-tab changes are reflected; unavailable storage keeps the preference for the current visit with a visible notice. This is device-local, not cross-device account sync. The picker includes an interactive preview with keyboard controls and GLB download. Editable files are in assets/blender/characters; regenerate with scripts/blender/build_characters.py.
+Pip, Sprout and Honey are the current original Blender apple companions. Pip is the default; retired character choices fall back to Pip. Choose a character from Today, the chat avatar, onboarding, the desktop rail or mobile More. The preference is scoped to the account or signed-out device in localStorage, not cloud-synced or included in AI requests. Cross-tab changes are reflected. Detailed portraits remain visible until Explore in 3D is requested in the picker; Back to portrait releases the viewer.
+
+Regenerate the current family with `Blender --background --python scripts/blender/build_apples.py -- /absolute/repo` from the repo root. Editable files are `assets/blender/characters/{pip,sprout,honey}.blend`; exported GLBs and 1024px transparent portraits share the same meshes. These are smooth fruit-skin materials, not the retired fabric characters. The older script and assets are retained as design history.
 
 ## Companion visual revision
 

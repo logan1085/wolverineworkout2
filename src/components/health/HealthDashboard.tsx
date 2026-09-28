@@ -1005,7 +1005,7 @@ export default function HealthDashboard() {
             <div className="chat-layout">
               <section className="panel chat-panel">
                 <div className="chat-title">
-                  <button className="character-avatar" aria-label={`Change character, currently ${companion.character.title}`} onClick={() => setModal("character")}><Image src={companion.character.thumbnail} alt="" width={56} height={56}/></button>
+                  <button className="character-avatar" aria-label={`Change character, currently ${companion.character.title}`} onClick={() => setModal("character")}><Image src={companion.character.thumbnail} alt="" width={56} height={56} quality={95} sizes="56px"/></button>
                   <div>
                     <h2>Wolverine</h2>
                     <p>
@@ -1042,7 +1042,7 @@ export default function HealthDashboard() {
                 >
                   {!messages.length && (
                     <div className="chat-welcome">
-                      <button className="character-welcome" aria-label="Choose your character" onClick={() => setModal("character")}><Image src={companion.character.thumbnail} alt={companion.character.title} width={150} height={150}/></button>
+                      <button className="character-welcome" aria-label="Choose your character" onClick={() => setModal("character")}><Image src={companion.character.thumbnail} alt={companion.character.title} width={150} height={150} quality={95} sizes="150px"/></button>
                       <h2>Let’s connect the dots.</h2>
                       <p>What would make today feel a little better?</p>
                       <div className="prompt-chips">

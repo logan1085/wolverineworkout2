@@ -15,7 +15,7 @@ Latest shipped visual/asset/build verification: September 28, 2026. The account 
 | Home calendar | Month navigation and recorded-day agendas; local browser and calendar tests | Physical screen-reader/touch acceptance |
 | Public soul and memory documents | Runtime-generated `public/SOUL.md`, policy-only `public/MEMORY.md`, `/transparency` | Continue regeneration when behavior changes; never publish personal health records |
 | Blender object catalog throughout app | Editable Blender sources, GLB models, portrait assets, integrated activity/journal/Today cards and studio | Independent GLB viewer and physical touch/GPU checks |
-| Choose a character | Moss, Sunny, Pebble; saved per-device/account scope; selection verified across Today/chat and reload | Cloud preference sync is not implemented or claimed |
+| Choose a character | Pip, Sprout, Honey; saved per-device/account scope; selection verified across Today/chat and reload | Cloud preference sync is not implemented or claimed |
 | Smooth 3D experience | Detailed portrait remains the default; explicit 3D entry/return and rotation verified; retry/error handling implemented | GPU loss and network-failure fault testing on phones; no performance score claimed |
 | Garmin account connection | OAuth/import/encrypted-token implementation, synthetic tests and HTTP guards | Approved provider configuration, restored Supabase, migrations, real connect/sync/refresh/disconnect |
 | Strava account connection | Separate owner-only live connector implementation and guards | Eligible registered client, configured tools/credentials and real lifecycle verification; not general multi-user availability |
