@@ -48,15 +48,15 @@ for(const asset of catalog) test(`${asset.id}: loadable bounded GLB and source f
 const characters=JSON.parse(fs.readFileSync("public/models/characters/catalog.json","utf8"));
 test("three unique characters with valid geometry and editable sources",async()=>{assert.equal(characters.length,3);assert.equal(new Set(characters.map(c=>c.id)).size,3);for(const c of characters){const b=fs.readFileSync("public"+c.model);assert.ok(b.length<800000);const gltf=await assetLoader().parseAsync(b.buffer.slice(b.byteOffset,b.byteOffset+b.byteLength),"");assert.ok(new Box3().setFromObject(gltf.scene).getSize(new Vector3()).length()>0);assert.ok(fs.statSync("assets/blender/characters/"+c.id+".blend").size>1000);}});
 
-test('apple companions contain original fruit geometry and portable skin materials',()=>{
+test('sprout companions contain continuous sculpt geometry and portable clay materials',()=>{
   assert.deepEqual(characters.map(c=>c.id),['pip','sprout','honey']);
   for(const character of characters) {
     const bytes=fs.readFileSync('public'+character.model);
     const length=bytes.readUInt32LE(12);
     const document=JSON.parse(bytes.subarray(20,20+length).toString('utf8'));
-    const skin=document.materials.find(m=>m.name===character.title+' apple skin');
+    const skin=document.materials.find(m=>m.name===character.title+' soft clay');
     assert.ok(skin?.pbrMetallicRoughness?.baseColorFactor);
-    for(const part of ['Apple body','Apple leaf','Bent apple stem']) assert.ok(document.nodes.some(n=>n.name===part));
+    for(const part of ['Sprite body','Sprout tuft']) assert.ok(document.nodes.some(n=>n.name===part));
     assert.ok(!document.nodes.some(n=>n.name==='Linen face panel'));
     assert.ok(!document.images?.some(i=>i.uri),'No external texture dependencies');
   }

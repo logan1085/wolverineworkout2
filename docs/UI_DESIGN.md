@@ -54,3 +54,7 @@ Atelier-v3 makes the Blender body rounder with shorter arms, softer feet and qui
 ## Apple companion reset — September 28
 
 Replaces the previous cloth-bodied family with Pip (red apple), Sprout (green apple), and Honey (golden apple). Each uses a newly modeled lobed apple body with a recessed stem crown, curved stem, cupped leaf, direct seed-shaped eyes, tiny rounded smile, freckles, mitten hands and soft shoes. No human torso or separate face panel. Smooth satin skin and modeled features export directly to GLB without procedural-only texture differences. All three colors share the same friendly waving pose. Pip is the new default and fallback for retired saved IDs; character choice still propagates through Home, chat, picker and onboarding. The stable portrait / explicit interactive viewer behavior is preserved.
+
+### Soft creature iteration — September 28
+
+Pip now uses a continuous sage-green sprout-creature sculpt. No fruit dimples, brown stem, gloves or separate shoes. The face and asymmetrical flipper pose carry the character; the leaf is a small accent. The documented render/critique loop lives in `docs/studio/COMPANION_DESIGN.md`. Current assets use the `sprite-v4` version to prevent stale portrait/model caches.

@@ -2,22 +2,22 @@
   {
     "id": "pip",
     "title": "Pip",
-    "description": "A tiny apple with a big heart.",
-    "model": "/models/characters/pip-apple-v2.glb",
-    "thumbnail": "/models/characters/pip-apple-v2.png"
+    "description": "A small forest friend with a big heart.",
+    "model": "/models/characters/pip-sprite-v4.glb",
+    "thumbnail": "/models/characters/pip-sprite-v4.png"
   },
   {
     "id": "sprout",
     "title": "Sprout",
     "description": "Fresh green energy, at your own pace.",
-    "model": "/models/characters/sprout-apple-v2.glb",
-    "thumbnail": "/models/characters/sprout-apple-v2.png"
+    "model": "/models/characters/sprout-sprite-v4.glb",
+    "thumbnail": "/models/characters/sprout-sprite-v4.png"
   },
   {
     "id": "honey",
     "title": "Honey",
     "description": "A little golden company for your day.",
-    "model": "/models/characters/honey-apple-v2.glb",
-    "thumbnail": "/models/characters/honey-apple-v2.png"
+    "model": "/models/characters/honey-sprite-v4.glb",
+    "thumbnail": "/models/characters/honey-sprite-v4.png"
   }
 ]

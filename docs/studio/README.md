@@ -22,9 +22,9 @@ Today replaces the CSS orb with a live, demand-rendered Blender object: balance 
 
 ## Selectable companions
 
-Pip, Sprout and Honey are the current original Blender apple companions. Pip is the default; retired character choices fall back to Pip. Choose a character from Today, the chat avatar, onboarding, the desktop rail or mobile More. The preference is scoped to the account or signed-out device in localStorage, not cloud-synced or included in AI requests. Cross-tab changes are reflected. Detailed portraits remain visible until Explore in 3D is requested in the picker; Back to portrait releases the viewer.
+Pip, Sprout and Honey are the current original Blender sprout creatures. Pip is the default; retired character choices fall back to Pip. Choose a character from Today, the chat avatar, onboarding, the desktop rail or mobile More. The preference is scoped to the account or signed-out device in localStorage, not cloud-synced or included in AI requests. Cross-tab changes are reflected. Detailed portraits remain visible until Explore in 3D is requested in the picker; Back to portrait releases the viewer.
 
-Regenerate the current family with `Blender --background --python scripts/blender/build_apples.py -- /absolute/repo` from the repo root. Editable files are `assets/blender/characters/{pip,sprout,honey}.blend`; exported GLBs and 1024px transparent portraits share the same meshes. These are smooth fruit-skin materials, not the retired fabric characters. The older script and assets are retained as design history.
+Regenerate the current family with `Blender --background --python scripts/blender/build_sprites.py -- /absolute/repo` from the repo root. Editable files are `assets/blender/characters/{pip,sprout,honey}.blend`; exported GLBs and 1024px transparent portraits share the same meshes. These have a continuous body sculpt and satin clay materials. The older script and assets are retained as design history.
 
 ## Companion visual revision
 
