@@ -121,3 +121,9 @@ Passed 22 targeted tests (3 local storage, 7 routine, 12 health), lint, and loca
 `5e272aa` is live at https://wolverineworkout2.vercel.app (production READY, `dpl_21eQ6Dkpc5NyNi7bWrYPFNTvigfj`). Replaces the selectable family with Pip, Sprout, and Honey: original Blender apple characters with lobed bodies, indented tops, bent stems, cupped leaves, seed-shaped eyes, waving mitten hands, and small shoes. Includes editable Blender sources, a reproducible generator, versioned apple-v2 GLBs and 1024px transparent portraits. Retired saved character IDs fall back to Pip. Home, chat, onboarding, and the picker use the shared catalog; interactive 3D remains opt-in.
 
 All nine catalog checks and local/hosted production builds including lint/types passed. Local mobile browser review covered Home, character switching, chat, and interactive rotation. Production verification confirms Pip's apple-v2 portrait loads at quality 95. Existing account/provider and physical-device acceptance remains separate and incomplete.
+
+## Approved sprout-creature sculpt — September 28, 2026
+
+`5948175` is live at https://wolverineworkout2.vercel.app (production READY, `dpl_7mR1J7CEgrmcWYZPoCcyU9y9z6iH`). Four Blender render/critique passes replaced the literal apple with a continuous rounded sprout creature, refined limb joins and waving pose, and polished the silhouette. Pip, Sprout and Honey share versioned sprite-v4 portraits and GLBs. The user approved this direction; the reference and iteration studies are saved in `docs/studio/COMPANION_DESIGN.md`.
+
+Nine asset checks and local/hosted production builds passed. Reviewed all three final renders, the mobile picker, and the matching interactive 3D appearance. Each GLB remains below 800 KB. Existing account/provider acceptance remains separate.

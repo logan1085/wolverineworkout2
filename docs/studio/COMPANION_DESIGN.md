@@ -20,3 +20,7 @@ The apple was too literal: fruit silhouette, brown stem, gloves and shoes made i
 - GLBs remain below 800 KB; detailed portraits stay the default on mobile.
 
 Regenerate using `scripts/blender/build_sprites.py`. Add `--draft` after the repo argument for a single 768px Pip study in `/tmp/wolverine-sprite-study`; draft mode does not change the app catalog or production sources.
+
+## Approved direction
+
+Logan approved this sprout-creature direction on September 28: “wow finally uou nailed it”. Preserve the continuous rounded silhouette, small flippers and feet, large dark eyes, gentle smile, sage palette, and small leaf. Future poses or expressions should extend this character rather than restart its identity.
