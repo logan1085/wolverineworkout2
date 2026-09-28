@@ -23,6 +23,7 @@ import HealthObject from "./HealthObject";
 import FocusSpace from "./FocusSpace";
 import HomeCalendar from "./HomeCalendar";
 import DailyRoutine from "./DailyRoutine";
+import { readLocalHealth, commitLocalHealth, HEALTH_STORAGE_KEY, HEALTH_WRITE_LOCK } from "@/lib/health/local-health";
 import RoutineOnboarding from "./RoutineOnboarding";
 import HealthIcon from "./HealthIcon";
 import Modal from "./Modal";
@@ -102,6 +103,10 @@ export default function HealthDashboard() {
     window.scrollTo({ top: 0, behavior: "instant" });
   }
   const [data, setData] = useState<HealthState>(emptyHealth);
+  const localRevision = useRef<string|null>(null);
+  const loadedOwner = useRef<string|null>(null);
+  const healthOwner = useRef(user?.id || "device");
+  healthOwner.current = user?.id || "device";
   const [sample, setSample] = useState(false);
   const [samples, setSamples] = useState<HealthState>(emptyHealth);
   const [loaded, setLoaded] = useState(false);
@@ -199,6 +204,8 @@ export default function HealthDashboard() {
   useEffect(() => {
     let active = true;
     setLoaded(false);
+    loadedOwner.current = null;
+    setModal(null);
     setHistoryError("");
     setData(emptyHealth);
     resetConversationView();
@@ -213,12 +220,15 @@ export default function HealthDashboard() {
           if (!response.ok) throw new Error(result.error);
           if (active) {
             setData(validateHealth(result.state));
+            loadedOwner.current = user.id;
             setSample(false);
           }
         } else {
-          const saved = localStorage.getItem("wolverine.health.v1");
+          const saved = readLocalHealth(localStorage);
           if (active) {
-            setData(saved ? validateHealth(JSON.parse(saved)) : emptyHealth);
+            setData(saved.state);
+            localRevision.current = saved.raw;
+            loadedOwner.current = "device";
             const view = localStorage.getItem("wolverine.view.v1");
             setSample(view === "sample");
           }
@@ -234,6 +244,29 @@ export default function HealthDashboard() {
       active = false;
     };
   }, [user, historyRetry]);
+  useEffect(() => {
+    if (user || !loaded) return;
+    const refresh = () => {
+      try {
+        const snapshot = readLocalHealth(localStorage);
+        if (snapshot.raw === localRevision.current) return;
+        // Preserve form drafts and their base revision until dismissal or conflict recovery.
+        if (modal || busy) { setNotice("Health history changed in another tab. Close the open form to refresh before saving."); return; }
+        localRevision.current = snapshot.raw;
+        loadedOwner.current = "device";
+        setData(snapshot.state);
+        setHistoryError("");
+        setNotice("Health history refreshed from another tab.");
+      } catch { setHistoryError("Local history could not be read. Retry loading it before making changes."); }
+    };
+    const changed = (event:StorageEvent) => {
+      if (event.storageArea === localStorage && (event.key === HEALTH_STORAGE_KEY || event.key === null)) refresh();
+    };
+    refresh();
+    window.addEventListener("storage",changed);
+    window.addEventListener("focus",refresh);
+    return () => { window.removeEventListener("storage",changed); window.removeEventListener("focus",refresh); };
+  },[user,loaded,modal,busy]);
   useEffect(() => {
     let active = true;
     fetch("/api/garmin/status")
@@ -384,7 +417,20 @@ export default function HealthDashboard() {
       setNotice("Memory saved. You can review or change it in Memory.");
     });
   }
+  async function writeLocal(next: HealthState|null) {
+    const expected = localRevision.current;
+    const write = () => {
+      if (healthOwner.current !== "device" || loadedOwner.current !== "device") throw new Error("Your account changed. Reopen this form before saving.");
+      return commitLocalHealth(localStorage,next,expected);
+    };
+    const snapshot = navigator.locks ? await navigator.locks.request(HEALTH_WRITE_LOCK,write) : write();
+    if (healthOwner.current !== "device") throw new Error("Your account changed. Refresh to see its current history.");
+    localRevision.current = snapshot.raw;
+    setData(snapshot.state);
+  }
   async function save(next: HealthState) {
+    const owner = user?.id || "device";
+    if (loadedOwner.current !== owner || healthOwner.current !== owner) throw new Error("Your account changed. Reopen this form before saving.");
     if (!loaded)
       throw new Error(
         "Your history is still loading. Please try again in a moment.",
@@ -399,10 +445,10 @@ export default function HealthDashboard() {
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error);
+      if (healthOwner.current !== owner) throw new Error("Your account changed. Refresh to see its current history.");
       setData(validateHealth(result.state));
     } else {
-      localStorage.setItem("wolverine.health.v1", JSON.stringify(valid));
-      setData(valid);
+      await writeLocal(valid);
     }
     try { localStorage.setItem("wolverine.view.v1", "personal"); } catch { /* Optional view preference. */ }
     setSample(false);
@@ -619,10 +665,14 @@ export default function HealthDashboard() {
     navigate("Your agent");
   }
   async function garminAction(action: "connect" | "sync" | "disconnect") {
+    const owner = user?.id || "device";
+    const checkOwner = () => { if (healthOwner.current !== owner) throw new Error("Your account changed. Refresh connection status before continuing."); };
     await act(async () => {
+      checkOwner();
       const response = await fetch("/api/garmin/" + action, { method: "POST" });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error);
+      checkOwner();
       if (action === "connect") {
         const url = new URL(result.url);
         if (url.origin !== "https://connect.garmin.com")
@@ -631,11 +681,13 @@ export default function HealthDashboard() {
         return;
       }
       const status = await fetch("/api/garmin/status").then((r) => r.json());
+      checkOwner();
       setConnection(status);
       if (action === "sync") {
         const r = await fetch("/api/health/data");
         const saved = await r.json();
         if (!r.ok) throw new Error(saved.error);
+        checkOwner();
         setData(validateHealth(saved.state));
         setSample(false);
         setNotice(
@@ -1998,15 +2050,20 @@ export default function HealthDashboard() {
               disabled={busy}
               onClick={() =>
                 void act(async () => {
+                  const owner = user?.id || "device";
+                  if (healthOwner.current !== owner || loadedOwner.current !== owner) throw new Error("Your account changed. Reopen this form before clearing history.");
+                  if (!user && readLocalHealth(localStorage).raw !== localRevision.current) throw new Error("Your history changed in another tab. Close this form to refresh before clearing it.");
                   await memory.update(() => emptyMemory());
+                  if (healthOwner.current !== owner) throw new Error("Your account changed. Refresh before clearing history.");
                   resetConversationView();
                   if (user) {
                     const r = await fetch("/api/health/data", {
                       method: "DELETE",
                     });
                     if (!r.ok) throw new Error("Could not clear your history.");
-                  } else localStorage.removeItem("wolverine.health.v1");
-                  setData(emptyHealth);
+                  } else await writeLocal(null);
+                  if (healthOwner.current !== owner) throw new Error("Your account changed. Refresh to see its current history.");
+                  if (user) setData(emptyHealth);
                   setSample(false);
                   setMessages([]);
                   setConsent(false);
