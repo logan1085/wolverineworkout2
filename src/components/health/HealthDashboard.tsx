@@ -23,6 +23,7 @@ import HealthObject from "./HealthObject";
 import FocusSpace from "./FocusSpace";
 import HomeCalendar from "./HomeCalendar";
 import DailyRoutine from "./DailyRoutine";
+import TrainingWeek from "./TrainingWeek";
 import { readLocalHealth, commitLocalHealth, HEALTH_STORAGE_KEY, HEALTH_WRITE_LOCK } from "@/lib/health/local-health";
 import RoutineOnboarding from "./RoutineOnboarding";
 import HealthIcon from "./HealthIcon";
@@ -868,6 +869,8 @@ export default function HealthDashboard() {
                   : "Daily check-in"}
               </button>}
             </div>
+            <TrainingWeek state={current} today={today} sample={sample} disabled={!loaded || busy || !!historyError} onLog={()=>setModal("activity")} onSetup={()=>setModal("onboarding")}/>
+            {!sample && <DailyRoutine state={data} today={today} disabled={!loaded || busy || !!historyError} onSetup={()=>setModal("onboarding")} onAction={id=>{if(id==="reflection")startCheckin();else if(id==="movement")setModal("activity");else ask("Help me choose a simple wind-down ritual for tonight based on my routine and recent context.");}} onToggle={id=>void act(async()=>{const key=`${today}:routine-${id}`;await save({...data,completed:data.completed.includes(key)?data.completed.filter(c=>c!==key):[...data.completed,key].slice(-1500)});})}/>}
             <section className="briefing">
               <div className="briefing-copy">
                 <span className="eyebrow">
@@ -895,9 +898,9 @@ export default function HealthDashboard() {
               </div>
               <HealthObject id={companion.character.id} title={`${companion.character.title} · ${briefing.label}`} openLabel="Choose character" description="Your daily companion." onOpen={() => setModal("character")} live />
             </section>
-            {!sample && <DailyRoutine state={data} today={today} disabled={!loaded || busy || !!historyError} onSetup={()=>setModal("onboarding")} onAction={id=>{if(id==="reflection")startCheckin();else if(id==="movement")setModal("activity");else ask("Help me choose a simple wind-down ritual for tonight based on my routine and recent context.");}} onToggle={id=>void act(async()=>{const key=`${today}:routine-${id}`;await save({...data,completed:data.completed.includes(key)?data.completed.filter(c=>c!==key):[...data.completed,key].slice(-1500)});})}/>}
-            <HomeCalendar state={current} today={today} sample={sample} disabled={!loaded || busy || !!historyError} onCheckIn={startCheckin}/>
-            <FocusSpace onAsk={ask}/>
+
+            <details className="view-disclosure"><summary>Full calendar & check-ins</summary><HomeCalendar state={current} today={today} sample={sample} disabled={!loaded || busy || !!historyError} onCheckIn={startCheckin}/></details>
+            <details className="view-disclosure"><summary>Movement, rest & reflection</summary><FocusSpace onAsk={ask}/></details>
             {(check || latest) ? <details className="view-disclosure"><summary>Today’s signals</summary><div className="metrics">
               {[
                 {

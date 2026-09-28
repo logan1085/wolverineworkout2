@@ -443,3 +443,28 @@
 .health-app .onboarding-fields > p:not(.eyebrow) { color:#b6c3af; line-height:1.7; font-size:14px; }
 .health-app .onboarding-fields:disabled { opacity:.75; }
 .health-app .onboarding-fields h3:focus { outline:none; }
+
+/* Plan-first weekly rhythm, retaining Wolverine's approved companion and palette. */
+.health-app .training-week { padding:28px; margin:0 0 24px; background:#1b2b21; border:1px solid #40503c; border-radius:24px; }
+.health-app .training-week-heading { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.health-app .training-week h2 { margin:8px 0; font-size:28px; letter-spacing:-.8px; line-height:1.2; }
+.health-app .training-goal { color:#aebfa3; font-size:14px; margin:4px 0 22px; }
+.health-app .training-days { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:8px; }
+.health-app .training-days button { display:flex; flex-direction:column; align-items:center; gap:8px; background:transparent; border:1px solid transparent; color:#b9c6ae; border-radius:16px; padding:12px 2px 6px; min-height:90px; }
+.health-app .training-days button span { font-size:11px; }
+.health-app .training-days strong { font-size:20px; font-weight:500; }
+.health-app .training-days i { font-size:9px; font-style:normal; }
+.health-app .training-days .is-today { border-color:#6a805a; }
+.health-app .training-days button[aria-pressed="true"] { background:#d9e9b0; color:#20351f; }
+.health-app .training-day-detail { margin-top:22px; padding-top:22px; border-top:1px solid #40503c; }
+.health-app .training-day-detail p { color:#b9c6ae; font-size:14px; line-height:1.6; }
+.health-app .training-day-detail ul { list-style:none; padding:0; margin:16px 0; }
+.health-app .training-day-detail li { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 0; }
+.health-app .training-day-detail li strong,.health-app .training-day-detail li div span { display:block; }
+.health-app .training-day-detail li div span { color:#aebfa3; font-size:12px; margin-top:6px; }
+.health-app .training-recorded { color:#d9e9b0; font-size:11px; white-space:nowrap; }
+.health-app .training-totals { display:grid; grid-template-columns:1fr 1fr; border-top:1px solid #40503c; margin-top:20px; padding-top:20px; gap:24px; }
+.health-app .training-totals strong { display:block; font-size:28px; font-weight:500; }
+.health-app .training-totals small { font-size:13px; }
+.health-app .training-totals span { color:#aebfa3; font-size:12px; }
+@media(max-width:760px) { .health-app .training-week { padding:20px 16px; border-radius:20px; } .health-app .training-week-heading { align-items:flex-start; } .health-app .training-week h2 { font-size:24px; } .health-app .training-week-heading button { max-width:95px; padding:4px; font-size:11px; flex-shrink:0; } .health-app .training-days { gap:3px; } }
