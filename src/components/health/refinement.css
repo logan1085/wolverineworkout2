@@ -1,109 +1,109 @@
 /* Wolverine: forest surfaces, warm paper text, and sage accents. */
-.health-app { --ink:#edf0e8; --muted:#a8b7a9; --line:#34483b; --lime:#dcebb0; background:#111b17; color:var(--ink); }
+.health-app { --ink:#f5f6f7; --muted:#aab0b9; --line:#373b42; --lime:#97dfc2; background:#141518; color:var(--ink); }
 .health-app .health-main { max-width:1600px; }
 .health-app :is(h1,h2,h3) { font-family:var(--font-inter),sans-serif; color:var(--ink); }
-.health-app h1 em { font-family:inherit; font-style:normal; color:#dcebb0; }
-.health-app .rail { background:#17231c; border-color:var(--line); }
-.health-app .wordmark { color:#edf0e8; gap:10px; }
-.health-app .wordmark > .brand-symbol { display:grid; place-items:center; width:34px; height:34px; margin:0; transform:none; letter-spacing:0; color:#17231c; background:#dcebb0; border-radius:11px; }
+.health-app h1 em { font-family:inherit; font-style:normal; color:#97dfc2; }
+.health-app .rail { background:#1c1e22; border-color:var(--line); }
+.health-app .wordmark { color:#f5f6f7; gap:10px; }
+.health-app .wordmark > .brand-symbol { display:grid; place-items:center; width:34px; height:34px; margin:0; transform:none; letter-spacing:0; color:#1c1e22; background:#97dfc2; border-radius:11px; }
 .health-app .wordmark b { margin:0; letter-spacing:-.8px; font-size:21px; }
-.health-app .rail-label { font-size:9px; color:#a8b7a9; letter-spacing:.1em; }
+.health-app .rail-label { font-size:9px; color:#aab0b9; letter-spacing:.1em; }
 .health-app .rail nav { gap:6px; }
-.health-app .rail nav button { color:#a8b7a9; min-height:48px; border-radius:12px; }
-.health-app .rail nav button.selected { background:#23362a; color:#dcebb0; font-weight:600; }
+.health-app .rail nav button { color:#aab0b9; min-height:48px; border-radius:12px; }
+.health-app .rail nav button.selected { background:#272b30; color:#97dfc2; font-weight:600; }
 .health-app .rail nav button span { display:flex; align-items:center; }
-.health-app :is(.rail-bottom a,.rail-bottom small,.profile-button small) { color:#a8b7a9; }
+.health-app :is(.rail-bottom a,.rail-bottom small,.profile-button small) { color:#aab0b9; }
 .health-app .mini-orb { display:none; }
-.health-app .profile-button { background:#17231c; color:var(--ink); border-color:var(--line); }
-.health-app .profile-button > span:first-child { background:#23362a; color:#dcebb0; }
-.health-app .topbar { height:72px; border-color:var(--line); color:#a8b7a9; }
-.health-app .sample-pill { background:#17231c; color:#a8b7a9; border:1px solid #34483b; font-size:11px; padding:8px 12px; }
-.health-app .eyebrow { color:#a8b7a9; font-size:10px; letter-spacing:.13em; font-weight:600; }
+.health-app .profile-button { background:#1c1e22; color:var(--ink); border-color:var(--line); }
+.health-app .profile-button > span:first-child { background:#272b30; color:#97dfc2; }
+.health-app .topbar { height:72px; border-color:var(--line); color:#aab0b9; }
+.health-app .sample-pill { background:#1c1e22; color:#aab0b9; border:1px solid #373b42; font-size:11px; padding:8px 12px; }
+.health-app .eyebrow { color:#aab0b9; font-size:10px; letter-spacing:.13em; font-weight:600; }
 .health-app .greeting { padding:34px 0 28px; }
 .health-app .greeting h1 { font-size:clamp(32px,3vw,44px); font-weight:600; letter-spacing:-1.7px; line-height:1.16; }
-.health-app .greeting p:not(.eyebrow) { color:#a8b7a9; font-size:14px; }
+.health-app .greeting p:not(.eyebrow) { color:#aab0b9; font-size:14px; }
 .health-app button { transition:background-color .18s,border-color .18s; }
-.health-app :is(button,summary,a,input,textarea,select):focus-visible { outline:3px solid #dcebb0; outline-offset:3px; }
-.health-app :is(.primary,.light-btn) { background:#dcebb0; color:#17231c; border:1px solid transparent; border-radius:12px; padding:13px 18px; font-weight:500; }
-.health-app :is(.secondary,.studio-launch,.sketch-controls button) { background:#17231c; color:#dcebb0; border:1px solid #34483b; border-radius:12px; }
-.health-app :is(.quiet-button,.icon-button) { color:#dcebb0; }
-.health-app .briefing { background:#23362a; color:var(--ink); border:1px solid #34483b; border-radius:28px; min-height:350px; padding:38px; grid-template-columns:minmax(0,1.15fr) minmax(200px,.85fr); gap:20px; box-shadow:none; }
+.health-app :is(button,summary,a,input,textarea,select):focus-visible { outline:3px solid #97dfc2; outline-offset:3px; }
+.health-app :is(.primary,.light-btn) { background:#97dfc2; color:#1c1e22; border:1px solid transparent; border-radius:12px; padding:13px 18px; font-weight:500; }
+.health-app :is(.secondary,.studio-launch,.sketch-controls button) { background:#1c1e22; color:#97dfc2; border:1px solid #373b42; border-radius:12px; }
+.health-app :is(.quiet-button,.icon-button) { color:#97dfc2; }
+.health-app .briefing { background:#272b30; color:var(--ink); border:1px solid #373b42; border-radius:28px; min-height:350px; padding:38px; grid-template-columns:minmax(0,1.15fr) minmax(200px,.85fr); gap:20px; box-shadow:none; }
 .health-app .briefing-copy { align-self:center; }
-.health-app .briefing .eyebrow { color:#a8b7a9; }
+.health-app .briefing .eyebrow { color:#aab0b9; }
 .health-app .briefing h2 { font-family:var(--font-inter),sans-serif; font-size:clamp(32px,3.4vw,48px); font-weight:600; letter-spacing:-1.8px; line-height:1.12; margin:16px 0; max-width:470px; }
-.health-app .briefing-copy > p { color:#a8b7a9; font-size:14px; line-height:1.75; margin-bottom:24px; max-width:440px; }
-.health-app .briefing-source { display:block; margin-top:18px; color:#a8b7a9; font-size:11px; line-height:1.7; }
+.health-app .briefing-copy > p { color:#aab0b9; font-size:14px; line-height:1.75; margin-bottom:24px; max-width:440px; }
+.health-app .briefing-source { display:block; margin-top:18px; color:#aab0b9; font-size:11px; line-height:1.7; }
 .health-app .briefing-source summary { cursor:pointer; min-height:32px; padding:6px 0; }
 .health-app .briefing .health-object-live { align-self:center; background:radial-gradient(ellipse at 50% 60%,#94a97d28,transparent 68%); }
 .health-app .briefing .health-object-live .sketch-canvas { height:260px; }
-.health-app .briefing .health-object-live .object-copy h3 { color:#a8b7a9; font-size:10px; font-weight:500; }
+.health-app .briefing .health-object-live .object-copy h3 { color:#aab0b9; font-size:10px; font-weight:500; }
 .health-app .briefing .health-object-live .object-copy p { display:none; }
-.health-app .briefing .health-object-live .quiet-button { border:1px solid #34483b; border-radius:24px; padding:8px 14px; min-height:44px; margin-top:6px; font-size:11px; color:#a8b7a9; background:#ffffff0a; }
-.health-app .signals-empty { display:flex; align-items:center; gap:20px; padding:26px; margin:22px 0 30px; background:#17231c; border:1px solid var(--line); border-radius:20px; }
-.health-app .signals-icon { display:grid; place-items:center; flex:0 0 48px; height:48px; color:#dcebb0; background:#23362a; border-radius:15px; }
+.health-app .briefing .health-object-live .quiet-button { border:1px solid #373b42; border-radius:24px; padding:8px 14px; min-height:44px; margin-top:6px; font-size:11px; color:#aab0b9; background:#ffffff0a; }
+.health-app .signals-empty { display:flex; align-items:center; gap:20px; padding:26px; margin:22px 0 30px; background:#1c1e22; border:1px solid var(--line); border-radius:20px; }
+.health-app .signals-icon { display:grid; place-items:center; flex:0 0 48px; height:48px; color:#97dfc2; background:#272b30; border-radius:15px; }
 .health-app .signals-empty h2 { font-size:18px; letter-spacing:-.5px; margin:7px 0; font-weight:600; }
 .health-app .signals-empty p { max-width:520px; color:var(--muted); font-size:13px; line-height:1.7; margin:0; }
 .health-app .signals-empty .secondary { margin-left:auto; flex-shrink:0; min-height:44px; }
 .health-app .daily-section-heading h2 { font-size:19px; letter-spacing:-.5px; font-weight:600; }
 .health-app .daily-section-heading { margin:26px 0 16px; }
 .health-app .metrics { gap:14px; margin:22px 0 30px; }
-.health-app .metric { background:#17231c; border:1px solid var(--line); border-radius:18px; padding:22px; min-height:165px; }
+.health-app .metric { background:#1c1e22; border:1px solid var(--line); border-radius:18px; padding:22px; min-height:165px; }
 .health-app .metric strong { font-size:32px; letter-spacing:-1px; font-weight:500; font-variant-numeric:tabular-nums; }
-.health-app .metric small { color:#a8b7a9; }
-.health-app .metric .spark { opacity:.2; color:#dcebb0; }
+.health-app .metric small { color:#aab0b9; }
+.health-app .metric .spark { opacity:.2; color:#97dfc2; }
 .health-app .daily-objects { gap:18px; margin-bottom:26px; }
-.health-app .health-object { background:#1d3023; border:0; border-radius:20px; }
-.health-app .daily-objects .health-object { background:#1d3023; border:0; border-radius:20px; padding:24px; margin:0; }
-.health-app .daily-objects .health-object:nth-child(2) { background:#263026; }
+.health-app .health-object { background:#24282d; border:0; border-radius:20px; }
+.health-app .daily-objects .health-object { background:#24282d; border:0; border-radius:20px; padding:24px; margin:0; }
+.health-app .daily-objects .health-object:nth-child(2) { background:#282a30; }
 .health-app .health-object h3 { font-family:var(--font-inter),sans-serif; font-size:20px; letter-spacing:-.6px; font-weight:500; }
-.health-app .health-object p { color:#a8b7a9; font-size:13px; line-height:1.6; }
+.health-app .health-object p { color:#aab0b9; font-size:13px; line-height:1.6; }
 .health-app .daily-objects .object-art { flex-basis:105px; }
-.health-app .daily-objects .light-btn { background:none; color:#dcebb0; border:0; padding:0; min-height:44px; font-size:12px !important; }
-.health-app .daily-objects .quiet-button { font-size:11px; color:#a8b7a9; }
+.health-app .daily-objects .light-btn { background:none; color:#97dfc2; border:0; padding:0; min-height:44px; font-size:12px !important; }
+.health-app .daily-objects .quiet-button { font-size:11px; color:#aab0b9; }
 .health-app .daily-objects .object-actions { gap:14px; }
-.health-app .panel { background:#17231c; border-color:var(--line); border-radius:20px; }
+.health-app .panel { background:#1c1e22; border-color:var(--line); border-radius:20px; }
 .health-app .panel h2 { font-weight:500; letter-spacing:-.6px; }
 .health-app .plan-row { border-color:var(--line); padding:20px 0; }
 .health-app .plan-row h3 { font-weight:500; font-size:14px; }
 .health-app .plan-row p { color:var(--muted); font-size:12px; }
-.health-app .step { background:#23362a; border-color:#34483b; color:#a8b7a9; border-radius:50%; }
-.health-app .agent-teaser { background:#23362a; }
-.health-app :is(.agent-teaser p,.context-note,.subtle,footer,.chat-footnote,.consent,.sketch-hint,.companion-note,.knowledge-brief small) { color:#a8b7a9; }
+.health-app .step { background:#272b30; border-color:#373b42; color:#aab0b9; border-radius:50%; }
+.health-app .agent-teaser { background:#272b30; }
+.health-app :is(.agent-teaser p,.context-note,.subtle,footer,.chat-footnote,.consent,.sketch-hint,.companion-note,.knowledge-brief small) { color:#aab0b9; }
 /* Forms and secondary screens share the same surfaces. */
-.health-app :is(.health-dialog,.dialog-heading,.chat-panel,.chat-compose-area,.composer,.more-menu) { background:#17231c; color:var(--ink); border-color:var(--line); }
+.health-app :is(.health-dialog,.dialog-heading,.chat-panel,.chat-compose-area,.composer,.more-menu) { background:#1c1e22; color:var(--ink); border-color:var(--line); }
 .health-app .health-dialog::backdrop { background:#060e0aaa; backdrop-filter:blur(5px); }
-.health-app :is(input,textarea,select) { background:#111b17; color:var(--ink); border-color:#34483b; accent-color:#dcebb0; }
-.health-app :is(input,textarea)::placeholder { color:#a8b7a9; }
-.health-app :is(.health-dialog label,.chat-title p,.context-item small,.context-item p,.journal-aside p,.journal-entry p,.memory-card small,.memory-card blockquote,.connection-list,.empty-state p) { color:#a8b7a9; }
+.health-app :is(input,textarea,select) { background:#141518; color:var(--ink); border-color:#373b42; accent-color:#97dfc2; }
+.health-app :is(input,textarea)::placeholder { color:#aab0b9; }
+.health-app :is(.health-dialog label,.chat-title p,.context-item small,.context-item p,.journal-aside p,.journal-entry p,.memory-card small,.memory-card blockquote,.connection-list,.empty-state p) { color:#aab0b9; }
 .health-app :is(.chat-title,.context-item,.journal-entry,.activity-row,.journal-rule,.connection-list > div) { border-color:var(--line); }
 .health-app :is(.chat-welcome h2,.context-panel h2,.workout-link h2,.empty-state h3,.journal-aside h2,.memory-suggestions h3,.agent-teaser h2) { font-family:var(--font-inter),sans-serif; font-weight:500; letter-spacing:-.7px; }
-.health-app :is(.message,.memory-chat-bar,.memory-setting,.memory-card,.memory-suggestion,.memory-included,.journal-tags span,.range-toggle,.privacy-card,.catalog-card,.conversation-row > button:first-child) { background:#23362a; color:var(--ink); border-color:#34483b; }
-.health-app .message.user { background:#23362a; color:#edf0e8; }
-.health-app :is(.message > span,.memory-chat-bar span,.memory-category,.count-badge,.status-pill) { color:#dcebb0; }
-.health-app :is(.prompt-chips button,.memory-filters button,.range-toggle button,.companion-choices button,.character-options button) { background:#17231c; border:1px solid #34483b; color:#a8b7a9; }
-.health-app :is(.range-toggle button.active,.memory-filters button.active,.companion-choices button[aria-pressed="true"],.character-options button[aria-pressed="true"]) { background:#23362a; border-color:#93aa78; color:#dcebb0; box-shadow:none; }
-.health-app :is(.status-pill,.count-badge,.memory-category) { background:#23362a; }
+.health-app :is(.message,.memory-chat-bar,.memory-setting,.memory-card,.memory-suggestion,.memory-included,.journal-tags span,.range-toggle,.privacy-card,.catalog-card,.conversation-row > button:first-child) { background:#272b30; color:var(--ink); border-color:#373b42; }
+.health-app .message.user { background:#272b30; color:#f5f6f7; }
+.health-app :is(.message > span,.memory-chat-bar span,.memory-category,.count-badge,.status-pill) { color:#97dfc2; }
+.health-app :is(.prompt-chips button,.memory-filters button,.range-toggle button,.companion-choices button,.character-options button) { background:#1c1e22; border:1px solid #373b42; color:#aab0b9; }
+.health-app :is(.range-toggle button.active,.memory-filters button.active,.companion-choices button[aria-pressed="true"],.character-options button[aria-pressed="true"]) { background:#272b30; border-color:#93aa78; color:#97dfc2; box-shadow:none; }
+.health-app :is(.status-pill,.count-badge,.memory-category) { background:#272b30; }
 .health-app .memory-switch { background:#405348; }
-.health-app .memory-switch.on { background:#dcebb0; }
+.health-app .memory-switch.on { background:#97dfc2; }
 .health-app .chart-bar { background:linear-gradient(#c5d99b,#7e9d66); }
 .health-app .bar-track { background:#15231b; }
-.health-app :is(.chart-column span,.activity-summary p,.conversation-row small,.companion-choices small,.companion-heading > span,.companion-heading p) { color:#a8b7a9; }
-.health-app .activity-summary { background:#23362a; border-color:var(--line); }
+.health-app :is(.chart-column span,.activity-summary p,.conversation-row small,.companion-choices small,.companion-heading > span,.companion-heading p) { color:#aab0b9; }
+.health-app .activity-summary { background:#272b30; border-color:var(--line); }
 .health-app .companion-portrait { background:radial-gradient(ellipse at 50% 45%,#5a7052,#22372c); }
 .health-app .companion-sunny .companion-portrait { background:radial-gradient(ellipse at 50% 45%,#8c7143,#342e24); }
 .health-app .companion-pebble .companion-portrait { background:radial-gradient(ellipse at 50% 45%,#657c88,#24333b); }
 .health-app .companion-heading h3 { font-family:var(--font-inter),sans-serif; font-weight:500; }
-.health-app .companion-portrait .sketch-controls button { color:#a8b7a9; background:#14201c50; border-color:#34483b; }
-.health-app .sketch-canvas { background:#23362a; }
+.health-app .companion-portrait .sketch-controls button { color:#aab0b9; background:#14201c50; border-color:#373b42; }
+.health-app .sketch-canvas { background:#272b30; }
 .health-app .companion-portrait .sketch-canvas,.health-app .health-object-live .sketch-canvas { background:none; }
 .health-app :is(.notice,.chat-recovery) { background:#302f20; color:#f4e9c5; border-color:#887e50; }
 .health-app :is(.danger-button,.forget-button) { color:#efa899; }
-@media(hover:hover) { .health-app :is(.primary,.light-btn):hover { background:#c8dda0; color:#17231c; } .health-app .rail nav button:hover { background:#23362a; } .health-app .secondary:hover { background:#23362a; } }
+@media(hover:hover) { .health-app :is(.primary,.light-btn):hover { background:#c8dda0; color:#1c1e22; } .health-app .rail nav button:hover { background:#272b30; } .health-app .secondary:hover { background:#272b30; } }
 @media(max-width:1100px) { .health-app .daily-objects .health-object { flex-direction:column; align-items:flex-start; } .health-app .daily-objects .object-art { flex-basis:auto; width:95px; } .health-app .signals-empty { flex-wrap:wrap; } .health-app .signals-empty .secondary { margin-left:68px; } }
 @media(max-width:760px) {
- .health-app .rail { min-height:72px; border:0; background:#111b17; }
+ .health-app .rail { min-height:72px; border:0; background:#141518; }
  .health-app .wordmark b { font-size:20px; }
- .health-app .mobile-profile { background:#17231c; color:#dcebb0; border:1px solid #34483b; width:38px; height:38px; min-height:38px; }
+ .health-app .mobile-profile { background:#1c1e22; color:#97dfc2; border:1px solid #373b42; width:38px; height:38px; min-height:38px; }
  .health-app .health-main { padding-left:20px; padding-right:20px; }
  .health-app .topbar { min-height:32px; height:auto; border:0; padding:0; }
  .health-app .sample-pill { padding:5px 10px; min-height:32px; font-size:10px; }
@@ -140,10 +140,10 @@
  .health-app .metric { padding:18px; min-height:145px; }
  .health-app .metric strong { font-size:27px; }
  .health-app .metric small { font-size:10px; }
- .health-app .mobile-dock { background:#101a16f5; border-color:#34483b; padding-top:8px; backdrop-filter:blur(18px); }
- .health-app .mobile-dock button { color:#a8b7a9; gap:5px; font-size:10px; border-radius:14px; }
+ .health-app .mobile-dock { background:#101a16f5; border-color:#373b42; padding-top:8px; backdrop-filter:blur(18px); }
+ .health-app .mobile-dock button { color:#aab0b9; gap:5px; font-size:10px; border-radius:14px; }
  .health-app .mobile-dock button > span:first-child { display:grid; place-items:center; height:26px; }
- .health-app .mobile-dock button.selected { color:#dcebb0; background:#23362a; }
+ .health-app .mobile-dock button.selected { color:#97dfc2; background:#272b30; }
  .health-app.mobile-chat .topbar { min-height:0; }
 }
 @media(max-width:370px) { .health-app .health-main { padding-left:16px; padding-right:16px; } .health-app .briefing { padding:20px; grid-template-columns:minmax(0,1fr) 115px; } .health-app .briefing-copy h2 { font-size:25px; } }
@@ -185,16 +185,16 @@
   .health-object-live .asset-preview { --asset-height: 160px; }
 }
 .asset-preview:not(.asset-compact) { min-height: calc(var(--asset-height) + 88px); }
-.health-app .mobile-menu :is(button,a) { background:#17231c; border-color:#34483b; color:#edf0e8; }
-.health-app .mobile-menu :is(button,a) > span,.health-app .mobile-menu small { color:#a8b7a9; }
-.health-app :is(.chat-welcome p,.garmin-card > p,.privacy-card li,.connection-list p) { color:#a8b7a9; }
-.health-app .connection-note { color:#a8b7a9 !important; }
-.health-app :is(.data-scopes span,.connection-badge) { background:#23362a; color:#dcebb0; border-color:#34483b; }
-.health-app .strava-answer { background:#17231c; }
+.health-app .mobile-menu :is(button,a) { background:#1c1e22; border-color:#373b42; color:#f5f6f7; }
+.health-app .mobile-menu :is(button,a) > span,.health-app .mobile-menu small { color:#aab0b9; }
+.health-app :is(.chat-welcome p,.garmin-card > p,.privacy-card li,.connection-list p) { color:#aab0b9; }
+.health-app .connection-note { color:#aab0b9 !important; }
+.health-app :is(.data-scopes span,.connection-badge) { background:#272b30; color:#97dfc2; border-color:#373b42; }
+.health-app .strava-answer { background:#1c1e22; }
 .health-app :is(.garmin-card h2,.privacy-card h2,.strava-card h2 em) { font-family:var(--font-inter),sans-serif; font-style:normal; font-weight:500; }
-.health-app :is(.memory-setting p,.memory-setting small,.memory-suggestions p,.journal-aside p,.empty-state p,.agent-mark,.connection-badge.connected) { color:#a8b7a9; }
-.health-app input:not([type="checkbox"]) { background:#111b17; color:var(--ink); border-color:#34483b; }
-.health-app :is(.activity-summary strong small,.activity-row p,.activity-row strong small,.distance,.empty-inline,.health-dialog label small) { color:#a8b7a9; }
+.health-app :is(.memory-setting p,.memory-setting small,.memory-suggestions p,.journal-aside p,.empty-state p,.agent-mark,.connection-badge.connected) { color:#aab0b9; }
+.health-app input:not([type="checkbox"]) { background:#141518; color:var(--ink); border-color:#373b42; }
+.health-app :is(.activity-summary strong small,.activity-row p,.activity-row strong small,.distance,.empty-inline,.health-dialog label small) { color:#aab0b9; }
 
 .health-app .asset-poster img { width:100%; height:var(--asset-height); max-height:var(--asset-height); object-fit:contain; }
 /* Keep conversation space usable on the narrowest supported phones. */
@@ -235,7 +235,7 @@
 .health-app .signals-empty h2 { font-size:16px; }
 .health-app .signals-empty .secondary { margin-left:auto; }
 .health-app .view-disclosure { border:0; border-top:1px solid var(--line); padding:0; margin:16px 0; background:transparent; border-radius:0; min-width:0; }
-.health-app .view-disclosure > summary { display:flex; align-items:center; justify-content:space-between; gap:16px; min-height:56px; padding:14px 0; cursor:pointer; color:#a8b7a9; font-size:14px; font-weight:500; list-style:none; }
+.health-app .view-disclosure > summary { display:flex; align-items:center; justify-content:space-between; gap:16px; min-height:56px; padding:14px 0; cursor:pointer; color:#aab0b9; font-size:14px; font-weight:500; list-style:none; }
 .health-app .view-disclosure > summary::-webkit-details-marker { display:none; }
 .health-app .view-disclosure > summary::after { content:'+'; font-size:20px; font-weight:400; }
 .health-app .view-disclosure[open] > summary::after { content:'−'; }
@@ -286,10 +286,10 @@
 .health-app .activity-summary strong small { display:block; font-size:13px; margin:4px 0; }
 .health-app .activity-summary .range-toggle { flex-shrink:0; }
 .health-app .memory-setting { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:start; gap:16px; }
-.health-app .memory-switch { display:flex; gap:8px; align-items:center; background:none; padding:0; min-height:44px; color:#a8b7a9; }
+.health-app .memory-switch { display:flex; gap:8px; align-items:center; background:none; padding:0; min-height:44px; color:#aab0b9; }
 .health-app .memory-switch input { appearance:none; position:relative; width:40px; height:24px; flex:0 0 40px; border:0; border-radius:24px; background:#405348; margin:0; cursor:pointer; }
-.health-app .memory-switch input::before { content:''; position:absolute; width:18px; height:18px; border-radius:50%; top:3px; left:3px; background:#17231c; box-shadow:0 1px 3px #00000033; }
-.health-app .memory-switch input:checked { background:#dcebb0; }
+.health-app .memory-switch input::before { content:''; position:absolute; width:18px; height:18px; border-radius:50%; top:3px; left:3px; background:#1c1e22; box-shadow:0 1px 3px #00000033; }
+.health-app .memory-switch input:checked { background:#97dfc2; }
 .health-app .memory-switch input:checked::before { transform:translateX(16px); }
 .health-app .memory-switch input:disabled { opacity:.5; cursor:default; }
 @media(max-width:360px) { .health-app .memory-switch > span { display:none; } .health-app .activity-summary { gap:8px; } .health-app .range-toggle button { padding:8px; } }
@@ -309,7 +309,7 @@
 .health-app .briefing .light-btn:hover { background:#38513e; color:#f0f2e6; }
 .health-app .briefing .health-object-live .quiet-button { color:#4d5f46; border-color:#73826255; background:#ffffff30; }
 .health-app .briefing :focus-visible { outline-color:#38513e; }
-.health-app .memory-switch input::before { background:#edf0e8; }
+.health-app .memory-switch input::before { background:#f5f6f7; }
 .health-app .memory-switch input:checked::before { background:#203426; }
 
 /* Give the companion enough pixels for facial detail in the selection sheet. */
@@ -557,3 +557,89 @@
  .health-app .training-open .run-welcome { min-height:calc(100dvh - 155px); }
 }
 @media(prefers-reduced-motion:reduce) { .health-app .voice-bars i { animation:none; } }
+
+/* Running app refinement: compact coaching card, visible week, neutral surfaces. */
+.health-app { background:#141518; --ink:#f5f6f7; --muted:#aab0b9; --line:#373b42; --lime:#97dfc2; }
+.health-app .rail { background:#191b1f; border-color:#30343a; }
+.health-app .health-main { max-width:1240px; }
+.health-app.run-home .topbar { display:none; }
+.health-app .running-page-heading { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:32px 0 24px; }
+.health-app .running-page-heading h1 { margin:8px 0 0; font-size:32px; font-weight:700; letter-spacing:-1px; }
+.health-app .running-page-heading > span { font-size:13px; color:#aab0b9; }
+.health-app .run-welcome { min-height:0; grid-template-columns:minmax(0,1fr) 210px; padding:28px 28px 0; column-gap:28px; border:1px solid #3b4546; border-radius:16px; background:linear-gradient(115deg,#253531,#22272c 80%); overflow:hidden; }
+.health-app .run-welcome-copy { display:block; }
+.health-app .run-kicker { color:#97dfc2; font-size:10px; letter-spacing:1.2px; margin:0; justify-content:flex-start; }
+.health-app .run-kicker i { background:#97dfc2; }
+.health-app .run-welcome h1 { font-size:34px; line-height:1.1; font-weight:700; font-style:normal; text-transform:none; letter-spacing:-1.2px; text-align:left; margin:14px 0 10px; }
+.health-app .run-welcome-subtitle { font-size:14px; color:#b9c4c2; text-align:left; margin:0 0 22px; }
+.health-app .run-talk { background:#97dfc2; color:#142820; border-radius:8px; min-height:48px; font-size:14px; padding:12px 16px; max-width:360px; }
+.health-app .run-voice-privacy { font-size:10px; color:#b1bcb9; margin:10px 0 0; max-width:360px; line-height:1.5; }
+.health-app .run-text-link { color:#e2e8e6; font-size:12px; padding:12px 0; }
+.health-app .run-companion { width:210px; height:210px; margin:0; align-self:center; }
+.health-app .run-orbit,.health-app .run-companion-label { display:none; }
+.health-app .run-companion img { filter:drop-shadow(0 12px 16px #0003); }
+.health-app .run-welcome-footer { margin-top:12px; border-color:#ffffff1c; padding:12px 0; gap:24px; }
+.health-app .run-welcome-footer button { color:#d8e4df; font-size:12px; min-height:40px; }
+.health-app .run-welcome-footer button+button { border-color:#ffffff1c; }
+.health-app .run-week-overview { margin-top:28px; scroll-margin-top:20px; }
+.health-app .training-week { border:1px solid #34383f; background:#1e2126; border-radius:16px; padding:24px; }
+.health-app .training-week h2 { font-size:23px; font-weight:650; letter-spacing:-.6px; }
+.health-app .training-week :is(.training-goal,.plan-week-nav,.training-day-detail p,.training-totals span) { color:#aab0b9; }
+.health-app .training-week-heading .quiet-button { color:#97dfc2; font-size:13px; }
+.health-app .training-days button { color:#b9bfc9; min-height:78px; border-radius:10px; }
+.health-app .training-days button[aria-pressed=true] { background:#97dfc2; color:#13251d; }
+.health-app .training-days .is-today { border-color:#638d7d; }
+.health-app :is(.training-day-detail,.training-totals) { border-color:#383d45; }
+.health-app .training-day-detail { background:#262a31; border:0; border-radius:10px; padding:18px; }
+.health-app .training-totals strong { font-size:26px; font-weight:650; }
+.health-app .run-more-detail { margin-top:16px; width:100%; min-height:48px; text-align:left; color:#c4cbd3; background:transparent; border-color:#353940; border-radius:10px; }
+.health-app .mobile-nav { background:#191b1f; border-color:#353940; }
+.health-app .mobile-nav button { color:#aab0b9; }
+.health-app .mobile-nav button.selected { background:#293a35; color:#97dfc2; }
+.health-app .run-call-state { color:#97dfc2; }
+.health-app .run-end,.health-app .voice-bars i { background:#97dfc2; }
+@media(max-width:760px) {
+ .health-app .running-page-heading { padding:20px 0; }
+ .health-app .running-page-heading .eyebrow { display:none; }
+ .health-app .running-page-heading h1 { margin:0; font-size:28px; }
+ .health-app .run-welcome { position:relative; display:block; padding:22px 20px 0; min-height:0; border-radius:14px; }
+ .health-app .run-kicker { font-size:9px; letter-spacing:1px; }
+ .health-app .run-welcome h1 { font-size:29px; line-height:1.12; max-width:190px; margin:16px 0 10px; letter-spacing:-.8px; }
+ .health-app .run-welcome-subtitle { max-width:180px; font-size:12px; margin:0 0 22px; line-height:1.5; }
+ .health-app .run-companion { position:absolute; top:34px; right:0; width:125px; height:125px; }
+ .health-app .run-voice-actions { text-align:left; }
+ .health-app .run-talk { max-width:none; min-height:48px; font-size:13px; }
+ .health-app .run-voice-privacy { font-size:10px; margin-top:10px; max-width:none; }
+ .health-app .run-text-link { padding:12px 0; }
+ .health-app .run-welcome-footer { margin-top:0; padding:7px 0; gap:12px; }
+ .health-app .run-welcome-footer button { font-size:11px; }
+ .health-app .run-welcome-footer button+button { padding-left:12px; }
+ .health-app .run-week-overview { margin-top:24px; }
+ .health-app .training-week { padding:18px 14px; border-radius:14px; }
+ .health-app .training-week h2 { font-size:22px; }
+ .health-app .training-week-heading button { max-width:none; font-size:11px; }
+ .health-app .training-goal { font-size:12px; margin-bottom:14px; }
+ .health-app .training-days button { min-height:72px; padding:10px 0 4px; }
+ .health-app .training-days strong { font-size:18px; }
+ .health-app .training-day-detail { margin-top:16px; padding:14px; }
+ .health-app .training-totals { margin-top:16px; padding-top:16px; }
+}
+
+@media(min-width:1100px) {
+ .health-app .running-overview-grid { display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); gap:24px; align-items:start; }
+ .health-app .running-overview-grid .run-week-overview { margin-top:0; }
+ .health-app .running-overview-grid .run-welcome { display:block; position:relative; padding:26px 24px 0; }
+ .health-app .running-overview-grid .run-welcome h1 { max-width:220px; font-size:32px; }
+ .health-app .running-overview-grid .run-welcome-subtitle { max-width:210px; }
+ .health-app .running-overview-grid .run-companion { position:absolute; top:40px; right:0; width:130px; height:130px; }
+ .health-app .running-overview-grid .run-talk { max-width:none; }
+ .health-app .running-overview-grid .run-welcome-footer { margin-top:10px; gap:14px; }
+ .health-app .running-overview-grid .run-welcome-footer button+button { padding-left:14px; }
+ .health-app .running-overview-grid .training-week { margin:0; }
+}
+@media(max-width:360px) {
+ .health-app .run-companion { width:94px; height:94px; top:45px; right:0; }
+ .health-app .run-welcome h1 { max-width:160px; font-size:26px; }
+ .health-app .run-welcome-subtitle { max-width:150px; }
+ .health-app .run-welcome { padding-left:16px; padding-right:16px; }
+}

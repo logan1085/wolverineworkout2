@@ -836,9 +836,15 @@ export default function HealthDashboard() {
         )}
         {tab === "Today" && (
           <>
-            <RunWelcome key={user?.id || "device"} character={companion.character} onText={()=>ask("I'd like to check in about whether I ran today and how I'm feeling. Ask me one question at a time.")} onLog={()=>setModal("activity")} onPlan={()=>{setTrainingOpen(true);requestAnimationFrame(()=>document.getElementById("run-training")?.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"}));}} onCharacter={()=>setModal("character")} onAccount={()=>navigate("Connections")}/>
-            {trainingOpen && <div id="run-training" className="run-training-content">
+            <header className="running-page-heading"><div><span className="eyebrow">YOUR RUNNING COMPANION</span><h1>Today</h1></div><span>{new Date(today+"T12:00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"})}</span></header>
+            <div className="running-overview-grid">
+            <RunWelcome key={user?.id || "device"} character={companion.character} onText={()=>ask("I'd like to check in about whether I ran today and how I'm feeling. Ask me one question at a time.")} onLog={()=>setModal("activity")} onPlan={()=>{requestAnimationFrame(()=>document.getElementById("run-training")?.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"}));}} onCharacter={()=>setModal("character")} onAccount={()=>navigate("Connections")}/>
+            <div id="run-training" className="run-week-overview">
             <TrainingWeek state={current} today={today} sample={sample} disabled={!loaded || busy || !!historyError} onLog={()=>setModal("activity")} onSetup={id=>{setTrainingSession(id);setModal("training");}}/>
+            </div>
+            </div>
+            <button className="run-more-detail secondary" aria-expanded={trainingOpen} onClick={()=>setTrainingOpen(!trainingOpen)}>{trainingOpen?"Hide daily details −":"Daily routine & insights +"}</button>
+            {trainingOpen && <div className="run-training-content">
             {!sample && <DailyRoutine state={data} today={today} disabled={!loaded || busy || !!historyError} onSetup={()=>setModal("onboarding")} onAction={id=>{if(id==="reflection")startCheckin();else if(id==="movement")setModal("activity");else ask("Help me choose a simple wind-down ritual for tonight based on my routine and recent context.");}} onToggle={id=>void act(async()=>{const key=`${today}:routine-${id}`;await save({...data,completed:data.completed.includes(key)?data.completed.filter(c=>c!==key):[...data.completed,key].slice(-1500)});})}/>}
             <section className="briefing">
               <div className="briefing-copy">

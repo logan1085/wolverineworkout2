@@ -62,3 +62,7 @@ Pip now uses a continuous sage-green sprout-creature sculpt. No fruit dimples, b
 ### Running welcome — September 28
 
 Default Home is now a single-question welcome: “Did you run today?” Bold italic sans-serif, lime voice action, quiet dark-green surfaces, approved Pip and subtle track-like rings. Training and run logging are secondary actions; the full dashboard is revealed on demand. Voice consent and failure states remain readable within the welcome. Preserve the approved character geometry and colors.
+
+## Runna-informed daily screen — September 29
+
+Reviewed https://www.runna.com/ and its displayed app previews. Follow the product UI's charcoal surfaces, compact card hierarchy, normal sans-serif headings, clear selected days, and visible training week. Preserve Wolverine's mint-green accent and approved Pip asset. Home now places the voice check-in and real training calendar together, with routines and insights disclosed below. No invented activity, streaks, or race metrics. Desktop uses two columns; mobile stacks the cards. Voice consent and text fallback remain visible.
