@@ -58,3 +58,7 @@ Replaces the previous cloth-bodied family with Pip (red apple), Sprout (green ap
 ### Soft creature iteration — September 28
 
 Pip now uses a continuous sage-green sprout-creature sculpt. No fruit dimples, brown stem, gloves or separate shoes. The face and asymmetrical flipper pose carry the character; the leaf is a small accent. The documented render/critique loop lives in `docs/studio/COMPANION_DESIGN.md`. Current assets use the `sprite-v4` version to prevent stale portrait/model caches.
+
+### Running welcome — September 28
+
+Default Home is now a single-question welcome: “Did you run today?” Bold italic sans-serif, lime voice action, quiet dark-green surfaces, approved Pip and subtle track-like rings. Training and run logging are secondary actions; the full dashboard is revealed on demand. Voice consent and failure states remain readable within the welcome. Preserve the approved character geometry and colors.

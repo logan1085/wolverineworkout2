@@ -498,3 +498,62 @@
 .health-app .plan-move label { flex:1; margin:0; min-width:150px; }
 .health-app .plan-progress progress { width:100%; accent-color:#d9e9b0; }
 .health-app .plan-progress span { display:block; margin-top:8px; font-size:12px; color:#b6c3af; }
+
+/* Running-first welcome: athletic typography, focused actions, approved green identity. */
+.health-app :is(h1,h2,h3,h4) { font-family:var(--font-inter),Arial,sans-serif; }
+.health-app.run-home:not(.training-open) .topbar { display:none; }
+.health-app .run-welcome { position:relative; display:grid; grid-template-columns:1.12fr 1fr; align-items:center; column-gap:24px; min-height:calc(100dvh - 110px); padding:44px 12px 0; overflow:hidden; }
+.health-app .run-kicker { font-size:10px; font-weight:700; letter-spacing:2px; display:flex; align-items:center; gap:8px; color:#afbe9b; }
+.health-app .run-kicker i { width:6px; height:6px; border-radius:50%; background:#d4f48b; }
+.health-app .run-welcome h1 { font-size:clamp(58px,6.7vw,98px); font-weight:850; line-height:.95; letter-spacing:-5px; text-transform:uppercase; font-style:italic; margin:25px 0; color:#f1f4e9; }
+.health-app .run-welcome-subtitle { font-size:17px; line-height:1.55; color:#aebca9; margin:0 0 28px; }
+.health-app .run-talk { border:0; width:100%; max-width:380px; min-height:60px; display:flex; align-items:center; gap:12px; background:#d6f78b; color:#142013; border-radius:12px; font-weight:750; padding:16px 20px; }
+.health-app .run-talk svg { width:20px; height:24px; flex-shrink:0; }
+.health-app .run-talk > span { margin-left:auto; font-size:24px; }
+.health-app .run-voice-privacy { max-width:360px; font-size:10px; color:#8e9d86; line-height:1.65; margin:12px 0 8px; }
+.health-app .run-text-link { background:none; border:0; color:#e0e8d8; padding:12px 0; font-size:13px; }
+.health-app .run-text-link span { margin-left:8px; }
+.health-app .run-companion { position:relative; isolation:isolate; background:none; border:0; padding:0; width:100%; aspect-ratio:1; color:#dbe5cc; }
+.health-app .run-companion img { position:relative; z-index:1; width:100%; height:auto; display:block; filter:drop-shadow(0 24px 24px #0003); }
+.health-app .run-orbit { position:absolute; inset:12%; border:1px solid #53643c66; border-radius:50%; transform:rotate(-24deg) scaleY(.9); background:radial-gradient(ellipse,#adc78312,transparent 70%); }
+.health-app .run-orbit:before,.health-app .run-orbit:after { content:""; position:absolute; inset:-13%; border:1px solid #53643c33; border-radius:50%; }
+.health-app .run-orbit:after { inset:-26%; }
+.health-app .run-companion-label { display:flex; gap:9px; justify-content:center; align-items:center; margin-top:-15px; font-size:9px; letter-spacing:1.5px; text-transform:uppercase; }
+.health-app .run-companion-label i { height:3px; width:3px; border-radius:50%; background:#8fa475; }
+.health-app .run-welcome-footer { grid-column:1/-1; display:grid; grid-template-columns:1fr 1fr; gap:24px; border-top:1px solid #344331; margin-top:40px; padding:20px 0; align-self:end; }
+.health-app .run-welcome-footer button { display:flex; justify-content:space-between; background:none; border:0; color:#c7d4ba; font-size:13px; text-align:left; padding:10px 0; }
+.health-app .run-welcome-footer button+button { border-left:1px solid #344331; padding-left:24px; }
+.health-app .run-voice-error { color:#ffccba; font-size:13px; line-height:1.5; max-width:380px; }
+.health-app .run-caption { color:#e8efdf; font-size:15px; line-height:1.65; max-width:440px; }
+.health-app .run-call-state { display:flex; gap:12px; align-items:center; min-height:54px; font-size:14px; color:#d6f78b; }
+.health-app .run-call-controls { display:flex; gap:10px; }
+.health-app :is(.run-end,.run-mute) { padding:14px 20px; min-height:48px; border-radius:10px; border:1px solid #75885d; background:transparent; color:#e4eddb; }
+.health-app .run-end { background:#d6f78b; border-color:#d6f78b; color:#142013; }
+.health-app .voice-bars { display:flex; align-items:center; gap:4px; height:26px; }
+.health-app .voice-bars i { width:3px; height:10px; border-radius:3px; background:#d6f78b; animation:voice-wave 1s ease-in-out infinite alternate; }
+.health-app .voice-bars i:nth-child(2n) { height:24px; animation-delay:.3s; }
+.health-app .voice-bars i:nth-child(3) { height:18px; animation-delay:.6s; }
+@keyframes voice-wave { to { transform:scaleY(.4); } }
+.health-app .run-training-content { padding-top:28px; }
+.health-app .training-open .run-welcome { min-height:600px; }
+@media(max-width:760px) {
+ .health-app .run-welcome { grid-template-columns:1fr; padding:12px 0 0; min-height:calc(100dvh - 155px); gap:0; overflow:visible; }
+ .health-app .run-welcome-copy { display:contents; }
+ .health-app .run-kicker { grid-row:1; margin-top:8px; justify-content:center; font-size:9px; }
+ .health-app .run-welcome h1 { grid-row:2; text-align:center; font-size:clamp(48px,14vw,68px); line-height:.96; letter-spacing:-3px; margin:18px 0 0; }
+ .health-app .run-companion { grid-row:3; width:190px; height:180px; margin:-2px auto 0; }
+ .health-app .run-companion-label { display:none; }
+ .health-app .run-welcome-subtitle { grid-row:4; text-align:center; font-size:13px; margin:4px 0 18px; }
+ .health-app .run-welcome-subtitle br { display:none; }
+ .health-app .run-voice-actions { grid-row:5; text-align:center; }
+ .health-app .run-talk { margin:0 auto; min-height:56px; font-size:14px; }
+ .health-app .run-voice-privacy { margin:10px auto 0; font-size:9px; max-width:305px; }
+ .health-app .run-text-link { padding:14px 0; }
+ .health-app .run-welcome-footer { grid-row:6; margin-top:14px; padding:8px 0; gap:16px; }
+ .health-app .run-welcome-footer button { font-size:12px; }
+ .health-app .run-welcome-footer button+button { padding-left:16px; }
+ .health-app .run-call-state,.health-app .run-call-controls { justify-content:center; }
+ .health-app .run-caption,.health-app .run-voice-error { text-align:left; }
+ .health-app .training-open .run-welcome { min-height:calc(100dvh - 155px); }
+}
+@media(prefers-reduced-motion:reduce) { .health-app .voice-bars i { animation:none; } }

@@ -25,6 +25,7 @@ import HomeCalendar from "./HomeCalendar";
 import DailyRoutine from "./DailyRoutine";
 import TrainingWeek from "./TrainingWeek";
 import TrainingPlanner from "./TrainingPlanner";
+import RunWelcome from "./RunWelcome";
 import { readLocalHealth, commitLocalHealth, HEALTH_STORAGE_KEY, HEALTH_WRITE_LOCK } from "@/lib/health/local-health";
 import RoutineOnboarding from "./RoutineOnboarding";
 import HealthIcon from "./HealthIcon";
@@ -89,6 +90,7 @@ function Spark({ values }: { values: (number | undefined)[] }) {
 export default function HealthDashboard() {
   const { user, signIn, signUp, signOut } = useAuth();
   const companion = useCharacter(user?.id);
+  const [trainingOpen,setTrainingOpen]=useState(false);
   const [trainingSession,setTrainingSession]=useState<string|undefined>();
   const [tab, setTab] = useState<Tab>("Today");
   const [moreOpen, setMoreOpen] = useState(false);
@@ -741,7 +743,7 @@ export default function HealthDashboard() {
           dialogTrigger.current = event.target.closest<HTMLElement>("button");
         }
       }}
-      className={`health-app ${tab === "Your agent" ? "mobile-chat" : ""} ${keyboardOpen ? "keyboard-open" : ""}`}
+      className={`health-app ${tab === "Today" ? `run-home ${trainingOpen ? "training-open" : ""}` : ""} ${tab === "Your agent" ? "mobile-chat" : ""} ${keyboardOpen ? "keyboard-open" : ""}`}
     >
       <aside className="rail">
         <Link className="wordmark" href="/" aria-label="Wolverine home">
@@ -834,43 +836,8 @@ export default function HealthDashboard() {
         )}
         {tab === "Today" && (
           <>
-            <div className="greeting today-greeting">
-              <div>
-                <p className="eyebrow">
-                  {loaded
-                    ? new Date()
-                        .toLocaleDateString(undefined, {
-                          weekday: "long",
-                          month: "long",
-                          day: "numeric",
-                        })
-                        .toUpperCase()
-                    : "YOUR DAILY BRIEFING"}
-                </p>
-                <h1>
-                  {data.profile.name && !sample ? (
-                    <>
-                      Hi, {name}.
-                    </>
-                  ) : (
-                    <>
-                      Today
-                    </>
-                  )}
-                </h1>
-                <p>Your health is more than your last workout.</p>
-              </div>
-              {(sample || data.checkIns.length > 0) && <button
-                className="primary"
-                onClick={startCheckin}
-                disabled={!loaded}
-              >
-                ＋{" "}
-                {data.checkIns.some((c) => c.date === today)
-                  ? "Update check-in"
-                  : "Daily check-in"}
-              </button>}
-            </div>
+            <RunWelcome key={user?.id || "device"} character={companion.character} onText={()=>ask("I'd like to check in about whether I ran today and how I'm feeling. Ask me one question at a time.")} onLog={()=>setModal("activity")} onPlan={()=>{setTrainingOpen(true);requestAnimationFrame(()=>document.getElementById("run-training")?.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"}));}} onCharacter={()=>setModal("character")} onAccount={()=>navigate("Connections")}/>
+            {trainingOpen && <div id="run-training" className="run-training-content">
             <TrainingWeek state={current} today={today} sample={sample} disabled={!loaded || busy || !!historyError} onLog={()=>setModal("activity")} onSetup={id=>{setTrainingSession(id);setModal("training");}}/>
             {!sample && <DailyRoutine state={data} today={today} disabled={!loaded || busy || !!historyError} onSetup={()=>setModal("onboarding")} onAction={id=>{if(id==="reflection")startCheckin();else if(id==="movement")setModal("activity");else ask("Help me choose a simple wind-down ritual for tonight based on my routine and recent context.");}} onToggle={id=>void act(async()=>{const key=`${today}:routine-${id}`;await save({...data,completed:data.completed.includes(key)?data.completed.filter(c=>c!==key):[...data.completed,key].slice(-1500)});})}/>}
             <section className="briefing">
@@ -969,6 +936,7 @@ export default function HealthDashboard() {
 
 
 
+            </div>}
           </>
         )}
         {tab === "Your agent" && (
@@ -1939,7 +1907,7 @@ export default function HealthDashboard() {
             <div className="form-grid">
               <label>
                 Type
-                <select name="type">
+                <select name="type" defaultValue="Running">
                   {[
                     "Walking",
                     "Running",
