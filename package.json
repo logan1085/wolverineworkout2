@@ -21,17 +21,22 @@
     "test:calendar": "node --test tests/calendar.test.mjs",
     "test:account": "node --test tests/account-status.test.mjs",
     "test:training": "node --test tests/training.test.mjs",
-    "test:voice": "node --test tests/voice.test.mjs"
+    "test:voice": "node --test tests/voice.test.mjs",
+    "test:photon": "node --test tests/photon.test.mjs"
   },
   "dependencies": {
+    "@chat-adapter/state-redis": "4.41.1",
+    "@photon-ai/chat-adapter-imessage": "3.2.0",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.50.0",
+    "chat": "4.41.1",
     "mem0ai": "^2.1.32",
     "next": "^15.5.23",
     "openai": "^5.5.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "three": "0.186.0"
+    "three": "0.186.0",
+    "zod": "3.25.76"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -44,5 +49,8 @@
     "eslint-config-next": "^15.5.23",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "engines": {
+    "node": "22.x"
   }
 }

@@ -1,0 +1,18 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import ts from 'typescript';
+const m={exports:{}};
+new Function('exports',ts.transpileModule(fs.readFileSync('src/lib/photon/conversation.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText)(m.exports);
+const {handleText,TEXT_INTRO}=m.exports;
+function fixture(state=null){let saved=state,calls=0;return {get state(){return saved;},get calls(){return calls;},send:text=>handleText({text,state:saved,day:'2026-10-03',save:async s=>{saved=s;},answer:async()=>{calls++;return 'How did your run feel?';}})};}
+test('no AI call or text retention before explicit START',async()=>{const f=fixture();assert.equal(await f.send('ran 5k'),TEXT_INTRO);assert.equal(f.calls,0);assert.equal(f.state,null);await f.send('START');assert.equal(f.state.consented,true);assert.deepEqual(f.state.history,[]);await f.send('ran 5k');assert.equal(f.calls,1);assert.equal(f.state.history.length,2);});
+test('STOP revokes consent and clears history; RESET preserves consent',async()=>{const f=fixture();await f.send('START');await f.send('hello');await f.send('RESET');assert.equal(f.state.consented,true);assert.equal(f.state.history.length,0);await f.send('hello');await f.send('STOP');assert.equal(f.state.consented,false);assert.equal(f.state.history.length,0);const before=f.calls;await f.send('hello');assert.equal(f.calls,before);});
+test('history bounded and daily quota cannot be reset by STOP/START',async()=>{const f=fixture();await f.send('START');for(let i=0;i<60;i++)await f.send('hello');assert.equal(f.state.history.length,12);await f.send('STOP');await f.send('START');assert.match(await f.send('hello'),/limit/);assert.equal(f.calls,60);});
+test('oversize text rejected and quota resets next UTC day',async()=>{const f=fixture({consented:true,history:[],day:'2026-10-02',count:60});await f.send('x'.repeat(4001));assert.equal(f.calls,0);await f.send('hello');assert.equal(f.calls,1);assert.equal(f.state.count,1);});
+const crypto=await import('node:crypto');
+const ingress={exports:{}};
+new Function('require','exports',ts.transpileModule(fs.readFileSync('src/lib/photon/ingress.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText)(()=>crypto,ingress.exports);
+const {verifyPhoton,acceptedPhotonText}=ingress.exports;
+test('signature rejects forged, altered, stale and future deliveries',()=>{const now=1800000000000,stamp=String(now/1000),raw='{"event":"messages"}',secret='fixture-secret';const h=new Headers({'x-spectrum-timestamp':stamp,'x-spectrum-signature':'v0='+crypto.createHmac('sha256',secret).update(`v0:${stamp}:${raw}`).digest('hex')});assert.equal(verifyPhoton(raw,h,secret,now),true);assert.equal(verifyPhoton(raw+' ',h,secret,now),false);assert.equal(verifyPhoton(raw,h,'wrong',now),false);assert.equal(verifyPhoton(raw,h,secret,now+301000),false);assert.equal(verifyPhoton(raw,h,secret,now-301000),false);});
+test('only allowlisted incoming direct text messages accepted',()=>{const p={event:'messages',space:{type:'dm',platform:'iMessage'},message:{id:'one',platform:'iMessage',direction:'inbound',sender:{id:'+15555550100'},content:{type:'text',text:'hello'}}};assert.equal(acceptedPhotonText(p,['+15555550100']),true);assert.equal(acceptedPhotonText(p,[]),false);assert.equal(acceptedPhotonText({...p,space:{...p.space,type:'group'}},['+15555550100']),false);assert.equal(acceptedPhotonText({...p,message:{...p.message,direction:'outbound'}},['+15555550100']),false);assert.equal(acceptedPhotonText({...p,message:{...p.message,content:{type:'reaction'}}},['+15555550100']),false);});
