@@ -151,3 +151,9 @@ Typecheck and local/hosted production builds passed. Browser review covered 320p
 `0431496` is deployed to production (`dpl_B8jEuaaCgkcYnptdU1bSbMawxNeD`). The `/api/photon/webhook` endpoint remains disabled pending Photon project/line credentials, webhook registration, an approved Redis store and a sender allowlist. Production POST returned the expected 503 “Messaging is not configured.” No Photon messages were sent. This is not an activated messaging service.
 
 Six Photon checks, 31 existing health/memory/voice regression checks, and local/hosted production builds passed. Uses Node 22 and the official Photon Chat SDK adapter with Redis state. Setup and limitations are documented in `docs/PHOTON_SETUP.md`. Real inbound/outbound messaging and durable Redis behavior remain unverified. Web-account pairing and shared health memory are not included.
+
+## Photon Redis provisioned — October 3, 2026
+
+`e5ff436` is live at https://wolverineworkout2.vercel.app (production READY, `dpl_6bXwqjG6bKtsxkSVN71HqknVyGSc`). Free Upstash Redis is connected to production with automatic paid upgrades disabled; the Photon adapter now accepts the integration-provided `REDIS_URL`, with `PHOTON_REDIS_URL` taking precedence. Redis PING, six Photon tests and local/hosted production builds passed.
+
+Photon shared iMessage enrollment is ready. Credential storage awaits the owner’s Vercel browser sign-in, and webhook registration awaits the required browser access confirmation. The live endpoint still returns the expected 503; no text was sent and messaging is not activated. Temporary downloaded environment credentials were removed.
