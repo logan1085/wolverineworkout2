@@ -145,3 +145,9 @@ Four voice tests and local/hosted production builds passed. Browser review cover
 `ce7bcaf` is live at https://wolverineworkout2.vercel.app (deployment `dpl_4pqhDVhp9GuD9wfNpTeXuiw9v1pZ`). Replaces the oversized welcome with a compact Pip check-in card, charcoal surfaces and mint accents. The training week is immediately visible, with side-by-side cards on desktop and stacked cards on mobile. Daily routines and insights expand below. Reference and design rationale are in `docs/UI_DESIGN.md`.
 
 Typecheck and local/hosted production builds passed. Browser review covered 320px, 390px and desktop layouts, fixed a narrow-screen mascot overlap, and verified daily-detail expansion/collapse. Production verification confirms the new hierarchy and live weekly calendar. Voice/account limitations from the previous release remain unchanged.
+
+## Photon private text channel foundation — October 3, 2026
+
+`0431496` is deployed to production (`dpl_B8jEuaaCgkcYnptdU1bSbMawxNeD`). The `/api/photon/webhook` endpoint remains disabled pending Photon project/line credentials, webhook registration, an approved Redis store and a sender allowlist. Production POST returned the expected 503 “Messaging is not configured.” No Photon messages were sent. This is not an activated messaging service.
+
+Six Photon checks, 31 existing health/memory/voice regression checks, and local/hosted production builds passed. Uses Node 22 and the official Photon Chat SDK adapter with Redis state. Setup and limitations are documented in `docs/PHOTON_SETUP.md`. Real inbound/outbound messaging and durable Redis behavior remain unverified. Web-account pairing and shared health memory are not included.
