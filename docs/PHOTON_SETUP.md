@@ -1,6 +1,6 @@
 # Text Pip through Photon
 
-Status: endpoint deployed but disabled; not activated or end-to-end verified. The owner created a Photon account. Project “Wolverine - Pip” (3968b5dd-56d4-4ff6-a7cc-281ef6f26e01) was created on October 3 with iMessage selected. Photon reports `account_phone_missing`: owner phone verification is required before line enrollment. Redis and runtime credentials remain unconfigured. No texts have been sent.
+Status: endpoint deployed but disabled; not activated or end-to-end verified. Photon project “Wolverine - Pip” (3968b5dd-56d4-4ff6-a7cc-281ef6f26e01) has a connected shared iMessage line and the owner enrolled. A free Upstash Redis store is connected to Vercel production, with automatic paid upgrades disabled. Photon credentials, sender allowlist and webhook registration remain pending secure configuration. No texts have been sent.
 
 ## Activation
 
@@ -9,7 +9,7 @@ Status: endpoint deployed but disabled; not activated or end-to-end verified. Th
    - `IMESSAGE_PROJECT_ID`
    - `IMESSAGE_PROJECT_SECRET`
    - `IMESSAGE_WEBHOOK_SECRET` from the registered webhook
-   - `PHOTON_REDIS_URL` for an approved TLS Redis store
+   - `PHOTON_REDIS_URL` for an approved TLS Redis store, or the Vercel Upstash integration’s `REDIS_URL` (already provisioned). An explicit `PHOTON_REDIS_URL` takes precedence
    - `PHOTON_ALLOWED_SENDERS`: comma-separated exact iMessage sender IDs, normally E.164 phone numbers. Empty means no access.
    - Existing `OPENAI_API_KEY` and optional `OPENAI_HEALTH_MODEL` are reused.
 3. Register `https://wolverineworkout2.vercel.app/api/photon/webhook` in the Photon project's Webhook tab. Use one messaging line initially. Redeploy after setting variables.
@@ -30,6 +30,6 @@ Requires Node 22. Missing configuration returns 503; nothing is silently connect
 
 ## Verification
 
-`npm run test:photon` covers consent, STOP/RESET, bounded history, quota, sender/group/event filtering, forged/altered/stale/future signatures. Production build checks integration types. Real Photon delivery, Redis concurrency and full inbound/outbound acceptance remain pending credentials and a line.
+`npm run test:photon` covers consent, STOP/RESET, bounded history, quota, sender/group/event filtering, forged/altered/stale/future signatures. Production build checks integration types. Real Photon delivery, Redis concurrency and full inbound/outbound acceptance remain pending Photon credentials and webhook activation.
 
 References: https://photon.codes/docs/webhooks/events and https://github.com/photon-hq/vercel-chat-adapter-imessage

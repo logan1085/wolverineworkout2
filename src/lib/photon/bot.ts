@@ -6,10 +6,11 @@ import {createiMessageAdapter} from '@photon-ai/chat-adapter-imessage';
 import {buildHealthPrompt} from '@/lib/health/agent-prompt';
 import {handleText,TEXT_TTL,type TextState} from './conversation';
 
-export function photonConfigured(){return ['IMESSAGE_PROJECT_ID','IMESSAGE_PROJECT_SECRET','IMESSAGE_WEBHOOK_SECRET','PHOTON_REDIS_URL','PHOTON_ALLOWED_SENDERS','OPENAI_API_KEY'].every(key=>!!process.env[key]?.trim());}
+function redisUrl(){return process.env.PHOTON_REDIS_URL?.trim() || process.env.REDIS_URL?.trim();}
+export function photonConfigured(){return !!redisUrl() && ['IMESSAGE_PROJECT_ID','IMESSAGE_PROJECT_SECRET','IMESSAGE_WEBHOOK_SECRET','PHOTON_ALLOWED_SENDERS','OPENAI_API_KEY'].every(key=>!!process.env[key]?.trim());}
 function createBot(){
  const logger=new ConsoleLogger('silent');
- const state=createRedisState({url:process.env.PHOTON_REDIS_URL,keyPrefix:'wolverine-photon',logger});
+ const state=createRedisState({url:redisUrl(),keyPrefix:'wolverine-photon',logger});
  const bot=new Chat({userName:'Pip',logger,state,dedupeTtlMs:48*60*60*1000,concurrency:'queue',adapters:{imessage:createiMessageAdapter({projectId:process.env.IMESSAGE_PROJECT_ID,projectSecret:process.env.IMESSAGE_PROJECT_SECRET,webhookSecret:process.env.IMESSAGE_WEBHOOK_SECRET,logger})}});
  bot.onDirectMessage(async(thread,message,_channel,context)=>{
   const allowed=(process.env.PHOTON_ALLOWED_SENDERS||'').split(',').map(s=>s.trim()).filter(Boolean);
