@@ -1,6 +1,6 @@
 # Text Pip through Photon
 
-Status: implementation prepared; not activated or end-to-end verified. No Photon account, line, or Redis store has been provisioned by this change. No texts have been sent.
+Status: endpoint deployed but disabled; not activated or end-to-end verified. The owner created a Photon account. Project “Wolverine - Pip” (3968b5dd-56d4-4ff6-a7cc-281ef6f26e01) was created on October 3 with iMessage selected. Photon reports `account_phone_missing`: owner phone verification is required before line enrollment. Redis and runtime credentials remain unconfigured. No texts have been sent.
 
 ## Activation
 
