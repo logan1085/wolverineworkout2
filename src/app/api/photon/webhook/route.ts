@@ -1,4 +1,4 @@
-import {verifyPhoton,acceptedPhotonText} from '@/lib/photon/ingress';
+import {verifyPhoton,photonRejectionReason} from '@/lib/photon/ingress';
 import {after} from 'next/server';
 import {photonBot,photonConfigured} from '@/lib/photon/bot';
 export const runtime='nodejs';
@@ -13,6 +13,7 @@ export async function POST(request:Request){
  const raw=body.toString('utf8');
  if(!verifyPhoton(raw,request.headers,process.env.IMESSAGE_WEBHOOK_SECRET!))return new Response('Unauthorized',{status:401});
  let payload;try{payload=JSON.parse(raw);}catch{return new Response('Invalid JSON',{status:400});}
- if(!acceptedPhotonText(payload,(process.env.PHOTON_ALLOWED_SENDERS||'').split(',').map(s=>s.trim()).filter(Boolean)))return new Response(null,{status:204});
+ const rejected=photonRejectionReason(payload,(process.env.PHOTON_ALLOWED_SENDERS||'').split(',').map(s=>s.trim()).filter(Boolean));
+ if(rejected){console.info('Photon ignored event:',rejected);return new Response(null,{status:204});}
  return photonBot().webhooks.imessage(new Request(request.url,{method:'POST',headers:request.headers,body}),{waitUntil:task=>after(()=>task)});
 }
