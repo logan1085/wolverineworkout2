@@ -163,3 +163,7 @@ Photon shared iMessage enrollment is ready. Credential storage awaits the ownerâ
 Production deployment `dpl_EtVyTaH5o4cuNDfwvzVC7ULpYK92` is READY at https://wolverineworkout2.vercel.app, using source `e96dcaa`. Registered the Photon webhook to `/api/photon/webhook` and saved project ID, project secret, signing secret and owner-only sender allowlist in production. Credentials and private phone values are not checked in. Reuses the approved OpenAI key and free Upstash store. Hosted build passed, and the live unsigned request now returns HTTP 401 instead of the previous unconfigured HTTP 503.
 
 The owner was asked to send START and a non-sensitive greeting from the enrolled iMessage phone. Full inbound/outbound acceptance remains pending; no claim of verified delivery or shared web health memory is made.
+
+## Photon delivery investigation â€” October 4, 2026
+
+The owner reported no reply. Three signed inbound requests reached production but returned HTTP 204 before the bot ran. `817deba` adds fixed rejection-reason labels after signature verification, without logging payloads, phone numbers or message text. Deployed READY as `dpl_Gsfx6Z4dw3GEZyYd1agSXsmXASgM`. Six Photon tests, typecheck and hosted build passed; duplicate local generated `.next/types/* 2.ts` files were removed to restore typecheck. A fresh START message was requested to identify the failing check. Messaging remains unverified and the rejection cause is not yet established.
