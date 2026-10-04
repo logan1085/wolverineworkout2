@@ -1,6 +1,6 @@
 # Text Pip through Photon
 
-Status: endpoint deployed but disabled; not activated or end-to-end verified. Photon project “Wolverine - Pip” (3968b5dd-56d4-4ff6-a7cc-281ef6f26e01) has a connected shared iMessage line and the owner enrolled. A free Upstash Redis store is connected to Vercel production, with automatic paid upgrades disabled. Photon credentials, sender allowlist and webhook registration remain pending secure configuration. No texts have been sent.
+Status: configured and deployed October 4, 2026; real inbound/outbound messaging acceptance is still pending. Photon project “Wolverine - Pip” (3968b5dd-56d4-4ff6-a7cc-281ef6f26e01) has a connected shared iMessage line and the owner enrolled. The webhook is registered to the production endpoint. Project credentials, webhook signing secret and the owner-only sender allowlist are stored in Vercel production; private values are not in Git. Free Upstash Redis is connected with automatic paid upgrades disabled. Production deployment `dpl_EtVyTaH5o4cuNDfwvzVC7ULpYK92` is READY and unsigned requests return HTTP 401. No real text exchange has yet been verified.
 
 ## Activation
 
@@ -30,6 +30,6 @@ Requires Node 22. Missing configuration returns 503; nothing is silently connect
 
 ## Verification
 
-`npm run test:photon` covers consent, STOP/RESET, bounded history, quota, sender/group/event filtering, forged/altered/stale/future signatures. Production build checks integration types. Real Photon delivery, Redis concurrency and full inbound/outbound acceptance remain pending Photon credentials and webhook activation.
+`npm run test:photon` covers consent, STOP/RESET, bounded history, quota, sender/group/event filtering, forged/altered/stale/future signatures. Production build checks integration types. Redis PING and production configuration/signature rejection have passed. Real Photon delivery, Redis concurrency and full inbound/outbound acceptance remain pending a test from the enrolled phone. Send START followed by a non-sensitive greeting to the assigned line listed in Photon Users; confirm replies before declaring messaging fully verified.
 
 References: https://photon.codes/docs/webhooks/events and https://github.com/photon-hq/vercel-chat-adapter-imessage

@@ -157,3 +157,9 @@ Six Photon checks, 31 existing health/memory/voice regression checks, and local/
 `e5ff436` is live at https://wolverineworkout2.vercel.app (production READY, `dpl_6bXwqjG6bKtsxkSVN71HqknVyGSc`). Free Upstash Redis is connected to production with automatic paid upgrades disabled; the Photon adapter now accepts the integration-provided `REDIS_URL`, with `PHOTON_REDIS_URL` taking precedence. Redis PING, six Photon tests and local/hosted production builds passed.
 
 Photon shared iMessage enrollment is ready. Credential storage awaits the owner’s Vercel browser sign-in, and webhook registration awaits the required browser access confirmation. The live endpoint still returns the expected 503; no text was sent and messaging is not activated. Temporary downloaded environment credentials were removed.
+
+## Photon production connection — October 4, 2026
+
+Production deployment `dpl_EtVyTaH5o4cuNDfwvzVC7ULpYK92` is READY at https://wolverineworkout2.vercel.app, using source `e96dcaa`. Registered the Photon webhook to `/api/photon/webhook` and saved project ID, project secret, signing secret and owner-only sender allowlist in production. Credentials and private phone values are not checked in. Reuses the approved OpenAI key and free Upstash store. Hosted build passed, and the live unsigned request now returns HTTP 401 instead of the previous unconfigured HTTP 503.
+
+The owner was asked to send START and a non-sensitive greeting from the enrolled iMessage phone. Full inbound/outbound acceptance remains pending; no claim of verified delivery or shared web health memory is made.
