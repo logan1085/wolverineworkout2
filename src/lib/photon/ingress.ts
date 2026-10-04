@@ -11,8 +11,11 @@ export function photonRejectionReason(payload:unknown,allowed:string[]){
  const p=payload as {event?:string;space?:{type?:string;platform?:string};message?:{id?:string;direction?:string;platform?:string;sender?:{id?:string};content?:{type?:string;text?:string}}};
  if(p.event!=='messages')return 'unsupported-event';
  if(p.space?.type!=='dm')return 'not-direct-message';
- if(p.space.platform!=='iMessage'||p.message?.platform!=='iMessage')return 'unsupported-platform';
- if(p.message.direction!=='inbound')return 'not-inbound';
+ // The space identifies the provider; some deliveries omit its duplicate on message.
+ const isIMessage=(value:unknown)=>typeof value==='string'&&value.toLowerCase()==='imessage';
+ if(!isIMessage(p.space.platform))return 'unsupported-space-platform';
+ if(p.message?.platform!==undefined&&!isIMessage(p.message.platform))return 'unsupported-message-platform';
+ if(p.message?.direction!=='inbound')return 'not-inbound';
  if(typeof p.message.id!=='string'||!p.message.id)return 'missing-message-id';
  if(p.message.content?.type!=='text'||typeof p.message.content.text!=='string')return 'not-text';
  if(!allowed.includes(p.message.sender?.id||''))return 'sender-not-allowed';

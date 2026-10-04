@@ -16,3 +16,14 @@ new Function('require','exports',ts.transpileModule(fs.readFileSync('src/lib/pho
 const {verifyPhoton,acceptedPhotonText}=ingress.exports;
 test('signature rejects forged, altered, stale and future deliveries',()=>{const now=1800000000000,stamp=String(now/1000),raw='{"event":"messages"}',secret='fixture-secret';const h=new Headers({'x-spectrum-timestamp':stamp,'x-spectrum-signature':'v0='+crypto.createHmac('sha256',secret).update(`v0:${stamp}:${raw}`).digest('hex')});assert.equal(verifyPhoton(raw,h,secret,now),true);assert.equal(verifyPhoton(raw+' ',h,secret,now),false);assert.equal(verifyPhoton(raw,h,'wrong',now),false);assert.equal(verifyPhoton(raw,h,secret,now+301000),false);assert.equal(verifyPhoton(raw,h,secret,now-301000),false);});
 test('only allowlisted incoming direct text messages accepted',()=>{const p={event:'messages',space:{type:'dm',platform:'iMessage'},message:{id:'one',platform:'iMessage',direction:'inbound',sender:{id:'+15555550100'},content:{type:'text',text:'hello'}}};assert.equal(acceptedPhotonText(p,['+15555550100']),true);assert.equal(acceptedPhotonText(p,[]),false);assert.equal(acceptedPhotonText({...p,space:{...p.space,type:'group'}},['+15555550100']),false);assert.equal(acceptedPhotonText({...p,message:{...p.message,direction:'outbound'}},['+15555550100']),false);assert.equal(acceptedPhotonText({...p,message:{...p.message,content:{type:'reaction'}}},['+15555550100']),false);});
+
+test('space provider permits omitted duplicate or case variants but rejects other platforms',()=>{
+ const p={event:'messages',space:{type:'dm',platform:'iMessage'},message:{id:'one',direction:'inbound',sender:{id:'+15555550100'},content:{type:'text',text:'START'}}};
+ const allowed=['+15555550100'];
+ assert.equal(acceptedPhotonText(p,allowed),true);
+ assert.equal(acceptedPhotonText({...p,space:{...p.space,platform:'imessage'},message:{...p.message,platform:'imessage'}},allowed),true);
+ assert.equal(acceptedPhotonText({...p,message:{...p.message,platform:'whatsapp'}},allowed),false);
+ assert.equal(acceptedPhotonText({...p,space:{...p.space,platform:undefined}},allowed),false);
+ assert.equal(acceptedPhotonText({...p,space:{...p.space,platform:'whatsapp'}},allowed),false);
+ assert.equal(acceptedPhotonText(p,[]),false);
+});
