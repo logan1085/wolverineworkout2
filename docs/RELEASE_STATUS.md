@@ -167,3 +167,7 @@ The owner was asked to send START and a non-sensitive greeting from the enrolled
 ## Photon delivery investigation — October 4, 2026
 
 The owner reported no reply. Three signed inbound requests reached production but returned HTTP 204 before the bot ran. `817deba` adds fixed rejection-reason labels after signature verification, without logging payloads, phone numbers or message text. Deployed READY as `dpl_Gsfx6Z4dw3GEZyYd1agSXsmXASgM`. Six Photon tests, typecheck and hosted build passed; duplicate local generated `.next/types/* 2.ts` files were removed to restore typecheck. A fresh START message was requested to identify the failing check. Messaging remains unverified and the rejection cause is not yet established.
+
+## Photon platform filter compatibility — October 4, 2026
+
+Two fresh signed deliveries were rejected as `unsupported-platform`. `c097d5f` accepts case-insensitive iMessage labels on the authoritative space and permits an omitted duplicate message platform; an explicitly different message platform still fails closed. Signature, exact sender, DM, inbound and text-only checks remain required. Seven tests, typecheck and production build passed. Live deployment: `dpl_J5aeBBKryaL4F1MQ9sdaJg5EfXkD`. The previous logs did not identify which platform field or value differed, so this compatibility correction still needs a fresh message to verify; no successful reply is claimed.
