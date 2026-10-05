@@ -20,7 +20,7 @@ The complete product goal is **not achieved**. Local training and UI evidence is
 | Marathon positioning and Saywise-inspired entry | `SAYWISE_FLOW.md`, `MarathonWelcome.tsx`, live headline and prior browser review | Implemented; full new-user journey with a working cloud account unverified |
 | Runna-like plan-first home and calendar | `TrainingWeek.tsx`, `TrainingPlanner.tsx`; local mobile saved-plan navigation, completion, reflection and date return verified | Implemented locally; physical-device and hosted-account acceptance open |
 | A useful marathon training plan | Supported deterministic 16–24-week drafts, baseline validation, preview, explicit activation and archives; engine matrix/review plus unit suite | Narrow supported baseline range; generalized runner coverage and qualitative progression review incomplete |
-| Review and adapt to everyday training | Session completion, reschedule, skip, recovery substitution, reflection, reviewable lighter-week edits | Interrupted-training handling, symptom escalation path and follow-on progression incomplete; no automatic activity-to-session matching |
+| Review and adapt to everyday training | Session completion, reschedule, skip, recovery substitution, reflection, reviewable lighter-week edits | Interrupted-training handling, symptom escalation path and follow-on progression incomplete; explicit activity linking now implemented; automatic matching remains absent |
 | Daily onboarding, habits and streaks | Routine/setup implementation and passing routine tests; earlier local persistence review | Cloud persistence and physical-device walkthrough unverified |
 | AI system prompt and trustworthy replies | Runtime-derived public soul, context safeguards, historic synthetic output reviews | Current production authentication failure blocks new replies and fresh multi-turn evaluation |
 | Voice check-in | RunWelcome UI, ephemeral session endpoint, consent/origin tests and visible unavailable state | Working production voice session and physical microphone/keyboard behavior unverified |
@@ -31,7 +31,7 @@ The complete product goal is **not achieved**. Local training and UI evidence is
 | Mobile clarity and accessibility | 320px/390px reviews, keyboard focus return, labeled controls; `mobile/USAGE.md` | Real iOS/Android keyboard, large text, screen reader, safe-area and landscape checks open |
 | GitHub and Vercel delivery | Feature branch pushed, production READY, live home and status endpoint reachable | Delivered; does not prove connected features work |
 
-## Next implementation priority
+## Implementation priority after the audit
 
 Close the gap between completing a planned run and recording the actual run. Today those are deliberately separate, which avoids fabricated distance/time but makes the daily flow repetitive. A reviewable, explicit link between an existing recorded activity and a planned session should preserve actual values, avoid duplicate matching, survive export/import, handle edits/deletion, and never infer a match merely from the same date. Do not silently migrate or manufacture activity records. Build against fictional local data first; cloud/provider matching must retain its own acceptance gate.
 
@@ -42,3 +42,7 @@ Then address a user's explicit report of time away: preserve completed work and 
 Existing pending decisions remain required: reopen approved secure OpenAI key setup, and choose restoration/original-login access versus a dedicated replacement Supabase project. Do not provision credentials or change external accounts while those choices are unanswered. Provider configuration, real email/password tests, real device authorization and physical-phone acceptance follow those decisions. Do not substitute an unrelated database or claim that account-service availability proves row-level isolation.
 
 The full goal remains active. This audit is evidence for selecting the next work, not permission to mark the product complete or to bypass account approval.
+
+### Activity-link follow-up
+
+The explicit linking work described above is now implemented and covered by six new regression cases plus local browser link/reload/unlink/relink acceptance. The complete synthetic suite passes 145 tests. Source and deployment evidence are recorded in RELEASE_STATUS.md. Real-provider and cloud-account acceptance remain separate; interrupted-training handling is the next unimplemented training workflow.

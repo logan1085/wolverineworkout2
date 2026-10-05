@@ -21,7 +21,7 @@
     "test:routine": "node --test tests/routine.test.mjs",
     "test:calendar": "node --test tests/calendar.test.mjs tests/training-week-summary.test.mjs",
     "test:account": "node --test tests/account-status.test.mjs tests/ai-status.test.mjs tests/auth-callback.test.mjs tests/password-recovery.test.mjs",
-    "test:training": "node --test tests/training.test.mjs tests/marathon-goal.test.mjs tests/running-baseline.test.mjs tests/marathon-progression.test.mjs tests/marathon-training.test.mjs",
+    "test:training": "node --test tests/training.test.mjs tests/marathon-goal.test.mjs tests/running-baseline.test.mjs tests/marathon-progression.test.mjs tests/marathon-training.test.mjs tests/training-activity-link.test.mjs",
     "test:voice": "node --test tests/voice.test.mjs",
     "test:photon": "node --test tests/photon.test.mjs"
   },

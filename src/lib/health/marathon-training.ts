@@ -1,3 +1,4 @@
+import { validateActivityRef, assertUniqueActivityRefs } from "./training-activity-ref";
 import { lighterDistance, validateTrainingAdjustments } from "./training-adjustments";
 import { validateSessionFeedback } from "./training-feedback";
 import { createMarathonDraft, type MarathonDraft } from './marathon-progression';
@@ -25,17 +26,19 @@ export function validateMarathonTraining(value:unknown):TrainingPlan {
   const adjustment=adjustments.find(a=>a.sessionIds.includes(s.id));
   if(adjustment&&s.date<adjustment.appliedOn)throw new Error('An adjusted run cannot move before the adjustment date.');
   const distanceKm=adjustment?lighterDistance(original.distanceKm):original.distanceKm;
+  const activityRef=s.activityRef!==undefined?{activityRef:validateActivityRef(s.activityRef,s.status,s.kind,s.date)}:{};
   const feedback=s.feedback!==undefined?{feedback:validateSessionFeedback(s.feedback,s.status,s.date)}:{};
   const week=draft.weeks.find(w=>w.sessions.some(x=>x.id===s.id))!;
   if(s.date<week.start||s.date>week.end)throw new Error('Keep a marathon session in its original week.');
   if(original.kind==='race'&&(s.date!==original.date||s.kind!=='run'))throw new Error('Race day stays on the saved race date.');
   if(s.kind==='recovery'){
    if(s.minutes!==10||s.distanceKm!==undefined)throw new Error('Invalid recovery session.');
-   return {id:s.id,date:s.date,kind:'recovery',minutes:10,status:s.status,runType:original.kind,...feedback};
+   return {id:s.id,date:s.date,kind:'recovery',minutes:10,status:s.status,runType:original.kind,...feedback,...activityRef};
   }
   if(s.kind!=='run'||s.distanceKm!==distanceKm||s.minutes!==undefined||s.runType!==original.kind)throw new Error('Marathon distance does not match its preview.');
-  return {id:s.id,date:s.date,kind:'run',distanceKm,runType:original.kind,status:s.status,...feedback};
+  return {id:s.id,date:s.date,kind:'run',distanceKm,runType:original.kind,status:s.status,...feedback,...activityRef};
  });
+ assertUniqueActivityRefs([{sessions}]);
  const runs=sessions.filter(s=>s.kind==='run'&&s.status!=='skipped'),runDates=new Set(runs.map(s=>s.date));
  for(const run of runs){
   if(run.runType==='long'&&(runDates.has(addDays(run.date,-1))||runDates.has(addDays(run.date,1))))throw new Error('Leave a running-free day before and after the long run.');

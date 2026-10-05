@@ -60,3 +60,9 @@ SOUL.md publishes the agent's intended behavior. MEMORY.md publishes this storag
 The Memory view shows the same derived brief sent with personal-context chat requests: editable profile settings, up to 12 most recently updated active confirmed facts (only when memory is on), and records from the last seven UTC calendar dates. Additional relevant memories can be retrieved for the question. Included-memory disclosures cover both sources. The brief is rebuilt on read, never persisted or committed to Git. Forgetting, editing and expiry therefore affect the next brief without a separate summary to delete.
 
 Recent records are observations, not inferred traits. Same-date self-reported and Garmin sleep differences of at least one hour are flagged for clarification. This is not general contradiction detection; free-text conflicts still require user review. The personal Memory view excludes fictional sample records. Pausing memory removes confirmed facts from the brief but does not turn off explicitly shared health context.
+
+## Explicit activity links
+
+A completed planned run can reference one recorded activity by its source and ID, plus the date the link was made. You choose the match explicitly from activities on the scheduled date. Linking marks the session completed without changing its prescribed target or copying activity metrics. This is your assertion about the session, not verification that a target was met. A record can link only once across the current plan and saved archives.
+
+The link is saved in your training profile and follows its local/account storage and export rules. Removing a link preserves both the recorded activity and the completed status. Reopening a session removes its link and reflection but keeps the activity. If the original record is removed or changes date, the link is shown as unavailable; no missing measurements are reconstructed. Links are not automatically promoted into durable agent memories.

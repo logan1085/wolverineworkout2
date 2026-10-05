@@ -826,3 +826,9 @@
 .health-app .training-plan-progress progress::-webkit-progress-bar{background:#383d45;}
 .health-app .training-plan-progress progress::-webkit-progress-value{background:#97dfc2;}
 .health-app .training-plan-progress progress::-moz-progress-bar{background:#97dfc2;}
+.health-app .training-activity-link{padding:18px 0;border-top:1px solid #383d45;margin-top:18px;}
+.health-app .training-activity-link h4{margin:10px 0;font-size:16px;}
+.health-app .training-activity-link p{line-height:1.6;font-size:13px;overflow-wrap:anywhere;}
+.health-app .training-activity-link label{display:block;font-size:13px;margin:14px 0;}
+.health-app .training-activity-link select{width:100%;min-width:0;margin-top:8px;font-size:16px;}
+.health-app .training-activity-link>.secondary{margin-top:12px;}

@@ -1,3 +1,4 @@
+import { assertUniqueActivityRefs } from "./training-activity-ref";
 import { validateRunningBaseline, type RunningBaseline } from "./running-baseline";
 import { validateTraining, validateTrainingHistory, type TrainingArchive, type TrainingPlan } from "./training";
 export type CheckIn = {
@@ -217,6 +218,7 @@ export function validateHealth(value: unknown): HealthState {
   const runningBaseline = s.profile.runningBaseline === undefined ? undefined : validateRunningBaseline(s.profile.runningBaseline);
   const training = s.profile.training === undefined ? undefined : validateTraining(s.profile.training);
   const trainingHistory = s.profile.trainingHistory === undefined ? undefined : validateTrainingHistory(s.profile.trainingHistory, training?.id);
+  assertUniqueActivityRefs([...(training?[training]:[]),...(trainingHistory??[]).map(entry=>entry.plan)]);
   const routine = s.profile.routine;
   if (routine !== undefined && (!routine || !Array.isArray(routine.goals) || routine.goals.length < 1 || routine.goals.length > 3 || new Set(routine.goals).size !== routine.goals.length || !routine.goals.every(g => ["movement", "rest", "reflection"].includes(g)) || !["gentle", "steady"].includes(routine.pace) || !date(routine.startedAt)))
     throw new Error("Choose your routine goals and pace.");
