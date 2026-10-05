@@ -123,9 +123,14 @@ export default function HealthDashboard() {
   const [session, setSession] = useState({
     local: false,
     ai: false,
+    aiStatus: "checking",
     auth: false,
     authStatus: "checking",
   });
+  const aiUnavailable = session.aiStatus === "authentication_failed"
+    ? "AI replies are unavailable because the service connection needs repair. Your saved training still works."
+    : session.aiStatus === "not_configured" ? "AI replies are not connected yet. Your saved training still works." : "";
+  const voiceUnavailable = aiUnavailable || (session.aiStatus === "checking" ? "Checking voice availability…" : !session.local && !user && !session.auth ? "Voice check-in is unavailable while account sign-in is unavailable. You can still log your run." : "");
   const [checkingAccount, setCheckingAccount] = useState(false);
   async function refreshAccountStatus() {
     setCheckingAccount(true);
@@ -134,7 +139,7 @@ export default function HealthDashboard() {
       if (!response.ok) throw new Error("Status unavailable");
       setSession(await response.json());
     } catch {
-      setSession(s => ({...s, auth:false, authStatus:"unavailable"}));
+      setSession(s => ({...s, auth:false, authStatus:"unavailable", aiStatus:"unverified"}));
     } finally { setCheckingAccount(false); }
   }
   const [connection, setConnection] = useState<Connection>({
@@ -204,7 +209,7 @@ export default function HealthDashboard() {
       .then((r) => { if (!r.ok) throw new Error("Status unavailable"); return r.json(); })
       .then(setSession)
       .catch(() => {
-        setSession(s => ({...s, auth:false, authStatus:"unavailable"}));
+        setSession(s => ({...s, auth:false, authStatus:"unavailable", aiStatus:"unverified"}));
         setNotice("Connection status is unavailable. Local check-ins still work.");
       });
   }, []);
@@ -565,7 +570,7 @@ export default function HealthDashboard() {
       return;
     }
     if (!session.ai || (!user && !session.local)) {
-      setChatError("Sign in and connect the AI service to talk with your agent.");
+      setChatError(aiUnavailable || "Sign in to talk with your agent. Open Connections to check account availability.");
       return;
     }
     const useMemory = !sample && memory.ready && memory.state.enabled;
@@ -845,7 +850,7 @@ export default function HealthDashboard() {
             <div id="run-training" className="run-week-overview">
             <TrainingWeek state={current} today={today} sample={sample} disabled={!loaded || busy || !!historyError} onLog={()=>setModal("activity")} onSetup={id=>{setTrainingSession(id);setModal("training");}}/>
             </div>
-            <RunWelcome key={user?.id || "device"} character={companion.character} onText={()=>ask("I'd like to check in about whether I ran today and how I'm feeling. Ask me one question at a time.")} onLog={()=>setModal("activity")} onPlan={()=>{requestAnimationFrame(()=>document.getElementById("run-training")?.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"}));}} onCharacter={()=>setModal("character")} onAccount={()=>navigate("Connections")}/>
+            <RunWelcome unavailable={voiceUnavailable} key={user?.id || "device"} character={companion.character} onText={()=>ask("I'd like to check in about whether I ran today and how I'm feeling. Ask me one question at a time.")} onLog={()=>setModal("activity")} onPlan={()=>{requestAnimationFrame(()=>document.getElementById("run-training")?.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"}));}} onCharacter={()=>setModal("character")} onAccount={()=>navigate("Connections")}/>
             </div>
             <button className="run-more-detail secondary" aria-expanded={trainingOpen} onClick={()=>setTrainingOpen(!trainingOpen)}>{trainingOpen?"Hide daily details −":"Daily routine & insights +"}</button>
             {trainingOpen && <div className="run-training-content">
@@ -994,7 +999,7 @@ export default function HealthDashboard() {
                     <p>
                       {session.ai && (session.local || user)
                         ? "Your health agent"
-                        : "Ready when your AI connection is set up"}
+                        : aiUnavailable ? "AI connection needs attention" : "Sign in to talk with your trainer"}
                     </p>
                   </div>
                   <button
@@ -1011,6 +1016,7 @@ export default function HealthDashboard() {
                     New chat
                   </button>
                 </div>
+                {aiUnavailable&&<div className="agent-service-notice" role="status"><p>{aiUnavailable}</p><button className="quiet-button" onClick={()=>navigate("Connections")}>Connection status ↗</button></div>}
                 <div
                   ref={chatLog}
                   onScroll={(event) => {
@@ -1625,13 +1631,14 @@ export default function HealthDashboard() {
                     </p>
                     <p className="connection-note">
                       {session.local && session.ai
-                        ? "Your existing OpenAI key is connected to this local preview."
+                        ? "An AI key is configured for this local preview. Its connection status is shown below."
                         : "Personal AI conversations require a working account connection. You can explore the sample dashboard and object library now."}
                     </p>
                     <button className="secondary" disabled={checkingAccount} onClick={() => void refreshAccountStatus()}>{checkingAccount ? "Checking…" : "Check again"}</button>
                   </>
                 )}
               </section>
+              <section className="panel" aria-label="AI connection status"><span className="eyebrow">YOUR AGENT</span><h2>AI connection</h2><p role="status">{aiUnavailable || (session.aiStatus==="checking"?"Checking the AI service…":session.aiStatus==="reachable"?"Authentication and model access verified. Replies still depend on account access and available quota.":"The AI connection could not be verified. This can be temporary; check again or try a conversation when your account is available.")}</p><button className="secondary" disabled={checkingAccount} onClick={()=>void refreshAccountStatus()}>{checkingAccount?"Checking…":"Check connection again"}</button></section>
               <details className="view-disclosure history-tools"><summary>Export, restore & clear history</summary>
                 <p className="subtle">
                   Export your personal data as a Wolverine backup. Importing

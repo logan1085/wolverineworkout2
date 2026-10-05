@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { releaseVoice, type VoiceResources } from "@/lib/health/voice-client";
 
 type Phase="idle"|"connecting"|"listening"|"speaking"|"ended";
-export default function RunWelcome({character,onText,onLog,onPlan,onCharacter,onAccount}:{character:{title:string;thumbnail:string};onText:()=>void;onLog:()=>void;onPlan:()=>void;onCharacter:()=>void;onAccount:()=>void}){
+export default function RunWelcome({unavailable,character,onText,onLog,onPlan,onCharacter,onAccount}:{unavailable?:string;character:{title:string;thumbnail:string};onText:()=>void;onLog:()=>void;onPlan:()=>void;onCharacter:()=>void;onAccount:()=>void}){
   const [phase,setPhase]=useState<Phase>("idle"),[error,setError]=useState(""),[caption,setCaption]=useState(""),[muted,setMuted]=useState(false),[audioBlocked,setAudioBlocked]=useState(false);
   const [needsAccount,setNeedsAccount]=useState(false);
   const resources=useRef<VoiceResources>({});
@@ -14,7 +14,7 @@ export default function RunWelcome({character,onText,onLog,onPlan,onCharacter,on
   const stop=useCallback(()=>{cleanup();setPhase("ended");setMuted(false);setAudioBlocked(false);},[cleanup]);
   useEffect(()=>{const hide=()=>{if(document.hidden&&starting.current)stop();};window.addEventListener("pagehide",stop);document.addEventListener("visibilitychange",hide);return()=>{window.removeEventListener("pagehide",stop);document.removeEventListener("visibilitychange",hide);cleanup();};},[cleanup,stop]);
   async function start(){
-    if(starting.current)return;
+    if(starting.current||unavailable)return;
     cleanup();const version=epoch.current;starting.current=true;setAudioBlocked(false);setNeedsAccount(false);setError("");setCaption("");setMuted(false);setPhase("connecting");
     const live=()=>epoch.current===version;
     const fail=(message:string)=>{if(!live())return;cleanup();setPhase("idle");setError(message);};
@@ -44,7 +44,8 @@ export default function RunWelcome({character,onText,onLog,onPlan,onCharacter,on
   const active=phase==="connecting"||phase==="listening"||phase==="speaking";
   return <section className={`run-welcome voice-${phase}`} aria-label="Daily running check-in">
     <div className="run-welcome-copy"><span className="run-kicker"><i/> CHECK IN WITH PIP</span><h2>Did you run today?</h2><p className="run-welcome-subtitle">A quick catch-up. A better next step.</p>
-      <div className="run-voice-actions">{!active?<button className="run-talk" onClick={()=>void start()}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><rect x="9" y="2" width="6" height="13" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8"/></svg>{phase==="ended"?"Talk again":"Start voice check-in"}<span aria-hidden="true">↗</span></button>:<><div className="run-call-state" role="status"><span className="voice-bars" aria-hidden="true"><i/><i/><i/><i/><i/></span>{phase==="connecting"?"Connecting…":muted?"Microphone muted":phase==="speaking"?"Pip is speaking":"Listening to you"}</div><div className="run-call-controls"><button className="run-end" onClick={stop}>{phase==="connecting"?"Cancel":"End check-in"}</button>{phase!=="connecting"&&<button className="run-mute" aria-pressed={muted} onClick={()=>{resources.current.mic?.getAudioTracks().forEach(t=>{t.enabled=muted;});setMuted(!muted);}}>{muted?"Unmute":"Mute"}</button>}</div></>}
+      <div className="run-voice-actions">{!active?<button className="run-talk" disabled={!!unavailable} onClick={()=>void start()}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><rect x="9" y="2" width="6" height="13" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8"/></svg>{phase==="ended"?"Talk again":"Start voice check-in"}<span aria-hidden="true">↗</span></button>:<><div className="run-call-state" role="status"><span className="voice-bars" aria-hidden="true"><i/><i/><i/><i/><i/></span>{phase==="connecting"?"Connecting…":muted?"Microphone muted":phase==="speaking"?"Pip is speaking":"Listening to you"}</div><div className="run-call-controls"><button className="run-end" onClick={stop}>{phase==="connecting"?"Cancel":"End check-in"}</button>{phase!=="connecting"&&<button className="run-mute" aria-pressed={muted} onClick={()=>{resources.current.mic?.getAudioTracks().forEach(t=>{t.enabled=muted;});setMuted(!muted);}}>{muted?"Unmute":"Mute"}</button>}</div></>}
+      {!active&&unavailable&&<div role="status"><p className="run-voice-error">{unavailable}</p><button className="run-text-link" onClick={onAccount}>Connection status →</button></div>}
       {audioBlocked&&<button className="run-text-link" onClick={()=>void resources.current.audio?.play().then(()=>setAudioBlocked(false)).catch(()=>setError("Audio playback is blocked. Check your browser sound settings."))}>Tap to hear Pip</button>}
       {error&&<p className="run-voice-error" role="alert">{error}</p>}{needsAccount&&<button className="run-text-link" onClick={()=>{stop();onAccount();}}>Open sign-in →</button>}
       {caption&&<p className="run-caption" aria-live="polite">{caption}</p>}

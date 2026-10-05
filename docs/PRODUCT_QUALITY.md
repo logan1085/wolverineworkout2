@@ -179,3 +179,11 @@ Previous goal turn: progress (focused workout view shipped). Completed sessions 
 Previous goal turn: progress (session reflections shipped). Active marathon weeks now offer explicit shorter-target previews and a restoration preview. Completed work and feedback, race day and later weeks are preserved. Original distance blueprints remain available; validated adjustment records support persistence and archiving. No automatic changes follow subjective feedback.
 
 38 training tests and typecheck/focused lint passed. Local synthetic browser acceptance: cancel unchanged, explicit apply, reload persistence, original-target restoration, 390px change-list review and 320px overflow bounds. New previews are invalidated by plan/date changes. Automatic follow-on adaptation, interrupted training, broader runner support, AI credentials and hosted account/integration/device acceptance remain open.
+
+## October 5 — truthful agent connection status
+
+Previous goal turn: progress (reviewable lighter weeks shipped). A live check found `/api/health/session` still advertised `ai:true` based only on key presence while account auth was unavailable. Added a bounded, cached server-side model-metadata probe: missing configuration and provider 401 become explicit unavailable states; other permission/network/status failures remain unverified rather than being mislabeled invalid credentials. A matching metadata response proves authentication/model visibility only, not generation quota or voice readiness.
+
+Account and AI statuses are exposed separately. Chat explains known AI unavailability before sending; voice is disabled before microphone access for known AI/account blockers, with a connection-status link. The probe sends no health data and performs no generation. Source: https://developers.openai.com/api/reference/resources/models (reviewed October 5). Existing key reuse was already authorized; no key was created, rotated or written. Prior replacement-key destination nonapproval remains respected.
+
+Seven account/provider status tests and four voice tests pass, along with TypeScript and focused lint. Local mobile browser review verified missing-key and unavailable-account copy and navigation into Connections. Credential repair, account recovery and broader unfinished acceptance remain open.

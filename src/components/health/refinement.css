@@ -813,3 +813,5 @@
 .health-app .week-change-list li>span{white-space:nowrap;color:#c1d2c5;}
 .health-app .week-change-list b{color:#e1f3e8;}
 @media(max-width:760px){.health-app .week-adjustment{padding:16px;}.health-app .week-change-list li{flex-wrap:wrap;gap:8px;}.health-app .week-adjustment .plan-actions button{width:100%;min-height:44px;}}
+
+.health-app .agent-service-notice{padding:14px 18px;border-bottom:1px solid #465146;background:#273128;color:#d8e4d7;font-size:13px;line-height:1.6;}.health-app .agent-service-notice p{margin:0 0 6px;}.health-app .run-talk:disabled{opacity:.55;cursor:not-allowed;}

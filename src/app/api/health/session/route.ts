@@ -1,3 +1,4 @@
+import { aiStatus } from "@/lib/health/ai-status";
 import { NextRequest, NextResponse } from "next/server";
 import { localRequest, noStore } from "@/lib/health/server";
 import { accountStatus } from "@/lib/health/account-status";
@@ -5,11 +6,12 @@ export async function GET(request: NextRequest) {
   const local =
     localRequest(request) &&
     request.headers.get("sec-fetch-site") === "same-origin";
-  const authStatus = await accountStatus();
+  const [authStatus, providerStatus] = await Promise.all([accountStatus(),aiStatus()]);
   const response = NextResponse.json(
     {
       local,
-      ai: !!process.env.OPENAI_API_KEY,
+      ai: providerStatus === "reachable" || providerStatus === "unverified",
+      aiStatus: providerStatus,
       auth: authStatus === "ready",
       authStatus,
     },
