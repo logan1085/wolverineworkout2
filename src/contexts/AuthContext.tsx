@@ -65,6 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { error } = await createClient().auth.signUp({
       email,
       password,
+      options: { emailRedirectTo: new URL('/auth/callback', window.location.origin).toString() },
     })
     if (error) throw error
   }

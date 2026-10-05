@@ -1,50 +1,46 @@
-# Supabase Setup for Wolverine Workout
+# Wolverine account setup
 
-## Environment Variables
+Account integration exists in the repo, but configuration alone does not establish a working connected product. See `docs/RELEASE_STATUS.md` for current production evidence.
 
-Add these to your `.env.local` file:
+## Choose the correct project first
 
-```bash
-# Supabase Configuration
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-```
+Use the original Wolverine project if it can be restored, or a dedicated replacement explicitly selected by the owner. Do not point this health app at another application's database. Changing the project or its account settings requires owner approval under AGENTS.md.
 
-## Getting Your Supabase Credentials
+Keep credentials out of chat, Git and screenshots. Configure the chosen project's `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` in the deployment environment and local ignored environment file. These public values identify the backend; never substitute a service-role key for the anon key. Server-only integration credentials are documented in `CONNECTIONS.md`.
 
-1. Go to [supabase.com](https://supabase.com) and sign in
-2. Create a new project or select your existing project
-3. Go to Settings → API
-4. Copy the following:
-   - **Project URL** → `NEXT_PUBLIC_SUPABASE_URL`
-   - **anon public key** → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+## Email confirmation
 
-## What's Implemented
+The browser client uses PKCE. Registration supplies an explicit `/auth/callback` return URL on the current app origin. The callback exchanges the code server-side and writes session cookies through the existing server client. It redirects to `/auth/confirmed` with a fixed, non-sensitive result. The result screen verifies the user with the auth service before showing a signed-in state; a query parameter alone never proves authentication.
 
-✅ **Authentication System**
-- User registration and login
-- Session management
-- Protected routes
-- Logout functionality
+For the approved Supabase project, configure:
 
-✅ **Components Created**
-- `AuthForm` - Login/signup form
-- `AuthContext` - React context for auth state
-- Supabase client configuration
+- Site URL: `https://wolverineworkout2.vercel.app`
+- Allowed redirect URL: `https://wolverineworkout2.vercel.app/auth/callback`
+- Local development redirect URLs, only when needed: `http://localhost:3018/auth/callback` and `http://127.0.0.1:3018/auth/callback`
+- Add an exact preview origin only when deliberately testing there. Do not broadly allow arbitrary preview or third-party domains.
 
-## Next Steps
+Keep the standard confirmation email's confirmation URL flow when using this code-exchange callback. A custom token-hash template requires a separate verification handler; it is not implemented here. Open the email link in the same browser that initiated registration so the PKCE verifier is available. Used, expired, missing-verifier or service-failure cases return to a clear result screen with a Connections link.
 
-Once you add your Supabase credentials:
+Official references: [PKCE flow](https://supabase.com/docs/guides/auth/sessions/pkce-flow), [redirect URLs](https://supabase.com/docs/guides/auth/redirect-urls), [SSR clients](https://supabase.com/docs/guides/auth/server-side/creating-a-client).
 
-1. Users can sign up and log in
-2. The app will show the auth form when not logged in
-3. Authenticated users see the workout app
-4. User sessions persist across browser refreshes
+## Database schema
 
-## Database Integration (Future)
+Review and apply these checked-in migrations in order to the approved project:
 
-The foundation is set for:
-- Storing user workout history
-- Saving favorite exercises
-- Tracking progress over time
-- User preferences and settings 
+1. `supabase/migrations/20260918_health_agent.sql`
+2. `supabase/migrations/20260918120000_health_memory.sql`
+3. `supabase/migrations/20260918180000_strava_mcp.sql`
+
+Do not treat schema application as proof of row-level isolation. Validate with two dedicated test accounts before making that claim.
+
+## Required hosted acceptance
+
+- Confirm `/api/health/session` reports account availability.
+- Register an approved test address; verify email delivery and the exact callback destination.
+- Open the link in the initiating browser; confirm cookies survive the redirect and reload.
+- Verify an already-used link and a link opened in another browser give a useful recovery screen.
+- Confirm normal sign-in and sign-out, then test cross-account isolation of profiles, memory, training and connections using two test accounts.
+- Confirm local records are not silently uploaded into an account.
+- Test production on an actual phone. Simulated viewport checks are not physical-device acceptance.
+
+The synthetic callback tests (`node --test tests/auth-callback.test.mjs`) cover redirect/error handling and result-screen authentication checks. They do not prove email delivery, provider allowlist configuration, cookie persistence or database isolation. Password recovery is not yet implemented.
