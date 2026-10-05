@@ -34,6 +34,7 @@ The normal production build requires `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC
 | `npm run start` | Serve the production build |
 | `npm run typecheck` / `npm run lint` | Static checks |
 | `node --test tests/*.test.mjs` | Unit/synthetic suite; excludes separate live API scripts |
+| `npm run validate:models` | Independent Khronos validation of the nine exported catalog models |
 | `npm run eval:marathon` | Deterministic marathon draft review |
 | `npm run eval:agent` | Validate/load 21 fictional coaching scenarios without generation |
 | `npm run eval:agent -- --live` | Live synthetic evaluation; requires an approved local preview identity and working AI access |

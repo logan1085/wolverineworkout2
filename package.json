@@ -17,6 +17,7 @@
     "eval:agent": "node evals/run-health-agent.mjs",
     "docs:agent": "node scripts/export-agent-prompt.mjs",
     "test:scene": "node --test tests/scene.test.mjs",
+    "validate:models": "node scripts/validate-blender-exports.mjs",
     "test:catalog": "node --test tests/catalog.test.mjs",
     "test:local-health": "node --test tests/local-health.test.mjs",
     "test:routine": "node --test tests/routine.test.mjs",
@@ -49,6 +50,7 @@
     "@types/three": "0.186.0",
     "eslint": "^9",
     "eslint-config-next": "^15.5.23",
+    "gltf-validator": "2.0.0-dev.3.10",
     "tailwindcss": "^4",
     "typescript": "^5"
   },

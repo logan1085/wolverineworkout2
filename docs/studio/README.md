@@ -29,3 +29,9 @@ Regenerate the current family with `Blender --background --python scripts/blende
 ## Companion visual revision
 
 Distinct companion silhouettes, denoised 640px portrait renders and refined eyes/materials. The live renderer now uses a generated studio environment, filmic tone mapping, key/rim lighting, ground shadows and tighter bounding-box framing. The picker gives the selected companion a large portrait above three compact choices; geometry downloads stay in the object studio. Daily cards use quieter surfaces and secondary controls. This is a visual revision, with Blender render inspection and build/asset checks; browser and physical-device visual acceptance remain pending.
+
+## Independent export validation — October 5, 2026
+
+`npm run validate:models` runs the official Khronos glTF Validator (pinned dev dependency) on the three catalog companions and six object-library exports. It refuses external resources and does not alter assets. Run with `-- --write` to refresh `gltf-validation.json`; the report includes exact file hashes so evidence can be matched to an export. Errors or truncated reports fail the command. Warnings remain visible for review.
+
+All nine current GLBs have zero format errors and zero warnings. The 54 informational findings are unused UV-coordinate attributes. Companion exports are static, with no skin, morph targets or animation; the validator reports 38,680 triangles and 12 draw calls for Pip. This proves format/geometry/material consistency within the validator's scope, not appearance, GPU cost or physical-touch behavior. Blender was not available in the current environment, so independent visual import/render acceptance remains open. No artwork was regenerated or changed.

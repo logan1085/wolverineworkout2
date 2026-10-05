@@ -27,7 +27,7 @@ The complete product goal is **not achieved**. Local training and UI evidence is
 | Textable agent through Photon | Webhook/consent/quota tests; user reported receiving fallback replies | Successful AI response and multi-turn delivery require repaired AI credentials; web-memory pairing is not implemented |
 | Personal memory and transparency | Confirmation/edit/forget/expiry and context tests; public policy-only SOUL/MEMORY generated without diff | Real two-account isolation, account switching, deletion and cloud conflict behavior unverified |
 | Garmin/Strava connection | Guarded connector implementations and synthetic checks; `../CONNECTIONS.md` | Approved app/client configuration and real lifecycle tests missing; no watch-workout delivery claim |
-| Blender character/object use and choice | `.blend` source files, GLB/portrait assets, passing catalog/scene tests, prior browser character/3D review | Independent GLB viewer and physical GPU/touch/performance acceptance open |
+| Blender character/object use and choice | `.blend` source files, GLB/portrait assets, passing catalog/scene tests, prior browser character/3D review | Khronos validation now passes all nine exported GLBs with zero errors/warnings; independent visual viewer and physical GPU/touch/performance acceptance open |
 | Mobile clarity and accessibility | 320px/390px reviews, keyboard focus return, labeled controls; `mobile/USAGE.md` | Real iOS/Android keyboard, large text, screen reader, safe-area and landscape checks open |
 | GitHub and Vercel delivery | Feature branch pushed, production READY, live home and status endpoint reachable | Delivered; does not prove connected features work |
 
@@ -58,3 +58,9 @@ The first onboarding screen asks only for a marathon name; intention and optiona
 ### Full regression and documentation reconciliation — October 5, 2026
 
 At `60e5626`, all 164 unit/synthetic tests pass. Public policy regeneration has no diff. A fresh live status request still reports authentication_failed for AI and unavailable for account auth. README now describes the implemented marathon draft, local memory, activity correction, and current connected-feature limitations instead of the older workout-only architecture. The missing external decisions were presented again during this audit; no account or credential changes were made. This audit is progress in release evidence, not completion of the product goal.
+
+### Independent GLB and dependency audit — October 5, 2026
+
+All nine current catalog exports pass the pinned Khronos glTF Validator with zero errors and warnings; 54 informational findings are unused UV coordinates. `docs/studio/gltf-validation.json` records hashes and structural details. Nine existing catalog tests also pass. Blender is not installed in the current environment, so no independent visual render is claimed. Physical GPU/touch and exported appearance remain open.
+
+Installing the dev-only validator also surfaced dependency advisories. A separate fresh `npm audit --omit=dev --json` reports 26 affected production-tree packages (10 high, 16 moderate, zero critical). This counts dependency advisories, not demonstrated runtime exploits. High findings are concentrated in legacy Mem0 dependencies and PostCSS; the tool proposes major Mem0/Next updates, which must not be applied blindly. Review reachable behavior and supported patched versions, then run appropriate compatibility/build checks before release. This is a concrete release-quality gap that can be worked on independently of account approval.
