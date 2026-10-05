@@ -1,5 +1,7 @@
 "use client";
 import { formatMarathonGoal, parseMarathonGoal, RACE_AIMS } from "@/lib/health/marathon-goal";
+import { activityDistanceUnit, parseActivityDistance } from "@/lib/health/activity-distance";
+import { displayDistance, type RunningBaseline } from "@/lib/health/running-baseline";
 import { saveTrainingBlock } from "@/lib/health/training";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import Link from "next/link";
@@ -524,16 +526,17 @@ export default function HealthDashboard() {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
     const distance = String(f.get("distance") || "");
-    const item: Activity = {
-      id: crypto.randomUUID(),
-      date: String(f.get("date")),
-      name: String(f.get("name")),
-      type: String(f.get("type")),
-      minutes: Number(f.get("minutes")),
-      ...(distance ? { distanceKm: Number(distance) } : {}),
-      source: "manual",
-    };
     await act(async () => {
+      const distanceKm = parseActivityDistance(distance, f.get("distanceUnit"));
+      const item: Activity = {
+        id: crypto.randomUUID(),
+        date: String(f.get("date")),
+        name: String(f.get("name")),
+        type: String(f.get("type")),
+        minutes: Number(f.get("minutes")),
+        ...(distanceKm !== undefined ? { distanceKm } : {}),
+        source: "manual",
+      };
       await save({
         ...data,
         activities: [item, ...data.activities]
@@ -1351,7 +1354,7 @@ export default function HealthDashboard() {
               </div>
               {visibleActivities.length ? (
                 visibleActivities.map((a) => (
-                  <ActivityRow key={a.id} item={a} sample={sample} />
+                  <ActivityRow key={a.id} item={a} sample={sample} unit={activityDistanceUnit(current.profile)} />
                 ))
               ) : (
                 <Empty
@@ -1912,12 +1915,13 @@ export default function HealthDashboard() {
       {modal === "activity" && (
         <Modal returnFocusRef={dialogTrigger} title="Every bit counts." error={actionError} pending={busy} onClose={() => setModal(null)}>
           <form onSubmit={submitActivity}>
+            <fieldset disabled={busy}>
             <label>
               Activity name
               <input
                 name="name"
                 maxLength={120}
-                placeholder="A walk around the neighborhood"
+                placeholder="e.g. Morning easy run"
                 required
               />
             </label>
@@ -1960,19 +1964,22 @@ export default function HealthDashboard() {
                 />
               </label>
               <label>
-                Distance <span>km · optional</span>
+                Distance <span>optional</span>
                 <input
                   name="distance"
                   type="number"
                   min="0"
                   max="1000"
-                  step="0.1"
+                  step="0.01"
+                  inputMode="decimal"
                 />
               </label>
+              <label>Distance unit<select name="distanceUnit" defaultValue={activityDistanceUnit(data.profile)}><option value="mi">Miles</option><option value="km">Kilometres</option></select></label>
             </div>
             <button className="primary" disabled={busy}>
               {busy ? "Saving…" : "Save activity"}
             </button>
+            </fieldset>
           </form>
         </Modal>
       )}
@@ -2072,7 +2079,7 @@ export default function HealthDashboard() {
     </div>
   );
 }
-function ActivityRow({ item: a, sample }: { item: Activity; sample: boolean }) {
+function ActivityRow({ item: a, sample, unit }: { item: Activity; sample: boolean; unit: RunningBaseline["unit"] }) {
   return (
     <article className="activity-row">
       <div className="activity-icon" aria-hidden="true">
@@ -2093,13 +2100,13 @@ function ActivityRow({ item: a, sample }: { item: Activity; sample: boolean }) {
               : "Manual entry"}
         </p>
       </div>
-      <strong>
+      <div className="activity-values"><strong>
         {a.minutes}
         <small> min</small>
       </strong>
       {a.distanceKm !== undefined && (
-        <span className="distance">{a.distanceKm} km</span>
-      )}
+        <span className="distance">{displayDistance(a.distanceKm,unit)} {unit}</span>
+      )}</div>
     </article>
   );
 }

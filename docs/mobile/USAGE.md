@@ -45,3 +45,9 @@ At 667×320, the fixed chat layout placed Send below the viewport (bottom 432px)
 ## Green-theme browser review — September 25
 
 Reviewed Today, the first-check-in sheet, and More at 390×844 after restoring forest-green colors. Text, fields, navigation, and sheet close controls are readable against the dark surfaces; the pale briefing keeps dark text. Opened and dismissed the check-in without saving records, then restored the default viewport. This does not replace physical phone, keyboard, or screen-reader acceptance.
+
+## October 5 — logging and dialog acceptance
+
+Activity entry now offers miles or kilometres, defaulting to active marathon-plan units, then recent-running units, then kilometres. Only new input is converted; existing/imported distanceKm records remain unchanged. Home and activity history display in the preferred units, and the phone activity list keeps distance visible alongside duration. Busy entry fields are disabled during a save.
+
+Local fictional-profile acceptance: saved a 3.1-mile activity, reloaded it, verified 3.1 mi on home/history and 1.9 mi for the existing 3 km record. At 320px no horizontal overflow occurred. The native activity dialog traps focus, Shift+Tab wraps from Close to Save, Tab returns to Close, Escape closes it, body scroll unlocks and focus returns to Log a run. This is browser acceptance; physical-device and screen-reader testing remain open. Screenshots are retained in workspace outputs/marathon-proof/activity-miles-mobile.png and activity-history-miles-mobile.png.
