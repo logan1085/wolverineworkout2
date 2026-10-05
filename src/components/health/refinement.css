@@ -832,3 +832,10 @@
 .health-app .training-activity-link label{display:block;font-size:13px;margin:14px 0;}
 .health-app .training-activity-link select{width:100%;min-width:0;margin-top:8px;font-size:16px;}
 .health-app .training-activity-link>.secondary{margin-top:12px;}
+.health-app .training-pause{padding:18px;border:1px solid #465b50;border-radius:12px;margin-bottom:22px;}
+.health-app .training-pause p,.health-app .training-pause li{font-size:13px;line-height:1.6;}
+.health-app .training-pause h4{font-size:20px;margin-bottom:14px;}
+.health-app .training-pause>button{margin-top:12px;}
+.health-app .training-pause .pause-review-check{display:flex;gap:12px;align-items:flex-start;margin:18px 0;font-size:14px;line-height:1.5;}
+.health-app .pause-review-check input{width:20px;min-width:20px;height:20px;margin-top:2px;accent-color:#97dfc2;}
+.health-app .training-pause-notice{border-left:3px solid #97dfc2;padding-left:12px;font-size:13px;line-height:1.6;margin:16px 0;color:#d5e5dc;}

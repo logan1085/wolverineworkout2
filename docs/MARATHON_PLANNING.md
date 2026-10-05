@@ -80,3 +80,7 @@ Only unfinished runs dated today or later are affected. Race day, recovery subst
 Saved run sessions dated today or earlier can be linked to one existing activity from the same date. The user chooses the record, reviews its actual duration/distance/source and confirms completion. Any activity type may be selected explicitly (for example a walk used in place of a run); this is self-reported completion, not proof that the prescribed target was met. Targets and recorded metrics remain unchanged. This is not automatic matching or watch delivery.
 
 References survive plan archives and backups without copying the record. Duplicate use across active and archived plans is rejected. Removing a link preserves the session's completion/reflection and the actual activity; reopening removes the link/reflection. Missing or moved records are displayed as unavailable. The home calendar labels matched activity rows. Real Garmin import/link persistence and hosted account acceptance remain unverified.
+
+## Explicit training pause
+
+A runner can pause the saved schedule, then review unchanged targets or preview a replacement. Pausing preserves completed work and references and does not backfill or compress unfinished sessions. Pending sessions from the pause date are labeled paused, and schedule mutations in that interval require resume. Reflections on completed work remain editable. There is no automatic inactivity detection or return-to-running load prescription; broader interrupted-training adaptation still needs separate design and evidence.

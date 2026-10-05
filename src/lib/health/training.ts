@@ -1,3 +1,4 @@
+import { validatePauseDate } from "./training-pause";
 import { validateActivityRef, assertUniqueActivityRefs, type TrainingActivityRef } from "./training-activity-ref";
 import type { TrainingAdjustment } from "./training-adjustments";
 import { validateSessionFeedback, type SessionFeedback } from "./training-feedback";
@@ -8,7 +9,7 @@ import { addDays, calendarDate } from "./calendar-date";
 export { addDays, calendarDate } from "./calendar-date";
 export type TrainingKind = "run" | "strength" | "recovery";
 export type TrainingSession = {id:string;date:string;kind:TrainingKind;minutes?:number;distanceKm?:number;runType?:"easy"|"long"|"race";status:"planned"|"completed"|"skipped";feedback?:SessionFeedback;activityRef?:TrainingActivityRef};
-export type TrainingPlan = {id:string;start:string;experience:"starting"|"regular";minutes?:number;mode?:"marathon";marathon?:MarathonDraft;adjustments?:TrainingAdjustment[];days:number[];strength:boolean;sessions:TrainingSession[]};
+export type TrainingPlan = {id:string;pausedOn?:string;start:string;experience:"starting"|"regular";minutes?:number;mode?:"marathon";marathon?:MarathonDraft;adjustments?:TrainingAdjustment[];days:number[];strength:boolean;sessions:TrainingSession[]};
 export function validateTraining(value:unknown):TrainingPlan {
   if(!value||typeof value!=="object")throw new Error("Invalid training plan.");
   const p=value as TrainingPlan;
@@ -21,7 +22,7 @@ export function validateTraining(value:unknown):TrainingPlan {
   assertUniqueActivityRefs([p]);
   const runs=p.sessions.filter(s=>s.kind==="run"&&s.status!=="skipped").map(s=>s.date).sort();
   if(runs.some((d,i)=>i>0&&addDays(runs[i-1],1)===d))throw new Error("Keep a recovery day between runs.");
-  return {id:p.id,start:p.start,experience:p.experience,minutes:p.minutes,days:[...p.days].sort(),strength:p.strength,sessions:p.sessions.map(({id,date,kind,minutes,status,feedback,activityRef})=>({id,date,kind,minutes,status,...(feedback!==undefined?{feedback:validateSessionFeedback(feedback,status,date)}:{}),...(activityRef!==undefined?{activityRef:validateActivityRef(activityRef,status,kind,date)}:{})})).sort((a,b)=>a.date.localeCompare(b.date))};
+  return {id:p.id,...(validatePauseDate(p.pausedOn)?{pausedOn:p.pausedOn}:{}),start:p.start,experience:p.experience,minutes:p.minutes,days:[...p.days].sort(),strength:p.strength,sessions:p.sessions.map(({id,date,kind,minutes,status,feedback,activityRef})=>({id,date,kind,minutes,status,...(feedback!==undefined?{feedback:validateSessionFeedback(feedback,status,date)}:{}),...(activityRef!==undefined?{activityRef:validateActivityRef(activityRef,status,kind,date)}:{})})).sort((a,b)=>a.date.localeCompare(b.date))};
 }
 export function createTraining(input:Omit<TrainingPlan,"sessions"|"minutes"|"mode"|"marathon">&{minutes:number}):TrainingPlan {
   if(!calendarDate(input.start))throw new Error("Choose a valid start date.");
@@ -35,6 +36,7 @@ export function updateTraining(plan:TrainingPlan,id:string,change:Partial<Pick<T
   if(change.activityRef&&change.activityRef.linkedOn!==today)throw new Error("Activity links must use today’s date.");
   if(change.feedback&&change.feedback.updatedOn!==today)throw new Error("Feedback must use today’s date.");
   const current=plan.sessions.find(s=>s.id===id);if(!current)throw new Error("Session not found.");
+  if(plan.pausedOn&&(current.date>=plan.pausedOn||(change.date!==undefined&&change.date>=plan.pausedOn))&&(change.date!==undefined||change.status!==undefined||change.kind!==undefined))throw new Error("This schedule is paused. Review it before changing sessions from the pause onward.");
   if(plan.mode==="marathon"&&current.runType==="race"&&(change.date||change.kind))throw new Error("Race day stays on the saved race date.");
   if(change.date&&plan.sessions.some(s=>s.id!==id&&s.date===change.date))throw new Error("That day already has a session. Choose an empty day.");
   if(change.date&&(current.status!=="planned"||change.date<today))throw new Error("Only upcoming, unfinished sessions can move.");
@@ -44,6 +46,7 @@ export function updateTraining(plan:TrainingPlan,id:string,change:Partial<Pick<T
 }
 export function sessionTitle(session:TrainingSession,plan:TrainingPlan){if(plan.mode==="marathon"&&session.kind==="run")return session.runType==="race"?"Marathon":session.runType==="long"?"Long easy run":"Easy run";return session.kind==="recovery"?"Recovery & reset":session.kind==="strength"?"Familiar strength":plan.experience==="starting"?"Easy walk / jog":"Comfortable run";}
 export function sessionSteps(session:TrainingSession,plan:TrainingPlan):string[]{
+  if(plan.pausedOn&&session.status==="planned"&&session.date>=plan.pausedOn)return ["This schedule is paused. These are saved targets, not a recommendation to train today.","Review your current running and remaining schedule before continuing. Missed work is not moved or stacked into later days."];
   if(session.kind==="recovery")return ["Take a rest day, or choose up to 10 minutes of comfortable walking or gentle mobility.","No missed workout to make up. Resume when you feel ready."];
   if(session.kind==="strength")return ["Use a familiar strength routine at an easy effort for up to 15 minutes.","Choose movements you already know. Take breaks and leave energy in reserve."];
   if(plan.mode==="marathon")return session.runType==="race"?["Your marathon is scheduled on this date. The event distance does not predict readiness or a finish time."]:[`${sessionTarget(session,plan)} · Run at a comfortable conversational effort. Walk or stop when needed.`,"Warm up and cool down comfortably. No target pace or duration is inferred.","If you feel pain or unwell, stop. A recovery day is always an option."];

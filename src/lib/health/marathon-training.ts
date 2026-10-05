@@ -1,3 +1,4 @@
+import { validatePauseDate } from "./training-pause";
 import { validateActivityRef, assertUniqueActivityRefs } from "./training-activity-ref";
 import { lighterDistance, validateTrainingAdjustments } from "./training-adjustments";
 import { validateSessionFeedback } from "./training-feedback";
@@ -45,12 +46,14 @@ export function validateMarathonTraining(value:unknown):TrainingPlan {
   if(run.runType==='race'&&runDates.has(addDays(run.date,-1)))throw new Error('Keep the day before the race free of running.');
   if(runDates.has(addDays(run.date,1))&&runDates.has(addDays(run.date,2)))throw new Error('Avoid three consecutive running days.');
  }
- return {id:draft.inputs.id,mode:'marathon',start:draft.start,experience:'regular',days:draft.inputs.runDays,strength:false,marathon:draft,...(adjustments.length?{adjustments}:{}),sessions:sessions.sort((a,b)=>a.date.localeCompare(b.date))};
+ return {id:draft.inputs.id,...(validatePauseDate(p.pausedOn)?{pausedOn:p.pausedOn}:{}),mode:'marathon',start:draft.start,experience:'regular',days:draft.inputs.runDays,strength:false,marathon:draft,...(adjustments.length?{adjustments}:{}),sessions:sessions.sort((a,b)=>a.date.localeCompare(b.date))};
 }
 
 /** Reduce only unfinished runs in one selected week; never rewrite race day or past work. */
 export function proposeLighterWeek(value:TrainingPlan,weekIndex:number,today:string):TrainingPlan {
- const plan=validateMarathonTraining(value),week=plan.marathon!.weeks[weekIndex];
+ const plan=validateMarathonTraining(value);
+ if(plan.pausedOn)throw new Error("Review the paused schedule before changing targets.");
+ const week=plan.marathon!.weeks[weekIndex];
  if(!calendarDate(today)||today<plan.marathon!.inputs.asOf||!week||week.end<today)throw new Error('Choose a current or upcoming week.');
  if(plan.adjustments?.some(a=>a.week===weekIndex))throw new Error('This week already has lighter targets.');
  const ids=week.sessions.map(s=>s.id);
@@ -60,7 +63,9 @@ export function proposeLighterWeek(value:TrainingPlan,weekIndex:number,today:str
  return validateMarathonTraining({...plan,adjustments:[...(plan.adjustments??[]),adjustment],sessions:plan.sessions.map(s=>adjustment.sessionIds.includes(s.id)?{...s,distanceKm:lighterDistance(s.distanceKm!)}:s)});
 }
 export function restoreWeekTargets(value:TrainingPlan,weekIndex:number,today:string):TrainingPlan {
- const plan=validateMarathonTraining(value),adjustment=plan.adjustments?.find(a=>a.week===weekIndex);
+ const plan=validateMarathonTraining(value);
+ if(plan.pausedOn)throw new Error("Review the paused schedule before changing targets.");
+ const adjustment=plan.adjustments?.find(a=>a.week===weekIndex);
  if(!calendarDate(today)||!adjustment||today<adjustment.appliedOn)throw new Error('No restorable adjustment for this week.');
  const affected=plan.sessions.filter(s=>adjustment.sessionIds.includes(s.id));
  if(affected.some(s=>s.status!=='planned'||s.date<today))throw new Error('Original targets can only be restored before any affected session is completed, skipped or past.');

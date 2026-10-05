@@ -1,0 +1,21 @@
+'use client';
+import { useEffect, useRef, useState } from 'react';
+import { pauseTraining, resumeTraining } from '@/lib/health/training-pause';
+import { sessionTarget, sessionTitle, type TrainingPlan } from '@/lib/health/training';
+export default function TrainingPause({plan,today,busy,onSave,onReplan}:{plan:TrainingPlan;today:string;busy:boolean;onSave:(plan:TrainingPlan)=>Promise<boolean>;onReplan:()=>void}) {
+  const [review,setReview]=useState(false),[confirmed,setConfirmed]=useState(false),[error,setError]=useState('');
+  const heading=useRef<HTMLHeadingElement>(null),trigger=useRef<HTMLButtonElement>(null),previous=useRef(false);
+  const [base,setBase]=useState('');
+  const current=JSON.stringify({plan,today}),stale=review&&base!==current;
+  useEffect(()=>{if(review)heading.current?.focus();else if(previous.current)trigger.current?.focus();previous.current=review;},[review]);
+  const upcoming=plan.sessions.filter(s=>s.date>=today&&s.status==='planned');
+  const elapsed=plan.sessions.filter(s=>s.date<today&&s.status==='planned'&&s.date>=(plan.pausedOn??today)).length;
+  async function apply(){if(busy||stale)return;setError('');try{if(await onSave(plan.pausedOn?resumeTraining(plan,today,confirmed):pauseTraining(plan,today))){setReview(false);setConfirmed(false);}}catch(e){setError(e instanceof Error?e.message:'Could not update the schedule.');}}
+  if(!review)return <section className="training-pause"><div><span className="eyebrow">{plan.pausedOn?'SCHEDULE PAUSED':'ROOM FOR REAL LIFE'}</span>{plan.pausedOn?<p>Paused since {plan.pausedOn}. Your sessions and records are preserved.</p>:<p>Taking time away? Pause your schedule without losing your progress.</p>}</div><button ref={trigger} className="secondary" disabled={busy} onClick={()=>{setBase(current);setReview(true);setError('');setConfirmed(false);}}>{plan.pausedOn?'Review before continuing':'Pause schedule'}</button></section>;
+  return <section className="training-pause" aria-label="Review training pause"><h4 ref={heading} tabIndex={-1}>{plan.pausedOn?'Return on your terms.':'Take the time you need.'}</h4>
+    {plan.pausedOn?<><p>Pausing has not shifted dates, changed distances or made up unfinished work. Review your current running and the saved schedule before deciding what to do next.</p>{elapsed>0&&<p>{elapsed} session{elapsed===1?'':'s'} remain unfinished in the schedule before today. This does not tell us whether you ran elsewhere.</p>}{upcoming.length?<><p>Next saved sessions:</p><ul>{upcoming.slice(0,3).map(s=><li key={s.id}>{s.date} · {sessionTitle(s,plan)} · {sessionTarget(s,plan)}</li>)}</ul><label className="pause-review-check"><input type="checkbox" checked={confirmed} disabled={busy||stale} onChange={e=>setConfirmed(e.target.checked)}/><span>I’ve reviewed my current running and want to use the existing dates and targets unchanged.</span></label><p className="plan-hint">This is your choice to continue a saved schedule, not an assessment of readiness. If the targets no longer fit, keep it paused and preview a new plan.</p></>:<p>This schedule has no upcoming unfinished sessions. Keep it as history and preview a new plan when you’re ready.</p>}<button className="secondary" disabled={busy} onClick={onReplan}>Keep paused & preview a new plan</button></>:<p>Your completed sessions, reflections and linked activities stay saved. Upcoming sessions remain visible as paused. Nothing gets moved, marked skipped or added to a catch-up week.</p>}
+    <p className="plan-hint">If running hurts, stop and get appropriate advice before returning. <a href="https://www.nhs.uk/live-well/exercise/knee-pain-and-other-running-injuries/" target="_blank" rel="noreferrer">Running injury guidance ↗</a></p>
+    <div className="plan-actions">{(!plan.pausedOn||upcoming.length>0)&&<button className="primary" disabled={busy||stale||(!!plan.pausedOn&&!confirmed)} onClick={()=>void apply()}>{plan.pausedOn?'Continue existing schedule':'Confirm pause'}</button>}<button className="quiet-button" disabled={busy} onClick={()=>setReview(false)}>{plan.pausedOn?'Keep paused':'Cancel'}</button></div>
+    {stale&&<p role="alert">Your plan changed. Close this review and open it again.</p>}{error&&<p role="alert" className="form-error">{error}</p>}
+  </section>;
+}
