@@ -171,3 +171,9 @@ The owner reported no reply. Three signed inbound requests reached production bu
 ## Photon platform filter compatibility — October 4, 2026
 
 Two fresh signed deliveries were rejected as `unsupported-platform`. `c097d5f` accepts case-insensitive iMessage labels on the authoritative space and permits an omitted duplicate message platform; an explicitly different message platform still fails closed. Signature, exact sender, DM, inbound and text-only checks remain required. Seven tests, typecheck and production build passed. Live deployment: `dpl_J5aeBBKryaL4F1MQ9sdaJg5EfXkD`. The previous logs did not identify which platform field or value differed, so this compatibility correction still needs a fresh message to verify; no successful reply is claimed.
+
+## Marathon-first conversational welcome — October 5, 2026
+
+`011cc97` is live at https://wolverineworkout2.vercel.app (READY, `dpl_8JjpN6DH2RdNGbHBeusp2Zqjz1ti`). Adapts the Saywise single-question entry pattern into original Wolverine race onboarding: “Your personal trainer for your marathon,” Pip introduction, race and intention selection, explicit profile-goal save, then the existing training planner. Returning runners see their saved goal. Daily voice check-in and calendar remain below. Website metadata, README and design documentation use the new positioning.
+
+Nine training checks, typecheck, local and hosted builds passed. Browser review verified mobile layout without horizontal overflow, step focus, isolated local goal save, planner handoff, persistence after reload and edit cancellation. Production landing verified. No owner race goal was changed during testing. Full race-periodized planning remains future work; the existing four-week consistency block is labeled accurately. AI generation remains blocked by the invalid OpenAI credential; this release does not change that or claim shared Photon/web memory.
