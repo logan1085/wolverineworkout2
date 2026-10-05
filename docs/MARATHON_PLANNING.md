@@ -1,5 +1,7 @@
 # Marathon planning: implementation and acceptance
 
+Current status (October 5): the supported progression engine, app preview, activation/archive path, reflections and manual lighter-week edits are implemented. The sequence below records the original plan and later delivery evidence. Interrupted-training handling, broader supported inputs and live connected acceptance remain incomplete; see [RELEASE_ACCEPTANCE.md](RELEASE_ACCEPTANCE.md).
+
 Wolverine is positioned as “Your personal trainer for your marathon.” The current four-week consistency block does not fulfill that promise by itself. Race-specific training is an open product requirement, not a rename of the current block.
 
 ## Research — October 5, 2026

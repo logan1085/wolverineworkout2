@@ -1,5 +1,7 @@
 # Plan-first Wolverine
 
+Current status (October 5): the app now includes a supported marathon progression mode, explicit preview/activation, archived blocks, session reflections, reviewable lighter-week changes and a completion-aware home calendar. The dated sections below preserve implementation history. Use [RELEASE_ACCEPTANCE.md](RELEASE_ACCEPTANCE.md) for outstanding requirements.
+
 Keep the approved sprout companion and green visual identity. Borrow Runna's product clarity: one goal, today's useful actions, a readable week, and progress grounded in recorded activity.
 
 Reference: https://support.runna.com/en/articles/10473504-your-quick-guide-to-navigating-the-runna-app
