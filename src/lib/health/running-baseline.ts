@@ -1,4 +1,4 @@
-import { calendarDate } from './training';
+import { calendarDate } from './calendar-date';
 
 /** Self-reported recent running, not a fitness score or clearance to train. */
 export type RunningBaseline = {

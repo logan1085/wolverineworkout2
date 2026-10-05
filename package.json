@@ -12,6 +12,7 @@
     "test:health": "node --test tests/health.test.mjs",
     "test:memory": "node --test tests/memory.test.mjs tests/context-brief.test.mjs",
     "test:connections": "node --test tests/connections.test.mjs",
+    "eval:marathon": "node evals/review-marathon-drafts.mjs",
     "eval:agent": "node evals/run-health-agent.mjs",
     "docs:agent": "node scripts/export-agent-prompt.mjs",
     "test:scene": "node --test tests/scene.test.mjs",
@@ -20,7 +21,7 @@
     "test:routine": "node --test tests/routine.test.mjs",
     "test:calendar": "node --test tests/calendar.test.mjs",
     "test:account": "node --test tests/account-status.test.mjs",
-    "test:training": "node --test tests/training.test.mjs tests/marathon-goal.test.mjs tests/running-baseline.test.mjs",
+    "test:training": "node --test tests/training.test.mjs tests/marathon-goal.test.mjs tests/running-baseline.test.mjs tests/marathon-progression.test.mjs",
     "test:voice": "node --test tests/voice.test.mjs",
     "test:photon": "node --test tests/photon.test.mjs"
   },
