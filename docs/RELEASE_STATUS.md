@@ -243,3 +243,11 @@ Typecheck, focused lint and hosted build passed; the existing Supabase dependenc
 `f207013` is live at https://wolverineworkout2.vercel.app, READY as `dpl_7dwpWFgTVLoHTSZxpUpSRTNu7uT8`. A cached, bounded model-metadata probe replaces key-presence-only availability. Known missing/rejected credentials show an upfront chat notice and disable voice before microphone access. Other probe failures are unverified, preserving the distinction from invalid authentication. Separate account and AI status controls support retry.
 
 Production `/api/health/session` now returns `ai:false`, `aiStatus:authentication_failed`, `auth:false`, `authStatus:unavailable`. Live mobile Connections rendering and retry verified. Seven status tests, four voice tests, TypeScript, focused lint and hosted build pass; the existing Supabase dependency warning remains. The metadata request contains no health context and does not generate output. No key was created or changed. Secure key setup was offered again, awaiting the owner's decision after the earlier destination was not approved. Account recovery and remaining product acceptance are unfinished.
+
+## Marathon positioning refinement — October 5, 2026
+
+- Reviewed Saywise’s public entry flow and recorded the adapted Wolverine journey in `docs/SAYWISE_FLOW.md`.
+- Commit `bebe381` makes the marathon-trainer promise visible for returning runners and replaces abstract welcome copy with race, training-week, and post-run actions. Existing onboarding behavior is preserved.
+- Production deployment `dpl_uTKNfsSaN6PoUJq8y7AjFFkZqGny` reached READY and was aliased to https://wolverineworkout2.vercel.app. Live HTML contains the headline and updated copy.
+- Typecheck, focused ESLint and hosted production build passed. No new visual browser review was performed for this copy-only refinement.
+- AI authentication and account-service blockers remain unresolved; this release does not change credentials or connected capabilities.
