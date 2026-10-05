@@ -108,3 +108,14 @@ Browser evidence on isolated localhost tabs: one tab opened routine editing, the
 The preceding goal turn made progress by shipping cross-tab protection. The completion audit remains negative: production `/api/health/session` still returns `local:false, ai:true, auth:false, authStatus:"unavailable"`, and a fresh visit to the existing Supabase dashboard redirects to its sign-in page. No administrative session is available. GitHub's remote feature branch matches the latest release-log commit, and the production deployment remains Ready.
 
 The same account-access blocker has persisted through the routine audit, cross-tab pass and this revalidation. The broader goal is blocked on access to the existing Wolverine Supabase project, not complete. Next owner action: sign into that project and restore its availability or identify the approved active replacement. Do not send secrets in chat or substitute an unrelated project. Once accessible: verify migrations and real account isolation, then configure/authorize Garmin or the supported Strava flow and exercise their full lifecycle. Physical iOS/Android and accessibility acceptance remains required separately. No new account, database, provider app or billing resource was created during this audit.
+
+## Marathon experience audit — October 5, 2026
+
+The Saywise-inspired entry is live, but the polished-app goal is not complete. Current evidence and remaining acceptance:
+
+- Race entry and intention save through validated profile storage; browser verified planner handoff, reload and cancel. Returning-runner edits now prefill both values, including legacy “Training for…” goals, and loading no longer flashes the empty intake. Save submission is guarded against duplicates; pending state coordinates with dashboard writes. Network failure does not falsely assert that the server saved nothing.
+- The training engine remains a four-week steady consistency block. Full marathon progression, race dates, tapering and reviewed adaptation are missing. Marketing is positioning, not proof of this capability.
+- Photon transport and replies reached the owner's phone. OpenAI rejected the existing production key with `invalid_api_key` (401). New-key picker selection completed, but destination approval was declined and no replacement was created. Live generated coaching remains blocked.
+- Account persistence/isolation, real Garmin/Strava acceptance and physical iOS/Android testing are still unverified. See the dimension table above; local storage tests do not establish cloud-account readiness.
+
+Next acceptance: complete safe credential setup after destination approval; verify a real generated reply; implement and review race-specific planning; exercise signed-in storage and integrations with the intended accounts. Keep the overall goal active.

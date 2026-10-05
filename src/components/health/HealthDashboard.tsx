@@ -805,7 +805,7 @@ export default function HealthDashboard() {
             <button
               className="sample-pill"
               onClick={() => changeSample(!sample)}
-              disabled={thinking || tab === "Memory"}
+              disabled={thinking || busy || tab === "Memory"}
             >
               {tab === "Memory"
                 ? "Personal memory"
@@ -837,7 +837,7 @@ export default function HealthDashboard() {
         )}
         {tab === "Today" && (
           <>
-            <MarathonWelcome key={(user?.id || "device")+String(sample)} character={companion.character} goal={current.profile.goal} hasPlan={!!current.profile.training} disabled={!loaded||busy||!!historyError||sample} onSave={async goal=>{await save({...data,profile:{...data.profile,goal}});}} onPlan={()=>{setTrainingSession(undefined);setModal("training");}}/>
+            <MarathonWelcome key={(user?.id || "device")+String(sample)} character={companion.character} goal={current.profile.goal} hasPlan={!!current.profile.training} loading={!loaded} disabled={!loaded||busy||!!historyError||sample} onSave={async goal=>{if(busy)throw new Error("A save is already in progress.");setBusy(true);try{await save({...data,profile:{...data.profile,goal}});}finally{setBusy(false);}}} onPlan={()=>{setTrainingSession(undefined);setModal("training");}}/>
             <header className="running-page-heading"><div><span className="eyebrow">ONE DAY AT A TIME</span><h2>Today’s training</h2></div><span>{new Date(today+"T12:00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"})}</span></header>
             <div className="running-overview-grid">
             <RunWelcome key={user?.id || "device"} character={companion.character} onText={()=>ask("I'd like to check in about whether I ran today and how I'm feeling. Ask me one question at a time.")} onLog={()=>setModal("activity")} onPlan={()=>{requestAnimationFrame(()=>document.getElementById("run-training")?.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"}));}} onCharacter={()=>setModal("character")} onAccount={()=>navigate("Connections")}/>
