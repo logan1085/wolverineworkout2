@@ -1,6 +1,6 @@
 # Wolverine release status
 
-Latest shipped visual/asset/build verification: September 28, 2026. The account and device acceptance requirements below remain open; see the dated release entries for the verified revisions.
+Latest shipped verification: October 5, 2026 (email-confirmation mobile screen and production build; earlier asset verification remains recorded below). The account and device acceptance requirements below remain open; see the dated release entries for the verified revisions.
 
 **Not ready to claim a complete connected health product.** The production app supports local check-ins, activity records, device-local memory, personal routines/streaks, a history calendar, characters and contextual 3D objects. Its configured account service is unavailable, and neither wearable integration has passed real-account acceptance. A passing build does not remove those blockers.
 
@@ -26,7 +26,7 @@ Latest shipped visual/asset/build verification: September 28, 2026. The account 
 - Hosted `/api/health/session` returned `local:false`, `ai:true`, `auth:false`, `authStatus:"unavailable"` on September 28, 2026.
 - September 23 inventory (not rechecked in this pass): Vercel Preview environment contained only `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `OPENAI_API_KEY`. No credential values were printed. Garmin, Strava, server service-role and connector-encryption configuration are absent.
 - Earlier configured-host DNS and auth-settings checks failed with `ENOTFOUND`; this audit confirms account unavailability persists. No database records have been read or changed.
-- The Supabase dashboard currently presents a sign-in screen. No authenticated administrative session is available to inspect whether Wolverine's project can be restored.
+- October 5 live session recheck: `ai:false`, `aiStatus:"authentication_failed"`, `auth:false`, `authStatus:"unavailable"`. The account backend still needs restoration or an owner-approved dedicated replacement. A browser login alone does not establish backend availability.
 - Test/build evidence is recorded per release below. Those checks do not establish real account isolation or provider lifecycle acceptance.
 
 ## Unblocking sequence
@@ -37,7 +37,7 @@ Latest shipped visual/asset/build verification: September 28, 2026. The account 
 4. Complete the secure-deployment physical-phone checklist, including failure recovery and keyboard use. Local development authentication must remain loopback-only.
 5. Resolve remaining evaluation findings and publish the verified connected-account revision. The current local-first product is already on production by user request.
 
-No passwords, API keys or health exports should be sent through chat. The requested next user action is signing into the existing Supabase account, not creating or purchasing a new project.
+No passwords, API keys or health exports should be sent through chat. Project restoration or replacement selection remains an owner decision; do not create, substitute or purchase a project without approval.
 
 [Current Preview](https://wolverineworkout2-git-feat-pers-506864-logan-horowitzs-projects.vercel.app) · [GitHub branch](https://github.com/logan1085/wolverineworkout2/tree/feat/personal-health-agent)
 
@@ -251,3 +251,12 @@ Production `/api/health/session` now returns `ai:false`, `aiStatus:authenticatio
 - Production deployment `dpl_uTKNfsSaN6PoUJq8y7AjFFkZqGny` reached READY and was aliased to https://wolverineworkout2.vercel.app. Live HTML contains the headline and updated copy.
 - Typecheck, focused ESLint and hosted production build passed. No new visual browser review was performed for this copy-only refinement.
 - AI authentication and account-service blockers remain unresolved; this release does not change credentials or connected capabilities.
+
+## Email confirmation return flow — October 5, 2026
+
+- Feature commit `99be871`: explicit registration callback, server-side code exchange, fixed result destination, verified-user success screen, and recoverable invalid-link/service-unavailable screens. No provider errors or codes are echoed into the result URL. Callback responses are private/no-store and no-referrer.
+- Seven synthetic tests pass: missing/duplicate/oversized codes, provider errors, redirect tampering, incomplete exchange, outages, forged success query, and verified-user rendering. Typecheck, focused ESLint and hosted production build pass.
+- Browser verification: local failure screen at 390×844; 320px layout has no horizontal overflow; Connections recovery link opens the correct tab. Live missing-code callback redirects to the expected result screen. Screenshot: `../marathon-proof/confirmation-mobile.png` in the surrounding workspace outputs.
+- Production `dpl_6jHjUfDQ3sxQPF3WmmA8uQzGeSdu` reached READY and is aliased to https://wolverineworkout2.vercel.app.
+- `SUPABASE_SETUP.md` now specifies the exact callback allowlist, email-template compatibility, migration order and real-account acceptance requirements. No external account configuration was changed and no emails were sent.
+- Real email delivery, callback cookies, signup/sign-in and two-account isolation remain unverified while the account service is unavailable. AI credential failure is unchanged. Password recovery remains future work.
