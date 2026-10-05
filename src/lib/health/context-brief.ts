@@ -18,9 +18,15 @@ export function buildContextBrief(health: HealthState, memory: MemoryState, now 
   });
   return {
     asOf, since, memoryEnabled: memory.enabled,
-    profile: health.profile,
+    profile: currentTrainingProfile(health.profile),
     confirmed, additionalActiveFacts: Math.max(0,active.length-confirmed.length),
     recent: {checkIns, metrics, activities}, discrepancies,
     limitations: "Only the last seven UTC calendar dates are summarized. Missing records do not mean no activity. Profile settings are user-editable settings, not independently verified facts. Conflict checks only compare same-date sleep sources; they do not detect semantic contradictions in saved text.",
   };
+}
+
+/** Archived plans stay available in the app, outside the routine model context. */
+export function currentTrainingProfile(profile:HealthState['profile']) {
+  const {trainingHistory,...current}=profile;
+  return {...current,...(trainingHistory?.length?{archivedTrainingBlocks:trainingHistory.length}:{})};
 }

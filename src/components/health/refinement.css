@@ -705,3 +705,12 @@
 @media(max-width:480px){.health-app .running-assessment{padding:16px;}.health-app .running-assessment-heading{display:block;}.health-app .running-baseline-stats{grid-template-columns:1fr;gap:10px;}.health-app .running-baseline-stats>div{display:flex;justify-content:space-between;align-items:center;gap:12px;}.health-app .running-baseline-stats dd{margin:0;font-size:20px;}}
 .health-app .running-assessment h3,.health-app .running-assessment label {color:#19362b;}
 .health-app .running-assessment .eyebrow {color:#607065;}
+.health-app .plan-history-select {display:grid;gap:8px;margin:0 0 20px;font-size:12px;}
+.health-app .plan-history-select select {width:100%;min-width:0;min-height:46px;padding:10px;border:1px solid #597363;border-radius:8px;background:#192b20;color:#eef4e8;font-size:14px;}
+.health-app .plan-replacement-note {padding:16px;border:1px solid #597363;border-radius:12px;margin:0 0 22px;}
+.health-app .plan-replacement-note strong {font-size:14px;}
+.health-app .plan-replacement-note p {font-size:12px;line-height:1.6;}
+.health-app .plan-progress progress {appearance:none;-webkit-appearance:none;display:block;height:6px;border:0;border-radius:99px;overflow:hidden;background:#405044;margin:16px 0 0;}
+.health-app .plan-progress progress::-webkit-progress-bar {background:#405044;border-radius:99px;}
+.health-app .plan-progress progress::-webkit-progress-value {background:#bddc9b;border-radius:99px;}
+.health-app .plan-progress progress::-moz-progress-bar {background:#bddc9b;border-radius:99px;}

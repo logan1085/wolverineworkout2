@@ -50,3 +50,7 @@ Limitations: one active block; no block archive/replacement UI yet. No automatic
 ## Marathon direction — October 5
 
 The product direction is now marathon-first, with the user-approved positioning “Your personal trainer for your marathon.” Race name, intention and optional date lead into training. A saved recent-running assessment supplies current volume, frequency and longest run in either miles or kilometres. It does not yet produce progressive prescriptions. See [MARATHON_PLANNING.md](MARATHON_PLANNING.md) for research, the implementation sequence and full-plan acceptance requirements. The earlier open running-vs-general-health decision is resolved by this direction.
+
+## Training history — October 5
+
+The earlier one-block limitation is resolved for consistency plans. A new block can be previewed and activated with explicit replacement wording; the former plan moves to read-only history with completed/skipped/unfinished statuses retained. Past sessions do not remain on the active calendar. This is not yet marathon progression or automatic adaptation.

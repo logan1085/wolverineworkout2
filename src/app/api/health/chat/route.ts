@@ -134,7 +134,7 @@ export async function POST(request: NextRequest) {
         activityMinutes: "minutes",
         distanceKm: "kilometers",
       },
-      profile: state.profile,
+      profile: brief.profile,
       checkIns: state.checkIns.slice(0, 14),
       metrics: state.metrics.slice(-14),
       activities: state.activities.slice(0, 20),

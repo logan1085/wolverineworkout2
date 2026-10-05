@@ -35,3 +35,28 @@ export function sessionSteps(session:TrainingSession,plan:TrainingPlan):string[]
   if(session.kind==="strength")return ["Use a familiar strength routine at an easy effort for up to 15 minutes.","Choose movements you already know. Take breaks and leave energy in reserve."];
   return ["5 min · Walk comfortably to warm up.",plan.experience==="starting"?`${session.minutes-10} min · Walk at a comfortable effort; add short easy jogs only if they feel comfortable. Walking the whole session counts.`:`${session.minutes-10} min · Run at an effort where you can talk comfortably. Walk whenever you need to.`,"5 min · Easy walk to finish.","Stop if you feel pain or unwell; a recovery day is always an option."];
 }
+
+export type TrainingArchive = { plan: TrainingPlan; archivedAt: string };
+export const MAX_TRAINING_ARCHIVES = 52;
+export function validateTrainingHistory(value:unknown,activeId?:string):TrainingArchive[] {
+  if(!Array.isArray(value)||value.length>MAX_TRAINING_ARCHIVES)throw new Error(`Training history supports up to ${MAX_TRAINING_ARCHIVES} blocks.`);
+  const ids=new Set(activeId?[activeId]:[]);
+  return value.map(item=>{
+    if(!item||typeof item!=='object'||!calendarDate(item.archivedAt))throw new Error('Invalid training archive.');
+    const plan=validateTraining(item.plan);
+    if(ids.has(plan.id))throw new Error('A training block cannot appear twice.');
+    ids.add(plan.id);
+    return {plan,archivedAt:item.archivedAt};
+  });
+}
+/** Archive and activate in one profile save; never trim or reset completed work. */
+export function saveTrainingBlock(current:TrainingPlan|undefined,history:TrainingArchive[],next:TrainingPlan,today:string) {
+  if(!calendarDate(today))throw new Error('Invalid save date.');
+  const training=validateTraining(next);
+  const previous=validateTrainingHistory(history,current?.id);
+  if(current?.id===training.id)return {training,trainingHistory:previous};
+  if(previous.some(entry=>entry.plan.id===training.id))throw new Error('An archived block cannot replace the active plan. Create a new block.');
+  if(current&&previous.length>=MAX_TRAINING_ARCHIVES)throw new Error('Training history is full. Your current plan has not been replaced.');
+  const trainingHistory=current?[{plan:validateTraining(current),archivedAt:today},...previous]:previous;
+  return {training,trainingHistory};
+}

@@ -1,5 +1,5 @@
 import { validateRunningBaseline, type RunningBaseline } from "./running-baseline";
-import { validateTraining, type TrainingPlan } from "./training";
+import { validateTraining, validateTrainingHistory, type TrainingArchive, type TrainingPlan } from "./training";
 export type CheckIn = {
   id: string;
   date: string;
@@ -28,7 +28,7 @@ export type Activity = {
 };
 export type RoutineGoal = "movement" | "rest" | "reflection";
 export type Routine = { goals: RoutineGoal[]; pace: "gentle" | "steady"; startedAt: string };
-export type HealthProfile = { name: string; goal: string; raceDate?: string; runningBaseline?: RunningBaseline; minutes: number; routine?: Routine; training?: TrainingPlan };
+export type HealthProfile = { name: string; goal: string; raceDate?: string; runningBaseline?: RunningBaseline; minutes: number; routine?: Routine; training?: TrainingPlan; trainingHistory?: TrainingArchive[] };
 export type HealthState = {
   profile: HealthProfile;
   checkIns: CheckIn[];
@@ -216,6 +216,7 @@ export function validateHealth(value: unknown): HealthState {
   if (s.profile.raceDate !== undefined && !date(s.profile.raceDate)) throw new Error("Choose a valid race date.");
   const runningBaseline = s.profile.runningBaseline === undefined ? undefined : validateRunningBaseline(s.profile.runningBaseline);
   const training = s.profile.training === undefined ? undefined : validateTraining(s.profile.training);
+  const trainingHistory = s.profile.trainingHistory === undefined ? undefined : validateTrainingHistory(s.profile.trainingHistory, training?.id);
   const routine = s.profile.routine;
   if (routine !== undefined && (!routine || !Array.isArray(routine.goals) || routine.goals.length < 1 || routine.goals.length > 3 || new Set(routine.goals).size !== routine.goals.length || !routine.goals.every(g => ["movement", "rest", "reflection"].includes(g)) || !["gentle", "steady"].includes(routine.pace) || !date(routine.startedAt)))
     throw new Error("Choose your routine goals and pace.");
@@ -271,6 +272,7 @@ export function validateHealth(value: unknown): HealthState {
       ...(s.profile.raceDate !== undefined ? { raceDate: s.profile.raceDate } : {}),
       minutes: s.profile.minutes,
       ...(training ? { training } : {}),
+      ...(trainingHistory ? { trainingHistory } : {}),
       ...(runningBaseline ? { runningBaseline } : {}),
       ...(routine ? { routine: { goals: [...routine.goals], pace: routine.pace, startedAt: routine.startedAt } } : {}),
     },

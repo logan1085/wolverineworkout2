@@ -1,4 +1,5 @@
 "use client";
+import { saveTrainingBlock } from "@/lib/health/training";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -1763,7 +1764,7 @@ export default function HealthDashboard() {
         </Modal>
       )}
       {modal === "character" && <Modal returnFocusRef={dialogTrigger} title="Meet your companion." onClose={() => setModal(null)}><CharacterPicker selected={companion.character.id} onChoose={companion.choose} disabled={!companion.ready} error={companion.error}/></Modal>}
-      {modal === "training" && <Modal returnFocusRef={dialogTrigger} title="Your training plan." pending={busy} onClose={()=>{if(!busy)setModal(null);}}><TrainingPlanner key={user?.id || "device"} plan={data.profile.training} raceDate={data.profile.raceDate} baseline={data.profile.runningBaseline} onSaveBaseline={async runningBaseline=>{if(busy)throw new Error("A save is already in progress.");setBusy(true);try{await save({...data,profile:{...data.profile,runningBaseline}});}finally{setBusy(false);}}} initialSession={trainingSession} today={today} busy={busy} onSave={async(training)=>{setBusy(true);try{await save({...data,profile:{...data.profile,training}});}finally{setBusy(false);}}}/></Modal>}
+      {modal === "training" && <Modal returnFocusRef={dialogTrigger} title="Your training plan." pending={busy} onClose={()=>{if(!busy)setModal(null);}}><TrainingPlanner key={user?.id || "device"} plan={data.profile.training} history={data.profile.trainingHistory} raceDate={data.profile.raceDate} baseline={data.profile.runningBaseline} onSaveBaseline={async runningBaseline=>{if(busy)throw new Error("A save is already in progress.");setBusy(true);try{await save({...data,profile:{...data.profile,runningBaseline}});}finally{setBusy(false);}}} initialSession={trainingSession} today={today} busy={busy} onSave={async(training)=>{setBusy(true);try{await save({...data,profile:{...data.profile,...saveTrainingBlock(data.profile.training,data.profile.trainingHistory??[],training,today)}});}finally{setBusy(false);}}}/></Modal>}
       {modal === "onboarding" && <Modal returnFocusRef={dialogTrigger} title="Make it yours." pending={busy} onClose={()=>{if(!busy)setModal(null);}}><RoutineOnboarding profile={data.profile} characterId={companion.character.id} busy={busy} onSave={async(profile,characterId)=>{setBusy(true);try{await save({...data,profile});companion.choose(characterId);setModal(null);setNotice("Your daily routine is ready.");}finally{setBusy(false);}}}/></Modal>}
       {modal === "studio" && (<Modal returnFocusRef={dialogTrigger} title="Make something yours." onClose={() => setModal(null)}><SketchStudio key={user?.id || "local"} /></Modal>)}
       {modal === "context" && (

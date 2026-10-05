@@ -26,3 +26,7 @@ The assessment follows profile JSON validation, existing local conflict protecti
 ## Acceptance still required for the full product
 
 Full marathon progression and adaptation; reliable generated AI replies; hosted account isolation; real Garmin/Strava lifecycle behavior; matching recorded activity to planned sessions; physical mobile and accessibility review. Watch workout delivery must not be claimed without separate acceptance. See PRODUCT_QUALITY.md for the broader audit.
+
+## History foundation delivered — October 5
+
+Existing consistency blocks now support explicit preview/replace with the old block archived atomically alongside activation. Archived session statuses remain readable after reload; no activity records are fabricated. Canceling a proposal leaves the active block unchanged. Archives are bounded to 52 blocks and are never silently evicted; replacement rejects at capacity. The normal agent context includes the active block plus an archive count. Marathon-specific schema, progression and weekly adaptation still remain in the sequence above.
