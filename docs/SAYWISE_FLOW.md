@@ -23,3 +23,7 @@ Do not copy Saywise branding, testimonials, metrics or pricing. Do not promise p
 ## Acceptance
 
 Preserve the original race/aim persistence and explicit plan activation. Keep mobile inputs labeled, choices keyboard accessible, save failures recoverable, and returning users out of repeated onboarding. The entry flow now progressively reveals the optional date after the race question. No save happens until the runner explicitly confirms the second step.
+
+## Introduction refinement
+
+The welcome page now explains the concrete outcome before asking for a race: a training week and a place to reflect. An optional “How we’ll get from here to your start line” disclosure covers race choice, reviewed plan activation, and post-run logging. It stays collapsed on mobile and is absent for returning runners. This borrows Saywise’s task-led explanation without presenting example messages as real conversations or claiming the unavailable connected services work.

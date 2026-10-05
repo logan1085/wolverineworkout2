@@ -846,3 +846,16 @@
 .health-app .activity-values .distance { display:block; min-width:0; margin-top:5px; white-space:nowrap; }
 
 .health-app .activity-values .activity-edit {min-height:44px;padding:8px 0 4px 16px;font-size:12px;}
+
+/* Explain the journey on demand, without adding another onboarding screen. */
+.health-app .marathon-how {grid-column:1/-1;border-top:1px solid #cbd7c7;padding-top:18px;color:#365440;}
+.health-app .marathon-how summary {display:flex;justify-content:space-between;gap:16px;align-items:center;cursor:pointer;font-size:13px;min-height:44px;list-style:none;}
+.health-app .marathon-how summary::-webkit-details-marker {display:none;}
+.health-app .marathon-how[open] summary>span {transform:rotate(45deg);}
+.health-app .marathon-how summary:focus-visible {outline:2px solid #447d52;outline-offset:4px;border-radius:4px;}
+.health-app .marathon-how ol {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;list-style:none;margin:18px 0 4px;padding:0;}
+.health-app .marathon-how li {display:flex;gap:12px;}
+.health-app .marathon-how li>span {font-size:11px;color:#607065;padding-top:3px;}
+.health-app .marathon-how h3 {color:#365440;font-size:14px;font-weight:600;margin:0 0 8px;}
+.health-app .marathon-how p {font-size:12px;line-height:1.7;margin:0;color:#607065;}
+@media(max-width:760px){.health-app .marathon-how ol{grid-template-columns:1fr;gap:20px;}.health-app .marathon-how{padding-top:8px;}.health-app .marathon-how summary{font-size:12px;}}
