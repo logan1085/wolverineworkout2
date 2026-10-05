@@ -1,6 +1,7 @@
 "use client";
 import { formatMarathonGoal, parseMarathonGoal, RACE_AIMS } from "@/lib/health/marathon-goal";
-import { activityDistanceUnit, parseActivityDistance } from "@/lib/health/activity-distance";
+import { editManualActivity } from "@/lib/health/activity-edit";
+import { activityDistanceUnit, correctedActivityDistance, parseActivityDistance } from "@/lib/health/activity-distance";
 import { displayDistance, type RunningBaseline } from "@/lib/health/running-baseline";
 import { saveTrainingBlock } from "@/lib/health/training";
 import { FormEvent, useEffect, useRef, useState } from "react";
@@ -153,9 +154,10 @@ export default function HealthDashboard() {
   const [actionError, setActionError] = useState("");
   const [busy, setBusy] = useState(false);
   const [modal, setModal] = useState<
-    "checkin" | "activity" | "profile" | "delete" | "context" | "studio" | "character" | "onboarding" | "training" | null
+    "checkin" | "activity" | "activityEdit" | "profile" | "delete" | "context" | "studio" | "character" | "onboarding" | "training" | null
   >(null);
-  useEffect(() => { setActionError(""); }, [modal]);
+  const [editingActivity,setEditingActivity]=useState<Activity|null>(null);
+  useEffect(() => { setActionError(""); if(modal!=="activityEdit")setEditingActivity(null); }, [modal]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState("");
   const [thinking, setThinking] = useState(false);
@@ -183,6 +185,8 @@ export default function HealthDashboard() {
 
   const upload = useRef<HTMLInputElement>(null);
   const current = sample ? samples : data;
+  const activityUnit=activityDistanceUnit(data.profile);
+  const originalDistance=editingActivity?.distanceKm===undefined?"":String(displayDistance(editingActivity.distanceKm,activityUnit));
   const briefing = dailyBriefing(current);
   const [today, setToday] = useState(dayKey);
   useEffect(() => {
@@ -527,7 +531,7 @@ export default function HealthDashboard() {
     const f = new FormData(e.currentTarget);
     const distance = String(f.get("distance") || "");
     await act(async () => {
-      const distanceKm = parseActivityDistance(distance, f.get("distanceUnit"));
+      const distanceKm = modal==="activityEdit" && editingActivity ? correctedActivityDistance(distance,f.get("distanceUnit"),editingActivity.distanceKm,activityUnit) : parseActivityDistance(distance, f.get("distanceUnit"));
       const item: Activity = {
         id: crypto.randomUUID(),
         date: String(f.get("date")),
@@ -537,14 +541,17 @@ export default function HealthDashboard() {
         ...(distanceKm !== undefined ? { distanceKm } : {}),
         source: "manual",
       };
-      await save({
+      if(modal==="activityEdit"){
+        if(!editingActivity)throw new Error("Reopen the activity before editing.");
+        await save(editManualActivity(data,editingActivity,item,today));
+      }else await save({
         ...data,
         activities: [item, ...data.activities]
           .sort((a, b) => b.date.localeCompare(a.date))
           .slice(0, 1000),
       });
       setModal(null);
-      setNotice("Activity added.");
+      setNotice(modal==="activityEdit"?"Activity updated.":"Activity added.");
     });
   }
   async function submitProfile(e: FormEvent<HTMLFormElement>) {
@@ -1354,7 +1361,7 @@ export default function HealthDashboard() {
               </div>
               {visibleActivities.length ? (
                 visibleActivities.map((a) => (
-                  <ActivityRow key={a.id} item={a} sample={sample} unit={activityDistanceUnit(current.profile)} />
+                  <ActivityRow key={a.id} item={a} sample={sample} unit={activityDistanceUnit(current.profile)} disabled={!loaded||busy||!!historyError} onEdit={()=>{setEditingActivity({...a});setModal("activityEdit");}} />
                 ))
               ) : (
                 <Empty
@@ -1912,14 +1919,16 @@ export default function HealthDashboard() {
           </form>
         </Modal>
       )}
-      {modal === "activity" && (
-        <Modal returnFocusRef={dialogTrigger} title="Every bit counts." error={actionError} pending={busy} onClose={() => setModal(null)}>
-          <form onSubmit={submitActivity}>
+      {(modal === "activity" || modal === "activityEdit") && (
+        <Modal returnFocusRef={dialogTrigger} title={modal==="activityEdit"?"Edit your activity.":"Every bit counts."} error={actionError} pending={busy} onClose={() => setModal(null)}>
+          <form key={editingActivity?.id??"new"} onSubmit={submitActivity}>
+            {editingActivity&&<p className="plan-hint">Update this record. Your training plan stays unchanged. Moving the date may make its training link unavailable.</p>}
             <fieldset disabled={busy}>
             <label>
               Activity name
               <input
                 name="name"
+                defaultValue={editingActivity?.name??""}
                 maxLength={120}
                 placeholder="e.g. Morning easy run"
                 required
@@ -1928,7 +1937,8 @@ export default function HealthDashboard() {
             <div className="form-grid">
               <label>
                 Type
-                <select name="type" defaultValue="Running">
+                <select name="type" defaultValue={editingActivity?.type??"Running"}>
+                  {editingActivity&&!["Walking","Running","Strength","Cycling","Swimming","Mobility","Other"].includes(editingActivity.type)&&<option>{editingActivity.type}</option>}
                   {[
                     "Walking",
                     "Running",
@@ -1947,7 +1957,7 @@ export default function HealthDashboard() {
                 <input
                   name="date"
                   type="date"
-                  defaultValue={today}
+                  defaultValue={editingActivity?.date??today}
                   max={today}
                   required
                 />
@@ -1960,13 +1970,14 @@ export default function HealthDashboard() {
                   min="1"
                   max="1440"
                   required
-                  defaultValue="30"
+                  defaultValue={editingActivity?.minutes??30}
                 />
               </label>
               <label>
                 Distance <span>optional</span>
                 <input
                   name="distance"
+                  defaultValue={originalDistance}
                   type="number"
                   min="0"
                   max="1000"
@@ -1977,7 +1988,7 @@ export default function HealthDashboard() {
               <label>Distance unit<select name="distanceUnit" defaultValue={activityDistanceUnit(data.profile)}><option value="mi">Miles</option><option value="km">Kilometres</option></select></label>
             </div>
             <button className="primary" disabled={busy}>
-              {busy ? "Saving…" : "Save activity"}
+              {busy ? "Saving…" : editingActivity?"Save changes":"Save activity"}
             </button>
             </fieldset>
           </form>
@@ -2079,7 +2090,7 @@ export default function HealthDashboard() {
     </div>
   );
 }
-function ActivityRow({ item: a, sample, unit }: { item: Activity; sample: boolean; unit: RunningBaseline["unit"] }) {
+function ActivityRow({ item: a, sample, unit, disabled, onEdit }: { item: Activity; sample: boolean; unit: RunningBaseline["unit"]; disabled:boolean; onEdit:()=>void }) {
   return (
     <article className="activity-row">
       <div className="activity-icon" aria-hidden="true">
@@ -2106,7 +2117,8 @@ function ActivityRow({ item: a, sample, unit }: { item: Activity; sample: boolea
       </strong>
       {a.distanceKm !== undefined && (
         <span className="distance">{displayDistance(a.distanceKm,unit)} {unit}</span>
-      )}</div>
+      )}
+      {!sample&&a.source==="manual"&&<button className="quiet-button activity-edit" disabled={disabled} aria-label={`Edit ${a.name}`} onClick={onEdit}>Edit</button>}</div>
     </article>
   );
 }

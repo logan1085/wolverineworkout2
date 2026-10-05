@@ -1,0 +1,15 @@
+import fs from 'node:fs';import path from 'node:path';import ts from 'typescript';import assert from 'node:assert/strict';import {test} from 'node:test';
+function load(file){const m={exports:{}};new Function('require','module','exports',ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText)(id=>load(path.resolve(path.dirname(file),id+'.ts')),m,m.exports);return m.exports;}
+const {editManualActivity}=load('src/lib/health/activity-edit.ts');const {emptyHealth}=load('src/lib/health/model.ts');const {createTraining,updateTraining}=load('src/lib/health/training.ts');
+const today='2026-10-05',original={id:'manual-1',name:'Fictional',type:'Running',date:today,minutes:30,distanceKm:4.989,source:'manual'};
+const state=()=>({...emptyHealth,activities:[{...original}]});
+test('manual correction retains identity and record count without mutating input',()=>{const before=state(),next=editManualActivity(before,original,{...original,name:'Corrected',minutes:35},today);assert.equal(next.activities.length,1);assert.equal(next.activities[0].id,original.id);assert.equal(next.activities[0].minutes,35);assert.equal(next.activities[0].distanceKm,4.989);assert.equal(before.activities[0].name,'Fictional');});
+test('removed, stale, ambiguous and imported records cannot be overwritten',()=>{
+ assert.throws(()=>editManualActivity({...state(),activities:[]},original,original,today),/changed/);
+ assert.throws(()=>editManualActivity({...state(),activities:[{...original,minutes:31}]},original,original,today),/changed/);
+ assert.throws(()=>editManualActivity({...state(),activities:[original,{...original}]},original,original,today),/changed/);
+ assert.throws(()=>editManualActivity(state(),{...original,source:'garmin'},original,today),/source app/);
+});
+test('source identity, zero and absent distance remain distinct',()=>{const before={...state(),activities:[original,{...original,source:'garmin'}]};const next=editManualActivity(before,original,{...original,distanceKm:0},today);assert.equal(next.activities[0].distanceKm,0);assert.equal(next.activities[1].distanceKm,4.989);assert.equal(editManualActivity(state(),original,{...original,distanceKm:undefined},today).activities[0].distanceKm,undefined);});
+test('invalid corrections reject without replacing saved activity',()=>{for(const patch of [{date:'2026-10-06'},{date:'bad'},{minutes:0},{distanceKm:-1},{name:'   '},{type:''}])assert.throws(()=>editManualActivity(state(),original,{...original,...patch},today));});
+test('record edits preserve schedule targets, completion and link references even when date is corrected',()=>{const plan=updateTraining(createTraining({id:'plan-edit',start:today,experience:'regular',minutes:30,days:[1,3],strength:false}),'session-0',{status:'completed',activityRef:{id:original.id,source:'manual',linkedOn:today}},today);const before={...state(),profile:{...emptyHealth.profile,training:plan}};const next=editManualActivity(before,original,{...original,date:'2026-10-04',minutes:20},today);assert.deepEqual(next.profile.training,plan);assert.equal(next.activities[0].date,'2026-10-04');});

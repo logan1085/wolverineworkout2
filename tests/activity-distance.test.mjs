@@ -1,6 +1,6 @@
 import fs from 'node:fs';import path from 'node:path';import ts from 'typescript';import assert from 'node:assert/strict';import {test} from 'node:test';
 function load(file){const m={exports:{}};new Function('require','module','exports',ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText)(id=>load(path.resolve(path.dirname(file),id+'.ts')),m,m.exports);return m.exports;}
-const {activityDistanceUnit,parseActivityDistance}=load('src/lib/health/activity-distance.ts');
+const {activityDistanceUnit,parseActivityDistance,correctedActivityDistance}=load('src/lib/health/activity-distance.ts');
 const {displayDistance}=load('src/lib/health/running-baseline.ts');
 const {emptyHealth,validateHealth}=load('src/lib/health/model.ts');
 test('active plan units lead, baseline provides fallback, new runners default to km',()=>{
@@ -16,4 +16,8 @@ test('blank differs from zero; existing km values do not receive mile conversion
 });
 test('invalid or excessive distances fail before storage regardless of entered unit',()=>{
  for(const [value,unit] of [['-1','mi'],['NaN','km'],['Infinity','mi'],['1001','km'],['622','mi'],['5','miles']])assert.throws(()=>parseActivityDistance(value,unit));assert.equal(parseActivityDistance('1000','km'),1000);
+});
+
+test('editing other fields preserves precise distance despite rounded display; explicit changes are converted',()=>{
+ assert.equal(correctedActivityDistance('1.9','mi',3,'mi'),3);assert.equal(correctedActivityDistance('5.1','km',5.123,'km'),5.123);assert.equal(correctedActivityDistance('2','mi',3,'mi'),3.219);assert.equal(correctedActivityDistance('1.9','km',3,'mi'),1.9);assert.equal(correctedActivityDistance('','mi',3,'mi'),undefined);
 });

@@ -844,3 +844,5 @@
 .health-app .activity-row .activity-values { flex:0 0 auto; margin-left:auto; text-align:right; }
 .health-app .activity-values strong { display:block; margin:0; }
 .health-app .activity-values .distance { display:block; min-width:0; margin-top:5px; white-space:nowrap; }
+
+.health-app .activity-values .activity-edit {min-height:44px;padding:8px 0 4px 16px;font-size:12px;}

@@ -70,3 +70,7 @@ The link is saved in your training profile and follows its local/account storage
 ## Paused training
 
 Pausing stores a pause date with the active training plan. Dates, targets, completed sessions, reflections and activity references are preserved; pending sessions from that date are shown as paused. No inactivity is inferred from missing records. Continuing requires explicit review of the unchanged schedule, or you can keep it paused while previewing a replacement. Resuming removes the active pause date; it does not create a medical readiness assessment or shift unfinished sessions. Archived plans retain their pause state. This state follows the profile’s storage/export rules and is not automatically a durable agent memory.
+
+## Correcting manual activities
+
+Edit a manually logged activity from Activity. Saving updates the same record, including its existing identity, rather than adding a duplicate. Imported Garmin activities are read-only here. Correcting a record changes what the current health context can show; it does not rewrite older conversation messages or confirmed memories. Plan targets, reflections and completion are preserved. A linked session reads updated actual values from the record; if its date no longer matches, the link is shown as unavailable. Cancelling does not save, and detected stale/missing records require reopening before correction.
