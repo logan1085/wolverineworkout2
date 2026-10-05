@@ -714,3 +714,34 @@
 .health-app .plan-progress progress::-webkit-progress-bar {background:#405044;border-radius:99px;}
 .health-app .plan-progress progress::-webkit-progress-value {background:#bddc9b;border-radius:99px;}
 .health-app .plan-progress progress::-moz-progress-bar {background:#bddc9b;border-radius:99px;}
+
+.health-app .marathon-preview-entry {display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px;border:1px solid #597363;border-radius:12px;margin-bottom:24px;}
+.health-app .marathon-preview-entry p {font-size:14px;margin:6px 0 0;}
+.health-app .marathon-preview-back {display:block;margin:0 0 24px;}
+.health-app .marathon-preview>h3 {font-size:30px;line-height:1.15;margin:12px 0 16px;overflow-wrap:anywhere;}
+.health-app .marathon-preview-note {font-size:13px;line-height:1.7;color:#bdcbb8;margin:16px 0 22px;}
+.health-app .marathon-preview-disclosure {margin:20px 0;font-size:12px;line-height:1.7;color:#bdcbb8;}
+.health-app .marathon-preview-disclosure summary {cursor:pointer;min-height:44px;display:list-item;padding:10px 0;}
+.health-app .marathon-preview-controls {display:flex;justify-content:space-between;align-items:center;gap:14px;font-size:12px;color:#bdcbb8;}
+.health-app .marathon-preview-controls label {display:grid;gap:5px;font-size:11px;}
+.health-app .marathon-preview-controls select {border:1px solid #597363;border-radius:8px;background:#192b20;color:#eef4e8;padding:8px;font-size:14px;min-height:44px;}
+.health-app .marathon-preview-stats {display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0;}
+.health-app .marathon-preview-stats dt {font-size:10px;line-height:1.5;color:#bdcbb8;}
+.health-app .marathon-preview-stats dd {margin:6px 0 0;font-size:22px;color:#e1efcb;}
+.health-app .marathon-volume {display:flex;align-items:flex-end;gap:4px;height:76px;border-bottom:1px solid #597363;}
+.health-app .marathon-volume i {flex:1;background:#7a9975;border-radius:3px 3px 0 0;}
+.health-app .marathon-volume .phase-recovery {background:#485d51;}
+.health-app .marathon-volume .phase-taper,.health-app .marathon-volume .phase-race {background:#a9c4af;}
+.health-app .marathon-volume .selected {outline:2px solid #e0edc8;outline-offset:1px;}
+.health-app .marathon-preview-week {margin:24px 0;}
+.health-app .marathon-week-title h4 {font-size:24px;margin:10px 0;}
+.health-app .marathon-week-title p {font-size:12px;line-height:1.7;color:#bdcbb8;}
+.health-app .marathon-week-distance {font-size:14px;color:#dcebc9;margin:18px 0;}
+.health-app .marathon-preview-week ul {list-style:none;padding:0;margin:0;}
+.health-app .marathon-preview-week li {display:grid;grid-template-columns:48px 1fr auto;gap:10px;align-items:center;border-top:1px solid #3a483c;padding:14px 0;font-size:12px;}
+.health-app .marathon-preview-week time {font-size:12px;color:#e1efcb;}
+.health-app .marathon-preview-week time span {font-size:10px;color:#9eae99;display:block;margin-top:4px;}
+.health-app .marathon-preview-week li div>span {display:block;font-size:10px;line-height:1.5;color:#a9b9a3;margin-top:5px;}
+.health-app .marathon-preview-week li b {font-size:13px;font-weight:500;white-space:nowrap;color:#e1efcb;}
+.health-app .marathon-preview-week .is-rest strong {font-weight:400;color:#a9b9a3;}
+@media(max-width:480px){.health-app .marathon-preview-entry{display:block;}.health-app .marathon-preview-entry button{margin-top:14px;width:100%;}.health-app .marathon-preview-stats{gap:10px;}.health-app .marathon-preview-stats dd{font-size:18px;}.health-app .marathon-preview-controls{align-items:flex-start;}.health-app .marathon-preview-week li{grid-template-columns:42px 1fr auto;gap:8px;}}

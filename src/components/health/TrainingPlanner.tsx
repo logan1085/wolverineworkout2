@@ -2,10 +2,13 @@
 import { useEffect, useRef, useState } from "react";
 import { addDays, createTraining, sessionSteps, sessionTitle, updateTraining, type TrainingArchive, type TrainingPlan, type TrainingSession } from "@/lib/health/training";
 import { raceCountdown } from "@/lib/health/marathon-goal";
+import MarathonPreview from "./MarathonPreview";
 import RunningAssessment from "./RunningAssessment";
 import type { RunningBaseline } from "@/lib/health/running-baseline";
 const weekdays=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-export default function TrainingPlanner({plan,history=[],today,busy,onSave,initialSession,raceDate,baseline,onSaveBaseline}:{history?:TrainingArchive[];baseline?:RunningBaseline;onSaveBaseline:(baseline:RunningBaseline)=>Promise<void>;raceDate?:string;initialSession?:string;plan?:TrainingPlan;today:string;busy:boolean;onSave:(plan:TrainingPlan)=>Promise<void>}) {
+export default function TrainingPlanner({goal,plan,history=[],today,busy,onSave,initialSession,raceDate,baseline,onSaveBaseline}:{goal:string;history?:TrainingArchive[];baseline?:RunningBaseline;onSaveBaseline:(baseline:RunningBaseline)=>Promise<void>;raceDate?:string;initialSession?:string;plan?:TrainingPlan;today:string;busy:boolean;onSave:(plan:TrainingPlan)=>Promise<void>}) {
+  const [exploring,setExploring]=useState(false);
+  const exploreButton=useRef<HTMLButtonElement>(null);
   const [assessing,setAssessing]=useState(false);
   const [experience,setExperience]=useState<"starting"|"regular">("starting");
   const [minutes,setMinutes]=useState(20),[days,setDays]=useState([1,3,5]),[strength,setStrength]=useState(false),[start,setStart]=useState(today);
@@ -26,9 +29,11 @@ export default function TrainingPlanner({plan,history=[],today,busy,onSave,initi
   useEffect(()=>{if(error)alert.current?.focus();},[error]);
   async function persist(next:TrainingPlan){if(locked||saveLock.current)return;saveLock.current=true;setSaving(true);setError("");try{await onSave(next);if(!plan||next.id!==plan.id){setCreating(false);setPreview(null);setArchiveId('');resetSelection();}else summary.current?.focus();}catch(e){setError(e instanceof Error?e.message:"Could not save your plan.");}finally{saveLock.current=false;setSaving(false);}}
   function change(session:TrainingSession,patch:Parameters<typeof updateTraining>[2]){if(!plan||!isCurrent||locked)return;try{void persist(updateTraining(plan,session.id,patch,today));}catch(e){setError((e as Error).message);}}
+  if(exploring)return <MarathonPreview goal={goal} raceDate={raceDate} baseline={baseline} today={today} onBack={()=>{setExploring(false);requestAnimationFrame(()=>exploreButton.current?.focus());}}/>;
   return <div className="training-planner">
     {!archive&&<RunningAssessment baseline={baseline} today={today} busy={locked} onSave={onSaveBaseline} onEditingChange={setAssessing}/>}
     {!assessing&&<>
+    {!archive&&!creating&&<div className="marathon-preview-entry"><div><span className="eyebrow">LOOK AHEAD</span><p>Explore the weeks to race day.</p></div><button type="button" ref={exploreButton} disabled={locked} className="secondary" onClick={()=>setExploring(true)}>Marathon preview ↗</button></div>}
     {!creating&&history.length>0&&<label className="plan-history-select">Training block<select aria-label="Training block" disabled={locked} value={archiveId} onChange={e=>{setArchiveId(e.target.value);resetSelection();}}><option value="">Current block</option>{history.map((entry,index)=><option key={entry.plan.id} value={entry.plan.id}>Past block {history.length-index} · started {entry.plan.start}</option>)}</select></label>}
     {creating&&<div className="plan-replacement-note"><strong>Your current block stays active until you save.</strong><p>Starting the new block archives every session and its status from the current block. Unfinished sessions won’t carry into your new schedule.</p><button type="button" className="quiet-button" disabled={locked} onClick={cancelNew}>Cancel new block</button></div>}
     {archive&&<p className="plan-hint">Archived {archive.archivedAt}. This is a read-only record. Unfinished sessions are no longer on your active calendar.</p>}

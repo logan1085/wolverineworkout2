@@ -29,6 +29,11 @@ const floorHalf=(km:number)=>Math.floor((km+1e-9)*2)/2;
 const sum=(sessions:MarathonSession[])=>Math.round(sessions.reduce((n,s)=>n+s.distanceKm,0)*1000)/1000;
 const weekday=(date:string)=>new Date(date+'T12:00:00Z').getUTCDay();
 
+export function marathonWeeksForDate(raceDate:string,asOf:string):number {
+  if(!calendarDate(raceDate)||!calendarDate(asOf))return 0;
+  return Math.floor(((Date.parse(raceDate)-Date.parse(asOf))/86400000+1)/7);
+}
+
 /** Product support boundaries, not a readiness score or medical clearance. */
 export function validateMarathonInputs(value:MarathonInputs):MarathonInputs {
   if(!value||typeof value!=='object')throw new Error('Enter your marathon details.');

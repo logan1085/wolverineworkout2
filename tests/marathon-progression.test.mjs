@@ -65,3 +65,8 @@ test('longer preparation spreads progression rather than plateauing at peak mont
    assert.ok(work.slice(0,-1).every(w=>w.trainingKm<peak));
  }
 });
+test('date-based preview length has exact seven-day boundaries',()=>{
+ const {marathonWeeksForDate}=load('src/lib/health/marathon-progression.ts');
+ for(const [days,weeks] of [[110,15],[111,16],[117,16],[118,17],[167,24],[173,24],[174,25]])assert.equal(marathonWeeksForDate(addDays('2026-10-05',days),'2026-10-05'),weeks);
+ assert.equal(marathonWeeksForDate('invalid','2026-10-05'),0);
+});
