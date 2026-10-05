@@ -225,3 +225,9 @@ Typecheck, focused lint and production build passed (existing Supabase dependenc
 `33508bc` is live at https://wolverineworkout2.vercel.app, READY as `dpl_HD2sAxJoiFEfNkrvCE7seTFaPA1a`. Session links open a dedicated detail view; date, target, instructions and status controls are visible without scrolling past assessment/plan setup. Back navigation restores the selected run. Previews are labelled unsaved and archives remain read-only.
 
 Typecheck, focused lint and hosted build passed; the existing Supabase dependency build warning remains. Local browser acceptance covered completion/reopen, future-date guard, conflicting reschedule error, back focus, legacy archive and 390px/320px layouts. Production unsaved preview and focused details verified; closing retained the empty owner schedule. No owner records changed. Broader unfinished requirements remain in PRODUCT_QUALITY.md.
+
+## Session reflections — October 5, 2026
+
+`c501b82` is live at https://wolverineworkout2.vercel.app, READY as `dpl_n6fXe6dSZbUBSg91GgvAyRY5HXPA`. Completed sessions support perceived effort and a short note, with edit/remove and archive retention. The reflection is available in active-plan context; reopening removes it, and it never creates recorded activity or changes scheduled workload. Public MEMORY.md now discloses these boundaries and was verified live.
+
+53 training/health/storage/context tests, TypeScript and focused lint passed. Hosted build passed with the existing Supabase dependency warning. Synthetic local browser acceptance covered saving, reload, editing prefill, removal without undoing completion, adding again and mobile layout. No owner records changed. Automatic weekly adaptation, broader supported runners, live AI credentials and hosted account/integration/device acceptance remain open.
