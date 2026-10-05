@@ -186,7 +186,6 @@ export default function HealthDashboard() {
   }, []);
   const latest = current.metrics.find((x) => x.date === today);
   const check = current.checkIns.find((x) => x.date === today);
-  const name = current.profile.name || "there";
   useEffect(() => {
     setSamples(sampleHealth());
     const params = new URLSearchParams(location.search);
@@ -843,10 +842,10 @@ export default function HealthDashboard() {
             <MarathonWelcome key={(user?.id || "device")+String(sample)} character={companion.character} goal={current.profile.goal} raceDate={current.profile.raceDate} today={today} hasPlan={!!current.profile.training} loading={!loaded} disabled={!loaded||busy||!!historyError||sample} onSave={async (goal,raceDate)=>{if(busy)throw new Error("A save is already in progress.");setBusy(true);try{await save({...data,profile:{...data.profile,goal,raceDate}});}finally{setBusy(false);}}} onPlan={()=>{setTrainingSession(undefined);setModal("training");}}/>
             <header className="running-page-heading"><div><span className="eyebrow">ONE DAY AT A TIME</span><h2>Today’s training</h2></div><span>{new Date(today+"T12:00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"})}</span></header>
             <div className="running-overview-grid">
-            <RunWelcome key={user?.id || "device"} character={companion.character} onText={()=>ask("I'd like to check in about whether I ran today and how I'm feeling. Ask me one question at a time.")} onLog={()=>setModal("activity")} onPlan={()=>{requestAnimationFrame(()=>document.getElementById("run-training")?.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"}));}} onCharacter={()=>setModal("character")} onAccount={()=>navigate("Connections")}/>
             <div id="run-training" className="run-week-overview">
             <TrainingWeek state={current} today={today} sample={sample} disabled={!loaded || busy || !!historyError} onLog={()=>setModal("activity")} onSetup={id=>{setTrainingSession(id);setModal("training");}}/>
             </div>
+            <RunWelcome key={user?.id || "device"} character={companion.character} onText={()=>ask("I'd like to check in about whether I ran today and how I'm feeling. Ask me one question at a time.")} onLog={()=>setModal("activity")} onPlan={()=>{requestAnimationFrame(()=>document.getElementById("run-training")?.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"}));}} onCharacter={()=>setModal("character")} onAccount={()=>navigate("Connections")}/>
             </div>
             <button className="run-more-detail secondary" aria-expanded={trainingOpen} onClick={()=>setTrainingOpen(!trainingOpen)}>{trainingOpen?"Hide daily details −":"Daily routine & insights +"}</button>
             {trainingOpen && <div className="run-training-content">

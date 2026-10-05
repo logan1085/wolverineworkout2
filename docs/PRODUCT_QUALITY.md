@@ -155,3 +155,9 @@ Previous goal turn: progress (draft generator and offline review committed). The
 Saywise's single promise and short personal setup inform the marathon flow: race → recent running → review → explicit activation → today's session. The app uses “Your personal trainer for your marathon.” Source: https://saywise.com/ (reviewed October 5).
 
 Distance-based marathon activation, archived prior plans, focused weekly details and calendar links now work together. 51 tests and typecheck pass. Automatic weekly adaptation, broader baseline coverage, working AI credentials, hosted identity/integration acceptance and physical-device testing remain open.
+
+## October 5 — returning-runner home
+
+Previous goal turn: progress (saved marathon plans shipped). Returning runners now see a compact race header/countdown, with the home calendar before the voice check-in in DOM and visual order. The full introduction remains available to new users and during goal editing. Duplicate goal copy and a redundant plan CTA were removed; saved race details and cancel/focus behavior remain intact. Updated onboarding copy describes the available plan choice instead of implying only a four-week block.
+
+Local browser review covered 390px rendering, 320px horizontal bounds, prefilled goal editing/cancel with focus restoration, and direct calendar-to-completed-session navigation. Synthetic local data only. This improves daily usability, but automatic adaptation, supported-runner breadth, live AI credentials and account/integration/device acceptance remain open.
