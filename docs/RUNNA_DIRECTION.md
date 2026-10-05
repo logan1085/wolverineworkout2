@@ -46,3 +46,7 @@ The setup, preview, persistence, week navigation, direct session details, comple
 Validation: 31 training/health/routine/local-storage checks plus six context/calendar checks passed; production build passed. Isolated localhost browser review at 390px covered preview, save, reload, completion/undo, moving a session, collision feedback, recovery substitution and skip. The date-input review exposed an input-event compatibility issue; the final control handles input and change events and the successful reschedule was re-tested.
 
 Limitations: one active block; no block archive/replacement UI yet. No automatic activity matching, progression, race plan, GPS/audio coaching, or outbound watch workouts. Cloud storage follows the existing health-profile JSON path; real signed-in account acceptance remains unverified. The first production launch does not configure a plan for Logan.
+
+## Marathon direction — October 5
+
+The product direction is now marathon-first, with the user-approved positioning “Your personal trainer for your marathon.” Race name, intention and optional date lead into training. A saved recent-running assessment supplies current volume, frequency and longest run in either miles or kilometres. It does not yet produce progressive prescriptions. See [MARATHON_PLANNING.md](MARATHON_PLANNING.md) for research, the implementation sequence and full-plan acceptance requirements. The earlier open running-vs-general-health decision is resolved by this direction.

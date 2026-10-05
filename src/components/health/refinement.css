@@ -691,3 +691,17 @@
 .health-app .marathon-countdown strong {display:block;font-size:16px;color:#284e38;}
 .health-app .marathon-countdown time,.health-app .marathon-countdown p {display:block;font-size:12px;line-height:1.6;color:#607065;margin:6px 0 0;}
 .health-app .marathon-input-label span {font-weight:400;color:#607065;}
+
+.health-app .running-assessment {background:#f4f7ef;color:#19362b;border:1px solid #dce3d5;border-radius:14px;padding:20px;margin-bottom:24px;}
+.health-app .running-assessment-heading {display:flex;justify-content:space-between;align-items:center;gap:12px;}
+.health-app .running-assessment h3 {margin:8px 0 12px;}
+.health-app .running-assessment .quiet-button {color:#365440;}
+.health-app .running-assessment .plan-hint {color:#607065;}
+.health-app .running-baseline-stats {display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0;}
+.health-app .running-baseline-stats dt {font-size:11px;color:#607065;line-height:1.5;}
+.health-app .running-baseline-stats dd {margin:5px 0 0;font-size:24px;color:#284e38;}
+.health-app .running-baseline-stats small {font-size:12px;}
+.health-app .running-assessment-answer {font-size:13px;line-height:1.6;}
+@media(max-width:480px){.health-app .running-assessment{padding:16px;}.health-app .running-assessment-heading{display:block;}.health-app .running-baseline-stats{grid-template-columns:1fr;gap:10px;}.health-app .running-baseline-stats>div{display:flex;justify-content:space-between;align-items:center;gap:12px;}.health-app .running-baseline-stats dd{margin:0;font-size:20px;}}
+.health-app .running-assessment h3,.health-app .running-assessment label {color:#19362b;}
+.health-app .running-assessment .eyebrow {color:#607065;}

@@ -2,8 +2,11 @@
 import { useEffect, useRef, useState } from "react";
 import { addDays, createTraining, sessionSteps, sessionTitle, updateTraining, type TrainingPlan, type TrainingSession } from "@/lib/health/training";
 import { raceCountdown } from "@/lib/health/marathon-goal";
+import RunningAssessment from "./RunningAssessment";
+import type { RunningBaseline } from "@/lib/health/running-baseline";
 const weekdays=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-export default function TrainingPlanner({plan,today,busy,onSave,initialSession,raceDate}:{raceDate?:string;initialSession?:string;plan?:TrainingPlan;today:string;busy:boolean;onSave:(plan:TrainingPlan)=>Promise<void>}) {
+export default function TrainingPlanner({plan,today,busy,onSave,initialSession,raceDate,baseline,onSaveBaseline}:{baseline?:RunningBaseline;onSaveBaseline:(baseline:RunningBaseline)=>Promise<void>;raceDate?:string;initialSession?:string;plan?:TrainingPlan;today:string;busy:boolean;onSave:(plan:TrainingPlan)=>Promise<void>}) {
+  const [assessing,setAssessing]=useState(false);
   const [experience,setExperience]=useState<"starting"|"regular">("starting");
   const [minutes,setMinutes]=useState(20),[days,setDays]=useState([1,3,5]),[strength,setStrength]=useState(false),[start,setStart]=useState(today);
   const [preview,setPreview]=useState<TrainingPlan|null>(null),[error,setError]=useState("");
@@ -16,6 +19,8 @@ export default function TrainingPlanner({plan,today,busy,onSave,initialSession,r
   async function persist(next:TrainingPlan){setError("");try{await onSave(next);summary.current?.focus();}catch(e){setError(e instanceof Error?e.message:"Could not save your plan.");}}
   function change(session:TrainingSession,patch:Parameters<typeof updateTraining>[2]){if(!plan)return;try{void persist(updateTraining(plan,session.id,patch,today));}catch(e){setError((e as Error).message);}}
   return <div className="training-planner">
+    <RunningAssessment baseline={baseline} today={today} busy={busy} onSave={onSaveBaseline} onEditingChange={setAssessing}/>
+    {!assessing&&<>
     {raceDate&&<div className="marathon-countdown"><strong>{raceCountdown(raceDate,today)}</strong><p>Your race date is saved. This four-week block does not yet adapt to it or include a race taper.</p></div>}
     {error&&<p ref={alert} tabIndex={-1} className="form-error" role="alert">{error}</p>}
     {!active?<form onSubmit={e=>{e.preventDefault();setError("");try{if(start<today||start>addDays(today,90))throw new Error("Start today or within the next 90 days.");setPreview(createTraining({id:`plan-${crypto.randomUUID()}`,start,experience,minutes,days,strength}));}catch(e){setError((e as Error).message);}}}>
@@ -32,6 +37,7 @@ export default function TrainingPlanner({plan,today,busy,onSave,initialSession,r
       {plan&&<div className="plan-progress"><progress aria-label="Training block completion" max={plan.sessions.length} value={plan.sessions.filter(s=>s.status==="completed").length}/><span>{plan.sessions.filter(s=>s.status==="completed").length} of {plan.sessions.length} sessions completed · {plan.sessions.filter(s=>s.status==="skipped").length} skipped</span></div>}
       {!plan&&<div className="plan-actions"><button disabled={busy} className="secondary" onClick={()=>setPreview(null)}>Edit choices</button><button disabled={busy} className="primary" onClick={()=>void persist(active)}>{busy?"Saving…":"Start this plan"}</button></div>}
       {[0,1,2,3,4].map(week=>{const list=active.sessions.filter(s=>s.date>=addDays(active.start,week*7)&&s.date<=addDays(active.start,week*7+6));if(!list.length)return null;return <section className="plan-block" key={week}><h4>{week===4?"Rescheduled sessions":`Week ${week+1}`} <span>{addDays(active.start,week*7)}</span></h4>{list.map(s=><article key={s.id} className={`plan-session plan-${s.status}`}><button ref={selected===s.id?summary:undefined} className="plan-session-summary" aria-expanded={selected===s.id} onClick={()=>{setSelected(selected===s.id?null:s.id);setMoveDate(s.date);setError("");}}><span className="plan-session-date">{new Date(s.date+"T12:00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"})}</span><strong>{sessionTitle(s,active)}</strong><span>{s.minutes} min · {s.status==="planned"&&s.date<today?"Not completed":s.status} <b aria-hidden="true">{selected===s.id?"−":"+"}</b></span></button>{selected===s.id&&<div className="plan-session-detail"><ol>{sessionSteps(s,active).map(step=><li key={step}>{step}</li>)}</ol>{plan&&<fieldset disabled={busy} className="plan-fields"><div className="plan-actions">{s.status==="planned"?<><button className="primary" disabled={s.date>today} onClick={()=>change(s,{status:"completed"})}>Mark completed</button><button className="secondary" onClick={()=>change(s,{status:"skipped"})}>Skip session</button>{s.kind!=="recovery"&&<button className="quiet-button" onClick={()=>change(s,{kind:"recovery"})}>Make this a recovery day</button>}</>:<button className="secondary" onClick={()=>change(s,{status:"planned"})}>Reopen session</button>}</div>{s.status==="planned"&&<div className="plan-move"><label>Move to<input aria-label="Move session to" type="date" min={today>active.start?today:active.start} max={addDays(active.start,34)} value={moveDate} onInput={e=>setMoveDate(e.currentTarget.value)} onChange={e=>setMoveDate(e.target.value)}/></label><button className="secondary" onClick={()=>change(s,{date:moveDate})}>Move session</button></div>}<p className="plan-hint">Plan completion is separate from your activity log. Nothing is sent to your watch.</p></fieldset>}</div>}</article>)}</section>;})}
+    </>}
     </>}
   </div>;
 }
