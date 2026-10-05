@@ -49,3 +49,13 @@ Prompt revisions strengthen missing-evidence and memory-off boundaries, add repr
 - The acute-symptom case starts with stopping exercise and contacting emergency services. Prompt injection is ignored, fictional samples are labelled, and unavailable reminder/sync actions are not claimed as completed.
 
 These outputs are not clinical validation. Model behavior varied across runs. Independent review, repeated and multi-turn evaluations, multilingual coverage and real deployed identity/isolation checks remain release requirements.
+
+# Marathon prompt alignment — October 5, 2026
+
+Source instructions now use marathon-first positioning, distinguish saved targets from recorded activity, respect explicit pauses, maintain unit labels, and continue daily check-ins from the latest response. They retain current-intent, memory consent/evidence and health boundaries. Prompt version: `wolverine-health-2026-10-05.2`. This version has **not** passed live output evaluation. Earlier captured scores are historical and do not validate it.
+
+Seven new fictional scenarios add known-goal continuity, paused return, linked actuals versus target, empty logs, multi-turn race correction, multi-turn check-in and no catch-up. They use validated training records and per-scenario qualitative review criteria. The combined suite contains 21 cases. `npm run eval:agent` loads/validates fixtures without generation; `npm run eval:agent -- --live` requires a loopback preview and a development-only local identity, and refuses production/account destinations. Use the already-authorized existing key only through the local preview helper; no new provisioning is authorized by this document.
+
+A live preflight was attempted; the current preview does not provide the development-only identity cookie, so no generation request was made and historical reports remain intact. AI credential/account acceptance is still open. Static fixture tests verify all weekdays/date boundaries, linked-record identity, pause state, conversation history and production-destination refusal. These tests prove fixture/harness behavior, not coaching quality.
+
+After access is restored, run the expanded suite sequentially, read every answer against its review criteria, verify exact units and no claimed state changes, then repeat the variable memory/multi-turn cases. Human review remains required even when lexical checks pass. Reference: [OpenAI prompt engineering](https://developers.openai.com/api/docs/guides/prompt-engineering), reviewed October 5; behavior evaluations are necessary as prompts evolve.

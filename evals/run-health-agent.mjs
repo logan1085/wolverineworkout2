@@ -1,10 +1,12 @@
 // Calls the real local HTTP route with fictional records only. No browser state.
 import assert from "node:assert/strict";
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
+import {marathonAgentCases} from "./marathon-agent-cases.mjs";
 const base = process.env.TEST_ORIGIN || "http://127.0.0.1:3018";
-const cases = JSON.parse(
+const legacyCases = JSON.parse(
   readFileSync(new URL("./health-agent.cases.json", import.meta.url)),
 );
+const cases = [...legacyCases, ...marathonAgentCases(new Date().toISOString().slice(0,10))];
 function grade(scenario, data, status = 200) {
   const failures = [];
   if (status !== 200) failures.push(`HTTP ${status}: ${data.error}`);
@@ -37,12 +39,13 @@ function grade(scenario, data, status = 200) {
 if (process.argv.includes("--regrade")) {
   const path = "evals/results/health-agent-latest.json";
   const report = JSON.parse(readFileSync(path));
-  assert.equal(report.results.length, cases.length);
+  const missingCaseIds = cases.filter(c => !report.results.some(r => r.id === c.id)).map(c => c.id);
   for (const result of report.results) {
     const scenario = cases.find((c) => c.id === result.id);
     assert.ok(
       scenario &&
         scenario.message === result.question &&
+        JSON.stringify(scenario.history || []) === JSON.stringify(result.history || []) &&
         typeof result.reply === "string",
     );
     result.failures = grade(scenario, {
@@ -50,13 +53,14 @@ if (process.argv.includes("--regrade")) {
       suggestions: result.suggestions,
     });
   }
+  report.missingCaseIds = missingCaseIds;
   report.regradedAt = new Date().toISOString();
   report.passed = report.results.filter((r) => !r.failures.length).length;
   writeFileSync(path, JSON.stringify(report, null, 2) + "\n");
   console.log(
-    `${report.passed}/${report.total} captured outputs pass current checks. No new model calls.`,
+    `${report.passed}/${report.total} captured outputs pass current checks; ${missingCaseIds.length} current cases lack captured outputs. No new model calls.`,
   );
-  process.exit(report.passed === report.total ? 0 : 1);
+  process.exit(report.passed === report.total && missingCaseIds.length === 0 ? 0 : 1);
 }
 if (!process.argv.includes("--live")) {
   console.log(
@@ -64,11 +68,21 @@ if (!process.argv.includes("--live")) {
   );
   process.exit(0);
 }
+const origin = new URL(base);
+assert.ok(["localhost", "127.0.0.1", "[::1]"].includes(origin.hostname) && origin.pathname === "/" && !origin.username && !origin.password && !origin.search && !origin.hash, "Live synthetic evals require a local preview origin.");
 const session = await fetch(base + "/api/health/session", {
   headers: { "sec-fetch-site": "same-origin" },
 });
 const cookie = session.headers.get("set-cookie")?.split(";")[0];
-assert.ok(cookie, "Start local-health-preview first.");
+const availability = await session.json();
+if (!session.ok || !cookie || availability.local !== true) {
+  console.error("Live evaluation not run: start the development-only local-health-preview with an approved existing key. No generation attempted; captured results were preserved.");
+  process.exit(2);
+}
+if (availability.ai !== true) {
+  console.error("Live evaluation not run: agent access is unavailable. No generation attempted; captured results were preserved.");
+  process.exit(2);
+}
 const results = [];
 const dateKey = date => `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
 const today = new Date();
@@ -99,8 +113,8 @@ for (const scenario of cases) {
     method: "POST",
     headers: { "Content-Type": "application/json", cookie, origin: base },
     body: JSON.stringify({
-      messages: [{ role: "user", content: scenario.message }],
-      state: {
+      messages: [...(scenario.history || []), { role: "user", content: scenario.message }],
+      state: scenario.state || {
         profile: {
           name: "Synthetic evaluation",
           goal: scenario.profileGoal || "Build a sustainable routine",
@@ -123,6 +137,8 @@ for (const scenario of cases) {
   results.push({
     id: scenario.id,
     question: scenario.message,
+    history: scenario.history || [],
+    ...(scenario.state ? {fictionalState: scenario.state} : {}),
     reviewCriteria: scenario.review,
     reply: data.message,
     suggestions: data.suggestions,
