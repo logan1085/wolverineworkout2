@@ -149,3 +149,9 @@ Previous goal turn: progress (training replacement/history shipped). Implemented
 Previous goal turn: progress (draft generator and offline review committed). The app now exposes the draft through Training → Marathon preview: explicit race/day choices, compatible week count, support explanations, weekly-distance chart and focused-week run/rest detail. Race distance is separate, unit switching is display-only, and the active block remains unchanged. The preview is explicitly ephemeral and inactive.
 
 28 training tests and TypeScript validation passed. Local browser evidence covers unsupported baseline and short date-window rejection, a synthetic supported 20-week preview, race-week totals, miles/km switching, retained edit choices, unchanged active block, 390px visual review and 320px dialog overflow check. No owner records were edited. Active-plan schema/calendar integration and weekly adaptation remain required; preview availability does not complete the marathon feature or the overall app goal.
+
+## October 5 — saved marathon flow
+
+Saywise's single promise and short personal setup inform the marathon flow: race → recent running → review → explicit activation → today's session. The app uses “Your personal trainer for your marathon.” Source: https://saywise.com/ (reviewed October 5).
+
+Distance-based marathon activation, archived prior plans, focused weekly details and calendar links now work together. 51 tests and typecheck pass. Automatic weekly adaptation, broader baseline coverage, working AI credentials, hosted identity/integration acceptance and physical-device testing remain open.

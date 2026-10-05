@@ -101,7 +101,7 @@ export function createMarathonDraft(value:MarathonInputs):MarathonDraft {
   return {
     version:'marathon-draft-v1',inputs,start,weeks,
     notices:[
-      'An original planning proposal, not a prediction of readiness or finish time. It has not yet been enabled for activation.',
+      'An original planning proposal, not a prediction of readiness or finish time. It becomes a saved schedule only after explicit activation.',
       'All training runs are at a comfortable conversational effort. No race pace is inferred from your goal.',
       'Recovery weeks reduce planned distance; the following build resumes progression from the previous high week. This is not catch-up work.',
       'Race week uses short runs on your available days, leaves the day before the race free, and places the marathon on its actual date even if it is not a usual running day.',
