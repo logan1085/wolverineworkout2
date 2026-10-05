@@ -260,3 +260,11 @@ Production `/api/health/session` now returns `ai:false`, `aiStatus:authenticatio
 - Production `dpl_6jHjUfDQ3sxQPF3WmmA8uQzGeSdu` reached READY and is aliased to https://wolverineworkout2.vercel.app.
 - `SUPABASE_SETUP.md` now specifies the exact callback allowlist, email-template compatibility, migration order and real-account acceptance requirements. No external account configuration was changed and no emails were sent.
 - Real email delivery, callback cookies, signup/sign-in and two-account isolation remain unverified while the account service is unavailable. AI credential failure is unchanged. Password recovery remains future work.
+
+## Password recovery — October 5, 2026
+
+- Feature commit `c348511` adds forgot-password entry points, account-availability checks, a generic email-request acknowledgement, recovery callback routing, and an authenticated password-update form. Password mismatch, provider rejection, outage and changed-user cases have explicit recovery messages. Existing passwords are no longer subject to a client-side eight-character minimum during sign-in.
+- `npm run test:account` now runs 21 tests, all passing, including callback and password recovery cases. Typecheck and focused lint pass. The production build passed with the existing Supabase dependency-expression warning.
+- Production deployment `dpl_DeGFqDbe1dU18yDfwo5FMy8pTvrE` completed and was aliased to https://wolverineworkout2.vercel.app. The live forgot-password page correctly reports the current account outage without presenting an email submission form.
+- Local browser review: 390px recovery layout; signed-out reset page at 320px has no horizontal overflow and no password inputs, and its request-link action opens the correct page. Live screenshot retained in the workspace at `outputs/marathon-proof/password-recovery-mobile.png`.
+- No emails were sent and no passwords or external account settings were changed. Real recovery email delivery, approved callback configuration, authenticated form interaction, cookie persistence, and old/new-password sign-in acceptance remain pending restoration of the approved Supabase backend. `SUPABASE_SETUP.md` records these requirements.
