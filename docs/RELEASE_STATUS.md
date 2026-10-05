@@ -219,3 +219,9 @@ Six targeted goal/local-health checks, TypeScript validation and the hosted prod
 `4f9bd05` is live at https://wolverineworkout2.vercel.app, READY as `dpl_AAoQuvZsY6NWAf2PBhNshCfje6UK`. A compact saved-race header replaces repeat onboarding for returning runners. The calendar now precedes voice check-in in visual and DOM order. Goal-edit cancellation restores focus, and onboarding copy reflects marathon plan availability.
 
 Typecheck, focused lint and production build passed (existing Supabase dependency build warning remains). Browser acceptance covered 390px layout, 320px overflow bounds, edit/cancel and saved-session navigation. Production new-user rendering and calendar order verified without changing owner records. Remaining product gaps are recorded in PRODUCT_QUALITY.md.
+
+## Focused workout detail — October 5, 2026
+
+`33508bc` is live at https://wolverineworkout2.vercel.app, READY as `dpl_HD2sAxJoiFEfNkrvCE7seTFaPA1a`. Session links open a dedicated detail view; date, target, instructions and status controls are visible without scrolling past assessment/plan setup. Back navigation restores the selected run. Previews are labelled unsaved and archives remain read-only.
+
+Typecheck, focused lint and hosted build passed; the existing Supabase dependency build warning remains. Local browser acceptance covered completion/reopen, future-date guard, conflicting reschedule error, back focus, legacy archive and 390px/320px layouts. Production unsaved preview and focused details verified; closing retained the empty owner schedule. No owner records changed. Broader unfinished requirements remain in PRODUCT_QUALITY.md.
