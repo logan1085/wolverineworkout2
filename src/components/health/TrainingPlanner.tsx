@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { addDays, createTraining, sessionSteps, sessionTitle, updateTraining, type TrainingPlan, type TrainingSession } from "@/lib/health/training";
+import { raceCountdown } from "@/lib/health/marathon-goal";
 const weekdays=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-export default function TrainingPlanner({plan,today,busy,onSave,initialSession}:{initialSession?:string;plan?:TrainingPlan;today:string;busy:boolean;onSave:(plan:TrainingPlan)=>Promise<void>}) {
+export default function TrainingPlanner({plan,today,busy,onSave,initialSession,raceDate}:{raceDate?:string;initialSession?:string;plan?:TrainingPlan;today:string;busy:boolean;onSave:(plan:TrainingPlan)=>Promise<void>}) {
   const [experience,setExperience]=useState<"starting"|"regular">("starting");
   const [minutes,setMinutes]=useState(20),[days,setDays]=useState([1,3,5]),[strength,setStrength]=useState(false),[start,setStart]=useState(today);
   const [preview,setPreview]=useState<TrainingPlan|null>(null),[error,setError]=useState("");
@@ -15,6 +16,7 @@ export default function TrainingPlanner({plan,today,busy,onSave,initialSession}:
   async function persist(next:TrainingPlan){setError("");try{await onSave(next);summary.current?.focus();}catch(e){setError(e instanceof Error?e.message:"Could not save your plan.");}}
   function change(session:TrainingSession,patch:Parameters<typeof updateTraining>[2]){if(!plan)return;try{void persist(updateTraining(plan,session.id,patch,today));}catch(e){setError((e as Error).message);}}
   return <div className="training-planner">
+    {raceDate&&<div className="marathon-countdown"><strong>{raceCountdown(raceDate,today)}</strong><p>Your race date is saved. This four-week block does not yet adapt to it or include a race taper.</p></div>}
     {error&&<p ref={alert} tabIndex={-1} className="form-error" role="alert">{error}</p>}
     {!active?<form onSubmit={e=>{e.preventDefault();setError("");try{if(start<today||start>addDays(today,90))throw new Error("Start today or within the next 90 days.");setPreview(createTraining({id:`plan-${crypto.randomUUID()}`,start,experience,minutes,days,strength}));}catch(e){setError((e as Error).message);}}}>
       <p className="eyebrow">FOUR WEEKS · YOUR PACE</p><h3 ref={heading} tabIndex={-1}>Build a rhythm that fits.</h3><p>A consistency block for running, optional strength, and recovery. We hold the workload steady so you can learn what fits.</p>

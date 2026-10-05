@@ -548,6 +548,7 @@ export default function HealthDashboard() {
           ...data.profile,
           name: String(f.get("name")),
           goal: String(f.get("goal")),
+          raceDate: String(f.get("goal")) === data.profile.goal ? data.profile.raceDate : undefined,
           minutes: Number(f.get("minutes")),
         },
       });
@@ -837,7 +838,7 @@ export default function HealthDashboard() {
         )}
         {tab === "Today" && (
           <>
-            <MarathonWelcome key={(user?.id || "device")+String(sample)} character={companion.character} goal={current.profile.goal} hasPlan={!!current.profile.training} loading={!loaded} disabled={!loaded||busy||!!historyError||sample} onSave={async goal=>{if(busy)throw new Error("A save is already in progress.");setBusy(true);try{await save({...data,profile:{...data.profile,goal}});}finally{setBusy(false);}}} onPlan={()=>{setTrainingSession(undefined);setModal("training");}}/>
+            <MarathonWelcome key={(user?.id || "device")+String(sample)} character={companion.character} goal={current.profile.goal} raceDate={current.profile.raceDate} today={today} hasPlan={!!current.profile.training} loading={!loaded} disabled={!loaded||busy||!!historyError||sample} onSave={async (goal,raceDate)=>{if(busy)throw new Error("A save is already in progress.");setBusy(true);try{await save({...data,profile:{...data.profile,goal,raceDate}});}finally{setBusy(false);}}} onPlan={()=>{setTrainingSession(undefined);setModal("training");}}/>
             <header className="running-page-heading"><div><span className="eyebrow">ONE DAY AT A TIME</span><h2>Today’s training</h2></div><span>{new Date(today+"T12:00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"})}</span></header>
             <div className="running-overview-grid">
             <RunWelcome key={user?.id || "device"} character={companion.character} onText={()=>ask("I'd like to check in about whether I ran today and how I'm feeling. Ask me one question at a time.")} onLog={()=>setModal("activity")} onPlan={()=>{requestAnimationFrame(()=>document.getElementById("run-training")?.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"}));}} onCharacter={()=>setModal("character")} onAccount={()=>navigate("Connections")}/>
@@ -1762,7 +1763,7 @@ export default function HealthDashboard() {
         </Modal>
       )}
       {modal === "character" && <Modal returnFocusRef={dialogTrigger} title="Meet your companion." onClose={() => setModal(null)}><CharacterPicker selected={companion.character.id} onChoose={companion.choose} disabled={!companion.ready} error={companion.error}/></Modal>}
-      {modal === "training" && <Modal returnFocusRef={dialogTrigger} title="Your training plan." pending={busy} onClose={()=>{if(!busy)setModal(null);}}><TrainingPlanner key={user?.id || "device"} plan={data.profile.training} initialSession={trainingSession} today={today} busy={busy} onSave={async(training)=>{setBusy(true);try{await save({...data,profile:{...data.profile,training}});}finally{setBusy(false);}}}/></Modal>}
+      {modal === "training" && <Modal returnFocusRef={dialogTrigger} title="Your training plan." pending={busy} onClose={()=>{if(!busy)setModal(null);}}><TrainingPlanner key={user?.id || "device"} plan={data.profile.training} raceDate={data.profile.raceDate} initialSession={trainingSession} today={today} busy={busy} onSave={async(training)=>{setBusy(true);try{await save({...data,profile:{...data.profile,training}});}finally{setBusy(false);}}}/></Modal>}
       {modal === "onboarding" && <Modal returnFocusRef={dialogTrigger} title="Make it yours." pending={busy} onClose={()=>{if(!busy)setModal(null);}}><RoutineOnboarding profile={data.profile} characterId={companion.character.id} busy={busy} onSave={async(profile,characterId)=>{setBusy(true);try{await save({...data,profile});companion.choose(characterId);setModal(null);setNotice("Your daily routine is ready.");}finally{setBusy(false);}}}/></Modal>}
       {modal === "studio" && (<Modal returnFocusRef={dialogTrigger} title="Make something yours." onClose={() => setModal(null)}><SketchStudio key={user?.id || "local"} /></Modal>)}
       {modal === "context" && (
@@ -1988,6 +1989,7 @@ export default function HealthDashboard() {
                 required
               />
             </label>
+            {data.profile.raceDate && <p className="plan-hint">Changing your goal here clears its race date. To edit your race and date together, use “Change my race goal” on Today.</p>}
             <label>
               Time for movement <span>minutes a day</span>
               <input

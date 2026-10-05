@@ -18,3 +18,13 @@ export function formatMarathonGoal(race:string,aim:RaceAim){
  if(!RACE_AIMS.includes(aim))throw new Error('Choose a race intention.');
  return `Preparing for ${clean}. My aim: ${aim.toLowerCase()}.`;
 }
+
+/** Calendar-day difference, independent of DST and the browser timezone. */
+export function raceCountdown(raceDate:string,today:string):string|null {
+ const valid=(value:string)=>/^\d{4}-\d{2}-\d{2}$/.test(value)&&Number.isFinite(Date.parse(value))&&new Date(value).toISOString().slice(0,10)===value;
+ if(!valid(raceDate)||!valid(today))return null;
+ const days=Math.round((Date.parse(raceDate)-Date.parse(today))/86400000);
+ if(days===0)return 'Race day is here';
+ if(days<0)return `Race date was ${-days} ${days===-1?'day':'days'} ago`;
+ return `${days} ${days===1?'day':'days'} to your marathon`;
+}

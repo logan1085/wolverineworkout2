@@ -16,3 +16,11 @@ test('recovery replaces workload without marking a session completed',()=>{const
 test('old health data survives and training round trips through health validation',()=>{assert.deepEqual(validateHealth(emptyHealth),emptyHealth);const p=createTraining(input());const state={...structuredClone(emptyHealth),profile:{...emptyHealth.profile,training:p}};assert.deepEqual(validateHealth(JSON.parse(JSON.stringify(state))).profile.training,p);assert.deepEqual(validateHealth(state).activities,[]);});
 test('validation strips extra fields, rejects duplicate IDs and excessive sessions',()=>{const p=createTraining(input());assert.equal(validateTraining({...p,secret:'discard'}).secret,undefined);assert.throws(()=>validateTraining({...p,sessions:[...p.sessions,p.sessions[0]]}));assert.throws(()=>validateTraining({...p,sessions:p.sessions.map((s,i)=>({...s,id:i===1?p.sessions[0].id:s.id}))}));});
 test('calendar arithmetic crosses DST, leap day and year boundaries consistently',()=>{assert.equal(addDays('2026-10-31',2),'2026-11-02');assert.equal(addDays('2028-02-28',1),'2028-02-29');assert.equal(addDays('2026-12-31',1),'2027-01-01');});
+test('optional race date survives persisted health validation and rejects impossible dates',()=>{
+ const state=structuredClone(emptyHealth);
+ state.profile.raceDate='2026-11-01';
+ assert.equal(validateHealth(JSON.parse(JSON.stringify(state))).profile.raceDate,'2026-11-01');
+ for(const raceDate of ['2026-02-30','',null,20261101])assert.throws(()=>validateHealth({...state,profile:{...state.profile,raceDate}}));
+ delete state.profile.raceDate;
+ assert.equal(validateHealth(state).profile.raceDate,undefined);
+});

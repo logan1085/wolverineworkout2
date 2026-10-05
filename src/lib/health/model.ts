@@ -27,7 +27,7 @@ export type Activity = {
 };
 export type RoutineGoal = "movement" | "rest" | "reflection";
 export type Routine = { goals: RoutineGoal[]; pace: "gentle" | "steady"; startedAt: string };
-export type HealthProfile = { name: string; goal: string; minutes: number; routine?: Routine; training?: TrainingPlan };
+export type HealthProfile = { name: string; goal: string; raceDate?: string; minutes: number; routine?: Routine; training?: TrainingPlan };
 export type HealthState = {
   profile: HealthProfile;
   checkIns: CheckIn[];
@@ -212,6 +212,7 @@ export function validateHealth(value: unknown): HealthState {
     /^\d{4}-\d{2}-\d{2}$/.test(x) &&
     !Number.isNaN(Date.parse(x)) &&
     new Date(x).toISOString().slice(0, 10) === x;
+  if (s.profile.raceDate !== undefined && !date(s.profile.raceDate)) throw new Error("Choose a valid race date.");
   const training = s.profile.training === undefined ? undefined : validateTraining(s.profile.training);
   const routine = s.profile.routine;
   if (routine !== undefined && (!routine || !Array.isArray(routine.goals) || routine.goals.length < 1 || routine.goals.length > 3 || new Set(routine.goals).size !== routine.goals.length || !routine.goals.every(g => ["movement", "rest", "reflection"].includes(g)) || !["gentle", "steady"].includes(routine.pace) || !date(routine.startedAt)))
@@ -265,6 +266,7 @@ export function validateHealth(value: unknown): HealthState {
     profile: {
       name: s.profile.name,
       goal: s.profile.goal,
+      ...(s.profile.raceDate !== undefined ? { raceDate: s.profile.raceDate } : {}),
       minutes: s.profile.minutes,
       ...(training ? { training } : {}),
       ...(routine ? { routine: { goals: [...routine.goals], pace: routine.pace, startedAt: routine.startedAt } } : {}),

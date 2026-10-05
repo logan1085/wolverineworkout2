@@ -119,3 +119,9 @@ The Saywise-inspired entry is live, but the polished-app goal is not complete. C
 - Account persistence/isolation, real Garmin/Strava acceptance and physical iOS/Android testing are still unverified. See the dimension table above; local storage tests do not establish cloud-account readiness.
 
 Next acceptance: complete safe credential setup after destination approval; verify a real generated reply; implement and review race-specific planning; exercise signed-in storage and integrations with the intended accounts. Keep the overall goal active.
+
+### Race-date continuity — October 5
+
+The previous turn made progress by shipping reliable race-goal editing. This pass adds an optional structured race date to validated profile storage, onboarding review, the returning-runner countdown and the planner. Calendar arithmetic handles DST, race day and past dates without negative countdowns. No race date or year is inferred for the owner. Changing the free-text goal in profile clears the associated date with an explicit explanation.
+
+Seventeen targeted tests and TypeScript validation passed. Isolated localhost browser acceptance verified date selection, confirmation, save, planner handoff, reload, edit prefill and clearing the date; 390px visual review passed. Browser testing caught and fixed date input event handling before shipping. Tests used synthetic local preferences only. This is race context, not race-specific progression: the existing steady four-week plan does not adapt or taper to the date. Full planning, credentials, hosted accounts and wearable/device acceptance remain open.

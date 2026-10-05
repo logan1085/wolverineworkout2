@@ -18,3 +18,12 @@ test('invalid or unrecognized values do not silently replace a goal',()=>{
  assert.throws(()=>formatMarathonGoal('NYC Marathon','unsupported'));
  assert.equal(parseMarathonGoal('Preparing for NYC. My aim: unrecognized.'),null);
 });
+test('race countdown uses calendar days through DST and handles race day and past dates',()=>{
+ const {raceCountdown}=module.exports;
+ assert.equal(raceCountdown('2026-11-01','2026-10-31'),'1 day to your marathon');
+ assert.equal(raceCountdown('2026-11-02','2026-10-31'),'2 days to your marathon');
+ assert.equal(raceCountdown('2026-11-01','2026-11-01'),'Race day is here');
+ assert.equal(raceCountdown('2026-11-01','2026-11-03'),'Race date was 2 days ago');
+ assert.equal(raceCountdown('2027-01-01','2026-12-31'),'1 day to your marathon');
+ for(const date of ['2026-02-30','no date',''])assert.equal(raceCountdown(date,'2026-10-05'),null);
+});
