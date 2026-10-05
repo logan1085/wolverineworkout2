@@ -161,3 +161,9 @@ Distance-based marathon activation, archived prior plans, focused weekly details
 Previous goal turn: progress (saved marathon plans shipped). Returning runners now see a compact race header/countdown, with the home calendar before the voice check-in in DOM and visual order. The full introduction remains available to new users and during goal editing. Duplicate goal copy and a redundant plan CTA were removed; saved race details and cancel/focus behavior remain intact. Updated onboarding copy describes the available plan choice instead of implying only a four-week block.
 
 Local browser review covered 390px rendering, 320px horizontal bounds, prefilled goal editing/cancel with focus restoration, and direct calendar-to-completed-session navigation. Synthetic local data only. This improves daily usability, but automatic adaptation, supported-runner breadth, live AI credentials and account/integration/device acceptance remain open.
+
+## October 5 — focused session detail
+
+Previous goal turn: progress (returning-runner home shipped). Calendar and plan session links now open a focused detail view with date, distance/time, status, instructions and actions. Returning to the plan restores focus to the selected run. Future completion has an explicit explanation; archived sessions remain read-only and unsaved previews are labelled.
+
+TypeScript and focused lint passed. Browser acceptance on isolated synthetic data covered direct calendar entry, completion/reopen, return focus, future completion disabled, collision rejection without changing the scheduled run, archived legacy details without mutation controls, 390px visual review and 320px overflow bounds. Automatic adaptation, runner coverage, working AI credentials and hosted account/integration/device acceptance remain open.

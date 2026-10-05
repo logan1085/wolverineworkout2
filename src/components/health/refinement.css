@@ -777,3 +777,17 @@
  .health-app .running-page-heading{padding:14px 0;}
  .health-app .running-page-heading h2{margin:4px 0;font-size:23px;}
 }
+
+/* One session, one focused task. The full schedule remains one tap away. */
+.health-app .session-focus .session-back{display:block;margin:0 0 24px;padding:8px 0;min-height:44px;}
+.health-app .session-focus>h3{font-size:34px;letter-spacing:-1px;line-height:1.15;margin:10px 0 16px;}
+.health-app .session-focus-target{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px;background:#25352b;border:1px solid #405a47;border-radius:16px;margin-bottom:20px;}
+.health-app .session-focus-target>strong{font-size:32px;font-weight:600;color:#d3f0de;}
+.health-app .session-focus-target>span{font-size:12px;color:#c2d2c6;text-transform:capitalize;}
+.health-app .session-focus .plan-session-detail{padding:0;border:0;}
+.health-app .session-focus .plan-session-detail ol{padding-left:22px;margin:20px 0 24px;}
+.health-app .session-focus .plan-session-detail li{padding-left:6px;margin-bottom:14px;line-height:1.65;}
+.health-app .session-focus .plan-actions{gap:10px;}
+.health-app .session-focus .plan-actions button{min-height:44px;}
+.health-app .session-focus .plan-move{margin-top:24px;padding-top:20px;border-top:1px solid #39483d;}
+@media(max-width:760px){.health-app .session-focus>h3{font-size:30px;}.health-app .session-focus .plan-actions .primary{width:100%;}.health-app .session-focus .session-back{margin-bottom:16px;}}
