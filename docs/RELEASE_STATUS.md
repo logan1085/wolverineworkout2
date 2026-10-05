@@ -183,3 +183,9 @@ Nine training checks, typecheck, local and hosted builds passed. Browser review 
 `9ae0d19` is live at https://wolverineworkout2.vercel.app (READY, `dpl_4H2zyJYaHDCs74sVkPRo1h8so8rq`). Recognizes existing “Training for” race goals, restores the saved race and intention when editing, waits for profile loading before showing setup, and guards duplicate submissions and demo switching during save. Failed saves preserve entered choices and report an unconfirmed outcome accurately.
 
 Six targeted goal/local-health checks, TypeScript validation and the hosted production build passed. Isolated local browser review verified NYC Marathon and Build consistency are retained when editing. The production HTTP response includes the marathon positioning. No owner health records were changed during testing. Full marathon progression, valid AI credentials, wearable acceptance and account isolation remain open in `docs/PRODUCT_QUALITY.md`.
+
+## Race-date continuity — October 5, 2026
+
+`c3a3577` is live at https://wolverineworkout2.vercel.app (READY, `dpl_88JPhiJ9H1kfQZhHpoTb2ccYFyXX`). Adds an optional race date, confirmation-step review, a home countdown and race context in the training planner. The date is validated and stored with the profile, survives edits/reloads, and can be cleared. No owner race date was inferred or changed.
+
+32 targeted goal/training/storage/health/context checks, TypeScript validation and the hosted production build passed. Local browser review verified selection, save, reload, edit prefill and clearing, with a 390px visual check. The live production landing exposes the optional date field. Existing four-week training does not adapt or taper to race day; full progression and prior credential/account/integration acceptance remain open.
