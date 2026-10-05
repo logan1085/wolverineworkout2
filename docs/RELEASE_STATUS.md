@@ -189,3 +189,9 @@ Six targeted goal/local-health checks, TypeScript validation and the hosted prod
 `c3a3577` is live at https://wolverineworkout2.vercel.app (READY, `dpl_88JPhiJ9H1kfQZhHpoTb2ccYFyXX`). Adds an optional race date, confirmation-step review, a home countdown and race context in the training planner. The date is validated and stored with the profile, survives edits/reloads, and can be cleared. No owner race date was inferred or changed.
 
 32 targeted goal/training/storage/health/context checks, TypeScript validation and the hosted production build passed. Local browser review verified selection, save, reload, edit prefill and clearing, with a 390px visual check. The live production landing exposes the optional date field. Existing four-week training does not adapt or taper to race day; full progression and prior credential/account/integration acceptance remain open.
+
+## Running starting point — October 5, 2026
+
+`21a4dbe` is live at https://wolverineworkout2.vercel.app (READY, `dpl_7icr3qbjBdUmaGL3frizGWhg9D87`). Adds an editable two-step assessment for recent weekly running distance, running days and longest recent run, with miles/kilometres support, validated profile storage and a dated summary. Assessment editing has a focused view; saving context leaves scheduled workouts unchanged. Research and the full marathon implementation sequence are in `docs/MARATHON_PLANNING.md`.
+
+32 targeted checks, TypeScript validation and the hosted production build passed. Isolated local browser testing covered empty inputs, inconsistent-distance rejection, save/reload, editing, unit conversion and cancellation. Visual checks covered 390px and 320px. Production verification opened the new assessment form without saving owner data. Full progressive marathon plans and the previously documented AI/account/integration/device requirements remain unfinished.
