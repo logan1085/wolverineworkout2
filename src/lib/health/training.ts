@@ -1,3 +1,4 @@
+import type { TrainingAdjustment } from "./training-adjustments";
 import { validateSessionFeedback, type SessionFeedback } from "./training-feedback";
 import { validateMarathonTraining } from "./marathon-training";
 import type { MarathonDraft } from "./marathon-progression";
@@ -6,12 +7,12 @@ import { addDays, calendarDate } from "./calendar-date";
 export { addDays, calendarDate } from "./calendar-date";
 export type TrainingKind = "run" | "strength" | "recovery";
 export type TrainingSession = {id:string;date:string;kind:TrainingKind;minutes?:number;distanceKm?:number;runType?:"easy"|"long"|"race";status:"planned"|"completed"|"skipped";feedback?:SessionFeedback};
-export type TrainingPlan = {id:string;start:string;experience:"starting"|"regular";minutes?:number;mode?:"marathon";marathon?:MarathonDraft;days:number[];strength:boolean;sessions:TrainingSession[]};
+export type TrainingPlan = {id:string;start:string;experience:"starting"|"regular";minutes?:number;mode?:"marathon";marathon?:MarathonDraft;adjustments?:TrainingAdjustment[];days:number[];strength:boolean;sessions:TrainingSession[]};
 export function validateTraining(value:unknown):TrainingPlan {
   if(!value||typeof value!=="object")throw new Error("Invalid training plan.");
   const p=value as TrainingPlan;
   if(p.mode==="marathon")return validateMarathonTraining(value);
-  if(p.mode!==undefined||p.marathon!==undefined)throw new Error("Unsupported training mode.");
+  if(p.mode!==undefined||p.marathon!==undefined||p.adjustments!==undefined)throw new Error("Unsupported training mode.");
   if(typeof p.id!=="string"||!/^plan-[a-zA-Z0-9-]{1,60}$/.test(p.id)||!calendarDate(p.start)||!["starting","regular"].includes(p.experience)||!Number.isInteger(p.minutes)||(p.minutes??0)<15||(p.minutes??0)>60||typeof p.strength!=="boolean"||!Array.isArray(p.days)||p.days.length<2||p.days.length>3||new Set(p.days).size!==p.days.length||!p.days.every(d=>Number.isInteger(d)&&d>=0&&d<=6)||p.days.some(d=>p.days.includes((d+1)%7)))throw new Error("Choose two or three run days with a day between, and 15–60 comfortable minutes.");
   if(!Array.isArray(p.sessions)||p.sessions.length<8||p.sessions.length>16)throw new Error("Invalid session count.");
   const ids=new Set<string>();const dates=new Set<string>();

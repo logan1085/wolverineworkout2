@@ -5,7 +5,7 @@ import path from 'node:path';
 import ts from 'typescript';
 function load(file){const out=ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;const m={exports:{}};new Function('require','module','exports',out)(id=>load(path.resolve(path.dirname(file),id+'.ts')),m,m.exports);return m.exports;}
 const {createMarathonDraft}=load('src/lib/health/marathon-progression.ts');
-const {activateMarathonDraft}=load('src/lib/health/marathon-training.ts');
+const {activateMarathonDraft,proposeLighterWeek,restoreWeekTargets}=load('src/lib/health/marathon-training.ts');
 const {createTraining,updateTraining,validateTraining,saveTrainingBlock,sessionTarget,trainingEnd}=load('src/lib/health/training.ts');
 const {validateHealth,emptyHealth}=load('src/lib/health/model.ts');
 const input=()=>({id:'plan-marathon',raceName:'Test race',raceDate:'2027-03-21',asOf:'2026-11-02',weeks:20,runDays:[0,2,3,5],longRunDay:0,baseline:{weeklyKm:40,longestRunKm:16,daysPerWeek:4,unit:'km',recordedAt:'2026-11-02'}});
@@ -63,4 +63,45 @@ test('feedback rejects unfinished sessions, unsupported efforts, oversized notes
  for(const bad of [{...feedback,effort:'excellent'},{...feedback,note:'x'.repeat(281)},{...feedback,note:null},{...feedback,updatedOn:'invalid'},{...feedback,updatedOn:p.start}])assert.throws(()=>updateTraining(completed,first.id,{feedback:bad},first.date));
  assert.throws(()=>validateTraining({...completed,sessions:completed.sessions.map((s,i)=>i?s:{...s,feedback:{...feedback,updatedOn:p.start}})}));
  const reflected=updateTraining(completed,first.id,{feedback},first.date);assert.equal(reflected.sessions[0].feedback.note,'');
+});
+
+test('lighter week preserves completed feedback, skips, race and all other weeks',()=>{
+ let p=plan();const first=p.sessions[0],second=p.sessions[1];
+ p=updateTraining(p,first.id,{status:'completed'},first.date);
+ p=updateTraining(p,first.id,{feedback:{effort:'hard',note:'A tiring run',updatedOn:first.date}},first.date);
+ p=updateTraining(p,second.id,{status:'skipped'},first.date);
+ const before=structuredClone(p),lighter=proposeLighterWeek(p,0,first.date);
+ assert.deepEqual(p,before);assert.equal(lighter.adjustments.length,1);assert.equal(lighter.adjustments[0].sessionIds.length,2);
+ for(const s of p.sessions){const next=lighter.sessions.find(n=>n.id===s.id);if(lighter.adjustments[0].sessionIds.includes(s.id))assert.ok(next.distanceKm<s.distanceKm);else assert.deepEqual(next,s);}
+ assert.deepEqual(validateHealth({...structuredClone(emptyHealth),profile:{...emptyHealth.profile,training:lighter}}).profile.training,lighter);
+ assert.throws(()=>proposeLighterWeek(lighter,0,first.date),/already/);
+ assert.deepEqual(restoreWeekTargets(lighter,0,first.date),p);
+ const raceWeek=proposeLighterWeek(plan(),19,plan().start);assert.deepEqual(raceWeek.sessions.at(-1),plan().sessions.at(-1));
+});
+test('adjustments cannot forge distances, target race day, repeat a week or move before application',()=>{
+ const p=plan(),lighter=proposeLighterWeek(p,0,p.start),record=lighter.adjustments[0];
+ assert.throws(()=>validateTraining({...lighter,adjustments:[record,record]}));
+ assert.throws(()=>validateTraining({...lighter,adjustments:[{...record,scale:0.5}]}));
+ assert.throws(()=>validateTraining({...lighter,adjustments:[{...record,sessionIds:[p.sessions.at(-1).id]}]}));
+ assert.throws(()=>validateTraining({...lighter,sessions:lighter.sessions.map((s,i)=>i?s:{...s,distanceKm:s.distanceKm+1})}));
+ const applied=proposeLighterWeek(p,0,p.sessions[1].date);
+ assert.throws(()=>updateTraining(applied,p.sessions[1].id,{date:p.start},p.start),/adjustment date/);
+ assert.throws(()=>proposeLighterWeek(p,0,'2026-11-09'),/current or upcoming/);
+});
+test('restore cannot rewrite completed or past adjusted runs; archives retain target changes',()=>{
+ const p=plan(),lighter=proposeLighterWeek(p,0,p.start),first=lighter.sessions[0];
+ const completed=updateTraining(lighter,first.id,{status:'completed'},first.date);
+ assert.throws(()=>restoreWeekTargets(completed,0,first.date),/before any affected/);
+ assert.throws(()=>restoreWeekTargets(lighter,0,'2026-11-04'),/before any affected/);
+ const replacement=createTraining({id:'plan-next',start:p.start,experience:'starting',minutes:20,days:[1,3,5],strength:false});
+ assert.deepEqual(saveTrainingBlock(completed,[],replacement,first.date).trainingHistory[0].plan,completed);
+ assert.deepEqual(lighter.marathon,p.marathon);
+});
+test('lighter targets remain valid through recovery and later completion without changing their blueprint',()=>{
+ const p=plan(),lighter=proposeLighterWeek(p,1,p.start),id=lighter.adjustments[0].sessionIds[0];
+ const recovery=updateTraining(lighter,id,{kind:'recovery'},p.start);assert.equal(recovery.sessions.find(s=>s.id===id).distanceKm,undefined);
+ const restored=restoreWeekTargets(recovery,1,p.start);assert.equal(restored.sessions.find(s=>s.id===id).kind,'recovery');assert.equal(restored.adjustments,undefined);
+ for(let week=0;week<p.marathon.weeks.length;week++){
+  const reduced=proposeLighterWeek(p,week,p.start);for(const id of reduced.adjustments[0].sessionIds){const s=reduced.sessions.find(s=>s.id===id);assert.ok(s.distanceKm>0);assert.ok(s.distanceKm<=p.sessions.find(s=>s.id===id).distanceKm*.8+1e-6);}
+ }
 });

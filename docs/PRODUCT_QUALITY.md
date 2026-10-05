@@ -173,3 +173,9 @@ TypeScript and focused lint passed. Browser acceptance on isolated synthetic dat
 Previous goal turn: progress (focused workout view shipped). Completed sessions now support an optional perceived-effort choice and a 280-character note, with edit/remove controls and an update date. Reflections persist with legacy and marathon plans and their archives. They are self-reports available in active-plan context, not wearable observations or confirmed durable memory. Public memory policy and UI disclosure reflect this. Reopening removes the reflection with an inline explanation; removing a reflection leaves completion intact.
 
 53 training/health/storage/context tests passed, including feedback validation, storage round-trip, archive retention, unfinished-session rejection and clearing behavior. Typecheck and focused lint passed. Synthetic local browser review covered save, reload, edit prefill, remove without changing completion, add again and 390px rendering. Automatic weekly adjustment, broader runner support, AI credential repair and hosted account/integration/device acceptance remain open.
+
+## October 5 — reviewable lighter weeks
+
+Previous goal turn: progress (session reflections shipped). Active marathon weeks now offer explicit shorter-target previews and a restoration preview. Completed work and feedback, race day and later weeks are preserved. Original distance blueprints remain available; validated adjustment records support persistence and archiving. No automatic changes follow subjective feedback.
+
+38 training tests and typecheck/focused lint passed. Local synthetic browser acceptance: cancel unchanged, explicit apply, reload persistence, original-target restoration, 390px change-list review and 320px overflow bounds. New previews are invalidated by plan/date changes. Automatic follow-on adaptation, interrupted training, broader runner support, AI credentials and hosted account/integration/device acceptance remain open.

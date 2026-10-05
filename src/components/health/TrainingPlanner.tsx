@@ -5,6 +5,7 @@ import { raceCountdown } from "@/lib/health/marathon-goal";
 import MarathonPreview from "./MarathonPreview";
 import RunningAssessment from "./RunningAssessment";
 import TrainingFeedback from "./TrainingFeedback";
+import WeekAdjustment from "./WeekAdjustment";
 import type { RunningBaseline } from "@/lib/health/running-baseline";
 const weekdays=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 export default function TrainingPlanner({goal,plan,history=[],today,busy,onSave,initialSession,raceDate,baseline,onSaveBaseline}:{goal:string;history?:TrainingArchive[];baseline?:RunningBaseline;onSaveBaseline:(baseline:RunningBaseline)=>Promise<void>;raceDate?:string;initialSession?:string;plan?:TrainingPlan;today:string;busy:boolean;onSave:(plan:TrainingPlan)=>Promise<void>}) {
@@ -73,6 +74,7 @@ export default function TrainingPlanner({goal,plan,history=[],today,busy,onSave,
       {isCurrent&&<div className="plan-actions"><button disabled={locked} className="secondary" onClick={startNew}>Start a new block</button></div>}
       {isPreview&&<div className="plan-actions"><button disabled={locked} className="secondary" onClick={()=>setPreview(null)}>Edit choices</button><button disabled={locked} className="primary" onClick={()=>void persist(active)}>{locked?"Saving…":plan?"Archive current & start this plan":"Start this plan"}</button></div>}
       {active.mode==="marathon"&&<label className="plan-history-select">Plan week<select aria-label="Plan week" value={visibleWeek} onChange={e=>{setVisibleWeek(Number(e.target.value));setSelected(null);}}>{active.marathon!.weeks.map((w,i)=><option key={w.number} value={i}>Week {w.number} · {w.phase} · {w.start}</option>)}</select></label>}
+      {isCurrent&&active.mode==="marathon"&&<WeekAdjustment key={`${active.id}-${visibleWeek}`} plan={active} weekIndex={visibleWeek} today={today} busy={locked} onSave={persist}/>}
       {Array.from({length:active.mode==="marathon"?active.marathon!.weeks.length:5},(_,i)=>i).filter(week=>active.mode!=="marathon"||week===visibleWeek).map(week=>{const list=active.sessions.filter(s=>s.date>=addDays(active.start,week*7)&&s.date<=addDays(active.start,week*7+6));if(!list.length)return null;return <section className="plan-block" key={week}><h4>{week===4&&active.mode!=="marathon"?"Rescheduled sessions":`Week ${week+1}`} <span>{addDays(active.start,week*7)}</span></h4>{list.map(s=><article key={s.id} className={`plan-session plan-${s.status}`}><button ref={selected===s.id?summary:undefined} className="plan-session-summary" onClick={()=>{setSelected(s.id);setFocused(true);setMoveDate(s.date);setError("");}}><span className="plan-session-date">{new Date(s.date+"T12:00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"})}</span><strong>{sessionTitle(s,active)}</strong><span>{sessionTarget(s,active)} · {archive&&s.status==="planned"?"Unfinished when archived":s.status==="planned"&&s.date<today?"Not completed":s.status} <b aria-hidden="true">↗</b></span></button></article>)}</section>;})}
     </>}
     </>}

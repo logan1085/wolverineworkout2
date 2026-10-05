@@ -64,3 +64,11 @@ Completion, skip, recovery and within-week moves are supported. Validation prese
 ## Feedback foundation — October 5
 
 Completed sessions accept optional easy/steady/hard perceived effort and a short note. The feedback is saved with the session, retained in history, and available in current-plan agent context. It never changes scheduled distance or inserts recorded activity. The user may edit/remove it; reopening a session clears it. This supplies explicit subjective inputs for future review, but automatic adaptation is still unavailable.
+
+## Reviewable weekly distance edits — October 5
+
+A saved marathon week now offers a before/after preview for a user-requested 20% reduction, rounded down to 0.1 km. This is an explicit product editing option, not an evidence-backed readiness formula or injury treatment. The NHS injury guidance above was rechecked: pain is a reason to stop, not to use reduced mileage to continue through symptoms; the UI links that guidance.
+
+Only unfinished runs dated today or later are affected. Race day, recovery substitutions, completed/skipped/past sessions and all other weeks remain unchanged. One active reduction per week prevents accidental compounding. Original proposals remain immutable; bounded adjustment records validate the modified distances. The user can review and restore original targets before affected runs become completed, skipped or past. Feedback counts are factual context, not an automatic recommendation. Stale plan/date previews cannot apply.
+
+38 training tests pass, including reduction/restoration, feedback preservation, race exclusion, forgery rejection, archive retention, recovery handling and coverage across every week of a synthetic preparation. Mobile browser acceptance verified cancel, apply, reload and restore. This is a first manual weekly adaptation flow; automatic follow-on progression, interrupted-training logic, symptom escalation and wider supported inputs remain incomplete.
