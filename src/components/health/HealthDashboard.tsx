@@ -26,6 +26,7 @@ import DailyRoutine from "./DailyRoutine";
 import TrainingWeek from "./TrainingWeek";
 import TrainingPlanner from "./TrainingPlanner";
 import RunWelcome from "./RunWelcome";
+import MarathonWelcome from "./MarathonWelcome";
 import { readLocalHealth, commitLocalHealth, HEALTH_STORAGE_KEY, HEALTH_WRITE_LOCK } from "@/lib/health/local-health";
 import RoutineOnboarding from "./RoutineOnboarding";
 import HealthIcon from "./HealthIcon";
@@ -757,7 +758,7 @@ export default function HealthDashboard() {
         >
           {data.profile.name?.slice(0, 1).toUpperCase() || "W"}
         </button>
-        <div className="rail-label">YOUR HEALTH, CONNECTED</div>
+        <div className="rail-label">YOUR MARATHON, ONE DAY AT A TIME</div>
         <nav aria-label="Main navigation">
           {tabs.map((x, i) => (
             <button
@@ -836,7 +837,8 @@ export default function HealthDashboard() {
         )}
         {tab === "Today" && (
           <>
-            <header className="running-page-heading"><div><span className="eyebrow">YOUR RUNNING COMPANION</span><h1>Today</h1></div><span>{new Date(today+"T12:00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"})}</span></header>
+            <MarathonWelcome key={(user?.id || "device")+String(sample)} character={companion.character} goal={current.profile.goal} hasPlan={!!current.profile.training} disabled={!loaded||busy||!!historyError||sample} onSave={async goal=>{await save({...data,profile:{...data.profile,goal}});}} onPlan={()=>{setTrainingSession(undefined);setModal("training");}}/>
+            <header className="running-page-heading"><div><span className="eyebrow">ONE DAY AT A TIME</span><h2>Today’s training</h2></div><span>{new Date(today+"T12:00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"})}</span></header>
             <div className="running-overview-grid">
             <RunWelcome key={user?.id || "device"} character={companion.character} onText={()=>ask("I'd like to check in about whether I ran today and how I'm feeling. Ask me one question at a time.")} onLog={()=>setModal("activity")} onPlan={()=>{requestAnimationFrame(()=>document.getElementById("run-training")?.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"}));}} onCharacter={()=>setModal("character")} onAccount={()=>navigate("Connections")}/>
             <div id="run-training" className="run-week-overview">

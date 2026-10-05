@@ -66,3 +66,13 @@ Default Home is now a single-question welcome: “Did you run today?” Bold ita
 ## Runna-informed daily screen — September 29
 
 Reviewed https://www.runna.com/ and its displayed app previews. Follow the product UI's charcoal surfaces, compact card hierarchy, normal sans-serif headings, clear selected days, and visible training week. Preserve Wolverine's mint-green accent and approved Pip asset. Home now places the voice check-in and real training calendar together, with routines and insights disclosed below. No invented activity, streaks, or race metrics. Desktop uses two columns; mobile stacks the cards. Voice consent and text fallback remain visible.
+
+## Saywise-inspired marathon entry — October 5, 2026
+
+Reference reviewed: https://saywise.com/. Adopt its outcome-first headline, named companion introduction, single-field entry, progressive questions and direct next action. Keep Wolverine's original Pip artwork and green identity; do not copy Saywise assets, logos, statistics, endorsements or job-search promises.
+
+Positioning: “Your personal trainer for your marathon.” A warm paper-colored welcome sits above the daily dashboard. Two steps ask for a race and intention. The final action explicitly replaces the profile goal using existing validated storage and opens the real training planner. Cancel/back before saving leaves stored data unchanged. Existing plans remain intact. Profile goal remains visible in the calendar; goals saved through this flow show a returning-runner card. Sample mode disables writes.
+
+The current planner is a four-week consistency block, not a complete race-periodized program. Do not promise automatic adaptations, full marathon readiness, shared SMS/web memory, or live AI availability. Photon transport works, but generation remains blocked by the invalid OpenAI key; the replacement key destination was declined. This UI pass does not alter credentials or send messages.
+
+Next product increments: structured race/date and baseline fields; a reviewed race-specific training engine; explicit plan-change previews; verified account-to-phone pairing; consented shared context. These are future work, not shipped features.

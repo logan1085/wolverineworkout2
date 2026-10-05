@@ -1,6 +1,6 @@
-# Wolverine — Personal Health Agent
+# Wolverine — Your personal trainer for your marathon
 
-A personal health companion for daily check-ins, activity history, contextual AI conversations, and durable memory. The original workout and voice coach is preserved at `/workout`.
+A marathon-focused running companion with race-goal onboarding, a four-week consistency planner, daily check-ins, activity history, and personal memory. Full race-periodized training is not yet implemented. The original workout and voice coach is preserved at `/workout`.
 
 The `/` dashboard includes an opt-in **Memory** view, including “What Wolverine knows about me”: a dated, inspectable brief shared with the agent, with confirmed facts, recent observations, and limited source-discrepancy checks. Save, correct, expire, export, or forget facts and resume conversations. Sample chats remain separate. Device-local memory works immediately; account sync needs the Supabase migrations. See [HEALTH_AGENT.md](HEALTH_AGENT.md) for setup, validation, and current integration limits.
 

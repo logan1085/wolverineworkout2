@@ -15,7 +15,7 @@ const robotoCondensed = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Wolverine — Your personal health agent",
+  title: "Wolverine — Your personal trainer for your marathon",
   applicationName: "Wolverine",
   icons: { icon: { url: "/wolverine-icon.svg", type: "image/svg+xml" } },
   appleWebApp: {
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
   },
   description:
-    "Your daily health briefing, connected activity, and a coach that sees the whole picture.",
+    "Your personal trainer for your marathon. Set your race goal, build your training week, and track your progress with Pip.",
 };
 
 // Next 15 requires viewport to be its own export; leaving it on `metadata` was
