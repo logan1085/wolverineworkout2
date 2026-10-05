@@ -18,7 +18,9 @@ export async function GET(request: NextRequest) {
       result = "unavailable";
     }
   }
-  const response = NextResponse.redirect(new URL(`/auth/confirmed?result=${result}`, request.url), 303);
+  const destination = result === "confirmed" && params.get("flow") === "recovery"
+    ? "/auth/reset-password" : `/auth/confirmed?result=${result}`;
+  const response = NextResponse.redirect(new URL(destination, request.url), 303);
   response.headers.set("Cache-Control", "private, no-store");
   response.headers.set("Referrer-Policy", "no-referrer");
   return response;

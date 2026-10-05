@@ -2154,7 +2154,7 @@ function AuthFields({
         <input
           name="password"
           type="password"
-          minLength={8}
+          minLength={create ? 8 : undefined}
           autoComplete={create ? "new-password" : "current-password"}
           required
         />
@@ -2170,6 +2170,7 @@ function AuthFields({
         >
           {create ? "Already have an account?" : "Create an account"}
         </button>
+        {!create && <Link href="/auth/forgot-password" className="quiet-button">Forgot password?</Link>}
       </div>
     </form>
   );

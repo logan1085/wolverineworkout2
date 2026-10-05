@@ -43,4 +43,14 @@ Do not treat schema application as proof of row-level isolation. Validate with t
 - Confirm local records are not silently uploaded into an account.
 - Test production on an actual phone. Simulated viewport checks are not physical-device acceptance.
 
-The synthetic callback tests (`node --test tests/auth-callback.test.mjs`) cover redirect/error handling and result-screen authentication checks. They do not prove email delivery, provider allowlist configuration, cookie persistence or database isolation. Password recovery is not yet implemented.
+The synthetic callback tests (`node --test tests/auth-callback.test.mjs`) cover redirect/error handling and result-screen authentication checks. They do not prove email delivery, provider allowlist configuration, cookie persistence or database isolation. Password recovery is implemented but still requires hosted acceptance.
+
+## Password recovery
+
+Both sign-in forms link to `/auth/forgot-password`. The page checks account availability before accepting an email. A successful request returns the same copy for known and unknown addresses. The provider enforces request limits; the UI prevents duplicate in-flight submission and does not automatically resend.
+
+Allow the exact recovery callback `https://wolverineworkout2.vercel.app/auth/callback?flow=recovery` in the approved project's redirect configuration, plus corresponding exact local URLs if testing locally. Keep the standard recovery email confirmation URL flow. A successful code exchange returns to `/auth/reset-password`; the routing flag by itself does not authenticate anyone. The server verifies the user before rendering the password form and the client checks the user again before submitting to Supabase's authenticated `updateUser` API. Provider password policy remains authoritative.
+
+Acceptance still required: an approved test address receives a reset email, same-browser callback works, password update succeeds, the new password signs in, the old password fails, expired links recover clearly, and provider password/rate-limit policies display useful messages. No real email or password change is part of the synthetic test suite. Never store test credentials in the repo or release log.
+
+Reference: [Supabase password reset](https://supabase.com/docs/reference/javascript/auth-resetpasswordforemail).

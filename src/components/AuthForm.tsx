@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 
@@ -125,6 +126,7 @@ export default function AuthForm() {
           )}
 
           <div className="text-center">
+            {isLogin && <Link href="/auth/forgot-password" className="block py-3 text-teal-400">Forgot password?</Link>}
             <button
               type="button"
               onClick={() => {

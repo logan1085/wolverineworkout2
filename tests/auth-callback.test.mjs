@@ -30,3 +30,7 @@ async function page(result,getUser){const module={exports:{}};new Function('requ
 test('forged success query cannot show success without a verified user',async()=>{const html=await page('confirmed',async()=>null);assert.match(html,/Let’s get you signed in/);assert.doesNotMatch(html,/You’re ready/);assert.match(html,/tab=Connections/);});
 test('verified signed-in user can return to training without exposing account details',async()=>{const html=await page('confirmed',async()=>({id:'synthetic',email:'private@example.test'}));assert.match(html,/You’re ready/);assert.match(html,/tab=Today/);assert.doesNotMatch(html,/private@example/);});
 test('failure pages remain usable when the backend cannot be reached',async()=>{const html=await page('confirmed',async()=>{throw Error('private-config');});assert.match(html,/Let’s try again shortly/);assert.doesNotMatch(html,/private-config/);});
+test('recovery destination requires successful code exchange; flags alone never authenticate',async()=>{
+ assert.equal(await run('?flow=recovery',()=>{throw Error('not called');}),'https://wolverine.test/auth/confirmed?result=invalid');
+ assert.equal(await run('?flow=recovery&code=synthetic',async()=>({data:{session:{},user:{id:'u'}},error:null})),'https://wolverine.test/auth/reset-password');
+});
