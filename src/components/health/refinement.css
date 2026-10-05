@@ -791,3 +791,13 @@
 .health-app .session-focus .plan-actions button{min-height:44px;}
 .health-app .session-focus .plan-move{margin-top:24px;padding-top:20px;border-top:1px solid #39483d;}
 @media(max-width:760px){.health-app .session-focus>h3{font-size:30px;}.health-app .session-focus .plan-actions .primary{width:100%;}.health-app .session-focus .session-back{margin-bottom:16px;}}
+
+.health-app .session-feedback{padding:20px 0 24px;margin-bottom:24px;border-bottom:1px solid #39483d;}
+.health-app .session-feedback h4{font-size:22px;margin:8px 0 18px;letter-spacing:-.4px;}
+.health-app .feedback-efforts{display:flex;gap:8px;margin-bottom:18px;}
+.health-app .feedback-efforts button{flex:1;min-height:48px;border:1px solid #53624f;border-radius:10px;background:transparent;color:#d3dfcc;text-transform:capitalize;}
+.health-app .feedback-efforts button[aria-pressed=true]{background:#b8e0ca;color:#1b3528;border-color:#b8e0ca;}
+.health-app .session-feedback textarea{display:block;width:100%;margin-top:10px;min-height:90px;resize:vertical;background:#171e1a;color:#eef6ee;border:1px solid #61705c;border-radius:10px;padding:12px;font:inherit;}
+.health-app .session-feedback-effort{text-transform:capitalize;color:#d3f0de;font-weight:600;}
+.health-app .session-feedback-effort span{font-weight:400;font-size:12px;color:#b3c2b5;}
+.health-app .session-feedback-note{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6;}

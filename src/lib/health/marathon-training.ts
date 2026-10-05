@@ -1,3 +1,4 @@
+import { validateSessionFeedback } from "./training-feedback";
 import { createMarathonDraft, type MarathonDraft } from './marathon-progression';
 import { addDays, calendarDate } from './calendar-date';
 import type { TrainingPlan, TrainingSession } from './training';
@@ -19,15 +20,16 @@ export function validateMarathonTraining(value:unknown):TrainingPlan {
   const original=expected.find(x=>x.id===s?.id);
   if(!original||ids.has(s.id)||!calendarDate(s.date)||dates.has(s.date)||!['planned','completed','skipped'].includes(s.status))throw new Error('Invalid marathon session.');
   ids.add(s.id);dates.add(s.date);
+  const feedback=s.feedback!==undefined?{feedback:validateSessionFeedback(s.feedback,s.status,s.date)}:{};
   const week=draft.weeks.find(w=>w.sessions.some(x=>x.id===s.id))!;
   if(s.date<week.start||s.date>week.end)throw new Error('Keep a marathon session in its original week.');
   if(original.kind==='race'&&(s.date!==original.date||s.kind!=='run'))throw new Error('Race day stays on the saved race date.');
   if(s.kind==='recovery'){
    if(s.minutes!==10||s.distanceKm!==undefined)throw new Error('Invalid recovery session.');
-   return {id:s.id,date:s.date,kind:'recovery',minutes:10,status:s.status,runType:original.kind};
+   return {id:s.id,date:s.date,kind:'recovery',minutes:10,status:s.status,runType:original.kind,...feedback};
   }
   if(s.kind!=='run'||s.distanceKm!==original.distanceKm||s.minutes!==undefined||s.runType!==original.kind)throw new Error('Marathon distance does not match its preview.');
-  return {id:s.id,date:s.date,kind:'run',distanceKm:original.distanceKm,runType:original.kind,status:s.status};
+  return {id:s.id,date:s.date,kind:'run',distanceKm:original.distanceKm,runType:original.kind,status:s.status,...feedback};
  });
  const runs=sessions.filter(s=>s.kind==='run'&&s.status!=='skipped'),runDates=new Set(runs.map(s=>s.date));
  for(const run of runs){

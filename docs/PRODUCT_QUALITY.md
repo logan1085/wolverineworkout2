@@ -167,3 +167,9 @@ Local browser review covered 390px rendering, 320px horizontal bounds, prefilled
 Previous goal turn: progress (returning-runner home shipped). Calendar and plan session links now open a focused detail view with date, distance/time, status, instructions and actions. Returning to the plan restores focus to the selected run. Future completion has an explicit explanation; archived sessions remain read-only and unsaved previews are labelled.
 
 TypeScript and focused lint passed. Browser acceptance on isolated synthetic data covered direct calendar entry, completion/reopen, return focus, future completion disabled, collision rejection without changing the scheduled run, archived legacy details without mutation controls, 390px visual review and 320px overflow bounds. Automatic adaptation, runner coverage, working AI credentials and hosted account/integration/device acceptance remain open.
+
+## October 5 — session reflections
+
+Previous goal turn: progress (focused workout view shipped). Completed sessions now support an optional perceived-effort choice and a 280-character note, with edit/remove controls and an update date. Reflections persist with legacy and marathon plans and their archives. They are self-reports available in active-plan context, not wearable observations or confirmed durable memory. Public memory policy and UI disclosure reflect this. Reopening removes the reflection with an inline explanation; removing a reflection leaves completion intact.
+
+53 training/health/storage/context tests passed, including feedback validation, storage round-trip, archive retention, unfinished-session rejection and clearing behavior. Typecheck and focused lint passed. Synthetic local browser review covered save, reload, edit prefill, remove without changing completion, add again and 390px rendering. Automatic weekly adjustment, broader runner support, AI credential repair and hosted account/integration/device acceptance remain open.

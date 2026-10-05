@@ -38,3 +38,29 @@ test('moves stay inside original week and preserve long-run recovery spacing',()
  assert.throws(()=>updateTraining(p,first.id,{date:'2026-11-07'},p.start),/long run|consecutive/);
  const moved=updateTraining(p,first.id,{date:'2026-11-02'},p.start);assert.equal(moved.sessions.find(s=>s.id===first.id).date,'2026-11-02');
 });
+
+test('session feedback survives health storage and archiving in both plan formats',()=>{
+ const legacy=createTraining({id:'plan-legacy',start:'2026-11-02',experience:'starting',minutes:20,days:[1,3,5],strength:false});
+ for(const original of [legacy,plan()]){
+  const first=original.sessions[0];const completed=updateTraining(original,first.id,{status:'completed'},first.date);
+  const feedback={effort:'hard',note:'  Windy; slowed down on the way back.  ',updatedOn:first.date};
+  const reflected=updateTraining(completed,first.id,{feedback},first.date);
+  const expected={...feedback,note:feedback.note.trim()};
+  assert.deepEqual(reflected.sessions[0].feedback,expected);
+  const state=validateHealth({...structuredClone(emptyHealth),profile:{...emptyHealth.profile,training:reflected}});
+  assert.deepEqual(state.profile.training.sessions[0].feedback,expected);assert.equal(state.activities.length,0);
+  const replacement=createTraining({...legacy,id:'plan-replacement'});
+  assert.deepEqual(saveTrainingBlock(reflected,[],replacement,first.date).trainingHistory[0].plan.sessions[0].feedback,expected);
+  const reopened=updateTraining(reflected,first.id,{status:'planned'},first.date);
+  assert.equal(reopened.sessions[0].feedback,undefined);assert.deepEqual(reflected.sessions[0].feedback,expected);
+  const cleared=updateTraining(reflected,first.id,{feedback:undefined},first.date);assert.equal(cleared.sessions[0].status,'completed');assert.equal(cleared.sessions[0].feedback,undefined);
+ }
+});
+test('feedback rejects unfinished sessions, unsupported efforts, oversized notes and inconsistent dates',()=>{
+ const p=plan(),first=p.sessions[0],feedback={effort:'easy',note:'',updatedOn:first.date};
+ assert.throws(()=>updateTraining(p,first.id,{feedback},first.date),/completed/);
+ const completed=updateTraining(p,first.id,{status:'completed'},first.date);
+ for(const bad of [{...feedback,effort:'excellent'},{...feedback,note:'x'.repeat(281)},{...feedback,note:null},{...feedback,updatedOn:'invalid'},{...feedback,updatedOn:p.start}])assert.throws(()=>updateTraining(completed,first.id,{feedback:bad},first.date));
+ assert.throws(()=>validateTraining({...completed,sessions:completed.sessions.map((s,i)=>i?s:{...s,feedback:{...feedback,updatedOn:p.start}})}));
+ const reflected=updateTraining(completed,first.id,{feedback},first.date);assert.equal(reflected.sessions[0].feedback.note,'');
+});

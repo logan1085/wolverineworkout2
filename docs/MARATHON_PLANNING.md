@@ -60,3 +60,7 @@ Explicit activation validates the proposal against its original inputs and curre
 Completion, skip, recovery and within-week moves are supported. Validation preserves original distances, fixed race placement and recovery spacing; future completion is rejected. A recovery substitution is ten minutes of optional gentle movement, not a completed run. Weekly adaptation and wider runner coverage remain open.
 
 51 training, health, local-storage and context tests pass alongside TypeScript checking. Synthetic local-browser acceptance verified activation, persisted race/calendar after reload, calendar-to-session navigation, future completion disabled, valid rescheduling and completion.
+
+## Feedback foundation — October 5
+
+Completed sessions accept optional easy/steady/hard perceived effort and a short note. The feedback is saved with the session, retained in history, and available in current-plan agent context. It never changes scheduled distance or inserts recorded activity. The user may edit/remove it; reopening a session clears it. This supplies explicit subjective inputs for future review, but automatic adaptation is still unavailable.
