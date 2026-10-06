@@ -4,6 +4,10 @@ Current acceptance (October 5): the user reported receiving fallback replies thr
 
 Status: configured and deployed October 4, 2026; real inbound/outbound messaging acceptance is still pending. Photon project “Wolverine - Pip” (3968b5dd-56d4-4ff6-a7cc-281ef6f26e01) has a connected shared iMessage line and the owner enrolled. The webhook is registered to the production endpoint. Project credentials, webhook signing secret and the owner-only sender allowlist are stored in Vercel production; private values are not in Git. Free Upstash Redis is connected with automatic paid upgrades disabled. Production deployment `dpl_EtVyTaH5o4cuNDfwvzVC7ULpYK92` is READY and unsigned requests return HTTP 401. No real text exchange has yet been verified.
 
+## Pairing follow-up
+
+[Verified pairing design](PHOTON_PAIRING.md) specifies two-sided confirmation, scoped context access, revocation and acceptance gates. It is a design, not an implemented connection.
+
 ## Activation
 
 1. Owner completes account creation at https://app.photon.codes/ (new password and provider terms are owner actions). Choose an iMessage project/line; check pricing before purchasing anything.
