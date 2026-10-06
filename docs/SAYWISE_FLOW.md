@@ -27,3 +27,7 @@ Preserve the original race/aim persistence and explicit plan activation. Keep mo
 ## Introduction refinement
 
 The welcome page now explains the concrete outcome before asking for a race: a training week and a place to reflect. An optional “How we’ll get from here to your start line” disclosure covers race choice, reviewed plan activation, and post-run logging. It stays collapsed on mobile and is absent for returning runners. This borrows Saywise’s task-led explanation without presenting example messages as real conversations or claiming the unavailable connected services work.
+
+## Conversation continuity
+
+The agent entry now uses marathon-specific questions about the latest run, saved week and fatigue, displays the selected companion name, and references a saved race goal when present. If AI configuration is unavailable, the notice offers manual run logging and training review directly. Opening and canceling either dialog returns to the agent; a draft selected before plan review remained intact in the local browser test, with focus restored to the review button. No AI output or training recommendation was fabricated. TypeScript and focused ESLint passed.

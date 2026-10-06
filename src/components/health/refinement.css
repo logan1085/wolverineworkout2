@@ -859,3 +859,6 @@
 .health-app .marathon-how h3 {color:#365440;font-size:14px;font-weight:600;margin:0 0 8px;}
 .health-app .marathon-how p {font-size:12px;line-height:1.7;margin:0;color:#607065;}
 @media(max-width:760px){.health-app .marathon-how ol{grid-template-columns:1fr;gap:20px;}.health-app .marathon-how{padding-top:8px;}.health-app .marathon-how summary{font-size:12px;}}
+
+.health-app .agent-service-actions {display:flex;flex-wrap:wrap;gap:4px 16px;}
+.health-app .agent-service-actions button {min-height:44px;}

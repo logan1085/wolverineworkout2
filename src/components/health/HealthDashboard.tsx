@@ -975,7 +975,7 @@ export default function HealthDashboard() {
                 <p>
                   {sample
                     ? "Explore with a clearly labeled sample profile."
-                    : "Sleep, movement, recovery, and the life in between."}
+                    : "Your training, your recovery, and the road to race day."}
                 </p>
               </div>
               <button
@@ -1005,10 +1005,10 @@ export default function HealthDashboard() {
                 <div className="chat-title">
                   <button className="character-avatar" aria-label={`Change character, currently ${companion.character.title}`} onClick={() => setModal("character")}><Image src={companion.character.thumbnail} alt="" width={56} height={56} quality={95} sizes="56px"/></button>
                   <div>
-                    <h2>Wolverine</h2>
+                    <h2>{companion.character.title}</h2>
                     <p>
                       {session.ai && (session.local || user)
-                        ? "Your health agent"
+                        ? "Your marathon training companion"
                         : aiUnavailable ? "AI connection needs attention" : "Sign in to talk with your trainer"}
                     </p>
                   </div>
@@ -1026,7 +1026,7 @@ export default function HealthDashboard() {
                     New chat
                   </button>
                 </div>
-                {aiUnavailable&&<div className="agent-service-notice" role="status"><p>{aiUnavailable}</p><button className="quiet-button" onClick={()=>navigate("Connections")}>Connection status ↗</button></div>}
+                {aiUnavailable&&<div className="agent-service-notice" role="status"><p>{aiUnavailable}</p><div className="agent-service-actions"><button className="quiet-button" disabled={!loaded||busy||!!historyError||sample} onClick={()=>setModal("activity")}>Log a run</button><button className="quiet-button" disabled={!loaded||busy||!!historyError||sample} onClick={()=>{setTrainingSession(undefined);setModal("training");}}>{current.profile.training?"Review my plan":"Build a plan"}</button><button className="quiet-button" onClick={()=>navigate("Connections")}>Connection status ↗</button></div></div>}
                 <div
                   ref={chatLog}
                   onScroll={(event) => {
@@ -1042,13 +1042,13 @@ export default function HealthDashboard() {
                   {!messages.length && (
                     <div className="chat-welcome">
                       <button className="character-welcome" aria-label="Choose your character" onClick={() => setModal("character")}><Image src={companion.character.thumbnail} alt={companion.character.title} width={150} height={150} quality={95} sizes="150px"/></button>
-                      <h2>Let’s connect the dots.</h2>
-                      <p>What would make today feel a little better?</p>
+                      <h2>Let’s talk about your running.</h2>
+                      <p>{parseMarathonGoal(current.profile.goal) ? `Working toward ${parseMarathonGoal(current.profile.goal)!.race}, one conversation at a time.` : "A question about today’s run, your training week, or your race goal?"}</p>
                       <div className="prompt-chips">
                         {[
-                          "What does my recent sleep tell me?",
-                          "Help me fit movement into my day.",
-                          "I’m feeling tired. How should I adjust?",
+                          "Help me reflect on my latest run. Ask me one question at a time.",
+                          "Talk me through my saved training week.",
+                          "I’m feeling tired. Help me think through my next session.",
                         ].map((q) => (
                           <button key={q} onClick={() => setDraft(q)}>
                             {q} ↗
