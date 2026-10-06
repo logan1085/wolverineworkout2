@@ -323,3 +323,9 @@ Shipped `78d1545` (including welcome refinement `f792b49`) to GitHub branch `fea
 165 tests and TypeScript passed; after test-helper lint cleanup, full lint and all 19 affected tests passed. Hosted production build succeeded with the existing Supabase dynamic-dependency warning. Production npm audit reports zero advisories; 11 high development-tree advisories remain.
 
 Live browser verification confirmed the marathon headline, revised introduction, and expandable three-step journey. No production profile was changed. AI service remains unavailable; this release does not establish live AI, voice, cloud persistence or device integration acceptance. Screenshot: `outputs/marathon-proof/saywise-live.png` in the parent workspace.
+
+## October 5, 2026 — Marathon agent entry and useful unavailable state
+
+Feature `634eafb` is pushed and deployed: `dpl_2utyN3GV4YUuEgopJUTJBDUtTGDE` READY, aliased to https://wolverineworkout2.vercel.app/. TypeScript, focused lint and hosted production build passed. The existing Supabase dynamic-dependency build warning remains.
+
+Local synthetic-profile browser verification: both fallback actions open the existing run/plan dialogs, closing restores trigger focus, and reviewing the plan preserves the unsent prompt. Live verification confirms selected Pip identity, marathon questions, and run/plan shortcuts after the failed AI connection check. No live message was sent or production profile modified. AI, voice and cloud acceptance remain incomplete. Evidence: parent-workspace `outputs/marathon-proof/marathon-agent-live.png`.
