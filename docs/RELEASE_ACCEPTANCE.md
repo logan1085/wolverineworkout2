@@ -72,3 +72,9 @@ Mem0 is pinned to 3.3.1 for the legacy workout endpoint; add now uses `userId` a
 Targeted npm overrides pin Next's PostCSS to 8.5.29 and OpenTelemetry core to 2.11.0, retaining Next 15 and the existing Photon adapter. Remove overrides only when upstream packages resolve patched versions without them. Production-tree npm audit: zero advisories; full tree: 11 high advisories remain in development dependencies. This is dependency metadata, not evidence of exploitability or a full security review.
 
 Validation: 165 tests passed; TypeScript passed. Existing test-harness bindings were renamed to satisfy Next's module-variable lint rule. The Saywise-inspired welcome explanation was rendered and expanded in a clean local browser origin.
+
+### Development dependency follow-up — October 6, 2026
+
+Updated lockfile-only `brace-expansion` resolutions from 1.1.18 to 1.1.21 and 2.1.4 to 2.1.7 within their existing major versions. Full lint and TypeScript checks pass. Fresh runtime audit remains zero; full audit now reports ten high affected-package entries, all tracing to the single `braces <=3.0.3` advisory [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm). Registry latest and advisory both show no patched braces release.
+
+The installed path is `eslint-config-next → @next/eslint-plugin-next → fast-glob → micromatch → braces`; no direct use was found in app source or checked scripts/configuration. This limits current exposure evidence to development tooling, not a proof of general immunity. Do not downgrade Next/ESLint or suppress the advisory merely to turn the count green. Revisit when a supported upstream patch is published. This tooling-only lockfile change does not alter the deployed UI.
