@@ -329,3 +329,7 @@ Live browser verification confirmed the marathon headline, revised introduction,
 Feature `634eafb` is pushed and deployed: `dpl_2utyN3GV4YUuEgopJUTJBDUtTGDE` READY, aliased to https://wolverineworkout2.vercel.app/. TypeScript, focused lint and hosted production build passed. The existing Supabase dynamic-dependency build warning remains.
 
 Local synthetic-profile browser verification: both fallback actions open the existing run/plan dialogs, closing restores trigger focus, and reviewing the plan preserves the unsent prompt. Live verification confirms selected Pip identity, marathon questions, and run/plan shortcuts after the failed AI connection check. No live message was sent or production profile modified. AI, voice and cloud acceptance remain incomplete. Evidence: parent-workspace `outputs/marathon-proof/marathon-agent-live.png`.
+
+## October 6, 2026 — Compact mobile agent unavailable state
+
+Feature `0f12a46`, including tooling lockfile patch `7e93a1f`, deployed as `dpl_HF8FaHmt7BCbyJNan2YXNgRhJyga` (READY), aliased to the production domain. Hosted build, typecheck and focused lint passed. Live browser at 320 × 740 confirms the collapsed notice, 230px chat viewport, and document width equal to viewport. Native disclosure expansion was verified locally. This improves conversation space without concealing connection status or removing consent. Physical phone/keyboard acceptance remains open. Screenshot: parent-workspace `outputs/marathon-proof/agent-compact-mobile-live.png`.
