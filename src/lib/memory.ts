@@ -102,7 +102,7 @@ class MemoryService {
         // Store memories in parallel for better performance
         const storePromises = memories.map(memoryText =>
           client.add([{ role: 'user', content: memoryText }], {
-            user_id: userId, 
+            userId, 
             metadata: { 
               type: 'fitness_preference',
               timestamp: new Date().toISOString()
@@ -113,7 +113,7 @@ class MemoryService {
         // Also store the raw conversation for context
         storePromises.push(
           client.add([{ role: 'user', content: `User said: "${message}"` }], {
-            user_id: userId,
+            userId,
             metadata: {
               type: 'conversation',
               timestamp: new Date().toISOString()
@@ -138,7 +138,7 @@ class MemoryService {
 
       // Search for relevant memories
       const searchQuery = query || 'fitness preferences workout goals equipment time';
-      const memories = await client.search(searchQuery, { user_id: userId });
+      const memories = await client.search(searchQuery, { filters: { user_id: userId } });
 
       log.debug('Retrieved memories for user', redact(userId));
 

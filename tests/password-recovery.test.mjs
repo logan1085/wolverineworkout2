@@ -2,9 +2,9 @@ import fs from 'node:fs';
 import ts from 'typescript';
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
-const module={exports:{}};
-new Function('module','exports',ts.transpileModule(fs.readFileSync('src/lib/password-recovery.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText)(module,module.exports);
-const {requestPasswordReset,updateRecoveredPassword,RESET_REQUESTED}=module.exports;
+const loadedModule={exports:{}};
+new Function('module','exports',ts.transpileModule(fs.readFileSync('src/lib/password-recovery.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText)(loadedModule,loadedModule.exports);
+const {requestPasswordReset,updateRecoveredPassword,RESET_REQUESTED}=loadedModule.exports;
 test('email reset uses the fixed recovery callback and normalizes surrounding whitespace',async()=>{
  let sent;const result=await requestPasswordReset({resetPasswordForEmail:async(...args)=>{sent=args;return {error:null};}},' runner@example.test ','https://wolverine.test');
  assert.equal(result.ok,true);assert.deepEqual(sent,['runner@example.test',{redirectTo:'https://wolverine.test/auth/callback?flow=recovery'}]);

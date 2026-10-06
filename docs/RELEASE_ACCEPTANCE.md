@@ -64,3 +64,11 @@ At `60e5626`, all 164 unit/synthetic tests pass. Public policy regeneration has 
 All nine current catalog exports pass the pinned Khronos glTF Validator with zero errors and warnings; 54 informational findings are unused UV coordinates. `docs/studio/gltf-validation.json` records hashes and structural details. Nine existing catalog tests also pass. Blender is not installed in the current environment, so no independent visual render is claimed. Physical GPU/touch and exported appearance remain open.
 
 Installing the dev-only validator also surfaced dependency advisories. A separate fresh `npm audit --omit=dev --json` reports 26 affected production-tree packages (10 high, 16 moderate, zero critical). This counts dependency advisories, not demonstrated runtime exploits. High findings are concentrated in legacy Mem0 dependencies and PostCSS; the tool proposes major Mem0/Next updates, which must not be applied blindly. Review reachable behavior and supported patched versions, then run appropriate compatibility/build checks before release. This is a concrete release-quality gap that can be worked on independently of account approval.
+
+## Dependency remediation — October 5, 2026
+
+Mem0 is pinned to 3.3.1 for the legacy workout endpoint; add now uses `userId` and search uses `filters.user_id`. An isolated test exercises the actual installed SDK serializer with synthetic responses and confirms distinct user scopes. No live Mem0 account was contacted.
+
+Targeted npm overrides pin Next's PostCSS to 8.5.29 and OpenTelemetry core to 2.11.0, retaining Next 15 and the existing Photon adapter. Remove overrides only when upstream packages resolve patched versions without them. Production-tree npm audit: zero advisories; full tree: 11 high advisories remain in development dependencies. This is dependency metadata, not evidence of exploitability or a full security review.
+
+Validation: 165 tests passed; TypeScript passed. Existing test-harness bindings were renamed to satisfy Next's module-variable lint rule. The Saywise-inspired welcome explanation was rendered and expanded in a clean local browser origin.

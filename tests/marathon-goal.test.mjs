@@ -2,9 +2,9 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import ts from 'typescript';
-const module={exports:{}};
-new Function('exports',ts.transpileModule(fs.readFileSync('src/lib/health/marathon-goal.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText)(module.exports);
-const {parseMarathonGoal,formatMarathonGoal,RACE_AIMS}=module.exports;
+const loadedModule={exports:{}};
+new Function('exports',ts.transpileModule(fs.readFileSync('src/lib/health/marathon-goal.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText)(loadedModule.exports);
+const {parseMarathonGoal,formatMarathonGoal,RACE_AIMS}=loadedModule.exports;
 test('legacy NYC goal is recognized without rewriting the saved profile',()=>{
  assert.deepEqual(parseMarathonGoal('Training for the NYC Marathon'),{race:'the NYC Marathon',aim:'Finish feeling strong'});
  assert.equal(parseMarathonGoal('Build a sustainable routine'),null);
@@ -19,7 +19,7 @@ test('invalid or unrecognized values do not silently replace a goal',()=>{
  assert.equal(parseMarathonGoal('Preparing for NYC. My aim: unrecognized.'),null);
 });
 test('race countdown uses calendar days through DST and handles race day and past dates',()=>{
- const {raceCountdown}=module.exports;
+ const {raceCountdown}=loadedModule.exports;
  assert.equal(raceCountdown('2026-11-01','2026-10-31'),'1 day to your marathon');
  assert.equal(raceCountdown('2026-11-02','2026-10-31'),'2 days to your marathon');
  assert.equal(raceCountdown('2026-11-01','2026-11-01'),'Race day is here');
