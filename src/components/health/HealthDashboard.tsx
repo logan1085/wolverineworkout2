@@ -1026,7 +1026,7 @@ export default function HealthDashboard() {
                     New chat
                   </button>
                 </div>
-                {aiUnavailable&&<div className="agent-service-notice" role="status"><p>{aiUnavailable}</p><div className="agent-service-actions"><button className="quiet-button" disabled={!loaded||busy||!!historyError||sample} onClick={()=>setModal("activity")}>Log a run</button><button className="quiet-button" disabled={!loaded||busy||!!historyError||sample} onClick={()=>{setTrainingSession(undefined);setModal("training");}}>{current.profile.training?"Review my plan":"Build a plan"}</button><button className="quiet-button" onClick={()=>navigate("Connections")}>Connection status ↗</button></div></div>}
+                {aiUnavailable&&<details className="agent-service-notice"><summary>AI replies unavailable <span>Options</span></summary><p>{aiUnavailable}</p><div className="agent-service-actions"><button className="quiet-button" disabled={!loaded||busy||!!historyError||sample} onClick={()=>setModal("activity")}>Log a run</button><button className="quiet-button" disabled={!loaded||busy||!!historyError||sample} onClick={()=>{setTrainingSession(undefined);setModal("training");}}>{current.profile.training?"Review my plan":"Build a plan"}</button><button className="quiet-button" onClick={()=>navigate("Connections")}>Connection status ↗</button></div></details>}
                 <div
                   ref={chatLog}
                   onScroll={(event) => {

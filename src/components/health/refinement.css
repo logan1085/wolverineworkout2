@@ -862,3 +862,11 @@
 
 .health-app .agent-service-actions {display:flex;flex-wrap:wrap;gap:4px 16px;}
 .health-app .agent-service-actions button {min-height:44px;}
+
+.health-app .agent-service-notice {padding:0 18px;}
+.health-app .agent-service-notice summary {min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;list-style:none;}
+.health-app .agent-service-notice summary::-webkit-details-marker {display:none;}
+.health-app .agent-service-notice summary span {font-size:12px;text-decoration:underline;text-underline-offset:3px;}
+.health-app .agent-service-notice summary:focus-visible {outline:2px solid #a3cdb9;outline-offset:2px;border-radius:3px;}
+.health-app .agent-service-notice[open] {padding-bottom:10px;}
+@media(max-width:760px){.health-app.mobile-chat .chat-welcome .character-welcome{display:none;}.health-app.mobile-chat .chat-welcome{padding:4px 0 10px;}.health-app.mobile-chat .agent-service-notice{font-size:12px;padding-inline:12px;}}

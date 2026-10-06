@@ -55,3 +55,7 @@ Local fictional-profile acceptance: saved a 3.1-mile activity, reloaded it, veri
 ## October 5 — manual activity correction
 
 Manual rows now have an Edit action with prefilled values; imported and sample rows do not. Corrections retain identity and record count, preserve precise stored distance when its rounded display is unchanged, reject stale/ambiguous records and preserve plan references. Fictional localhost testing covered cancelled name changes, duration correction from 23 to 24 minutes, reload, updated home totals, and the linked session's updated actual duration with unchanged target and reflection. At 320px, both document and dialog remain within their widths. 390px screenshot: workspace outputs/marathon-proof/activity-edit-mobile.png. No production health records were edited.
+
+## Agent unavailable-state viewport check
+
+At 320 × 740, the expanded outage controls left roughly 106px for chat. The notice now starts as a native disclosure with a 44px minimum summary, and the redundant large welcome mascot is hidden on mobile (the selected character remains in the header). Measured chat viewport: 230px; document width 320px with no horizontal overflow; composer bottom 603px, above navigation. Expanding the notice exposes the existing log-run, review-plan and connection actions. TypeScript and focused ESLint pass. This is browser viewport evidence, not real keyboard or screen-reader acceptance.
