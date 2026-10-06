@@ -315,3 +315,11 @@ At source `9e34cc8`, the full checked-in `tests/*.test.mjs` run passes 139/139 w
 - Source `073fa07` adds Edit to manual activity rows, retaining the record ID/count and rejecting stale, missing, ambiguous or imported-record edits. Unchanged rounded distance preserves stored precision. Training targets, completion and references remain intact; a corrected date can make a link unavailable, disclosed before saving. Public MEMORY describes correction behavior.
 - 28 targeted tests pass (six new correction/precision cases), plus typecheck, focused ESLint and production build. Fictional local browser acceptance covers prefill, cancel, duration correction, reload, unchanged record count, home totals and linked-session actuals with preserved reflection/target. 320px page/dialog bounds pass; screenshot: workspace outputs/marathon-proof/activity-edit-mobile.png.
 - Deployment `dpl_37A6v8j2v9fjQ6wy8a4F5Yd7nKar` is READY at https://wolverineworkout2.vercel.app; live MEMORY.md returns HTTP 200 with the correction policy. GitHub source is pushed. No production health records were changed. Cloud persistence, live AI/provider connections and physical-device acceptance remain unverified.
+
+## October 5, 2026 — Welcome journey and production dependency patches
+
+Shipped `78d1545` (including welcome refinement `f792b49`) to GitHub branch `feat/personal-health-agent` and Vercel production. Deployment `dpl_Et3RMhDHz1WpJZgtbMMLoiwmkPiV` is READY and aliased to https://wolverineworkout2.vercel.app/.
+
+165 tests and TypeScript passed; after test-helper lint cleanup, full lint and all 19 affected tests passed. Hosted production build succeeded with the existing Supabase dynamic-dependency warning. Production npm audit reports zero advisories; 11 high development-tree advisories remain.
+
+Live browser verification confirmed the marathon headline, revised introduction, and expandable three-step journey. No production profile was changed. AI service remains unavailable; this release does not establish live AI, voice, cloud persistence or device integration acceptance. Screenshot: `outputs/marathon-proof/saywise-live.png` in the parent workspace.
