@@ -1,70 +1,31 @@
-# Interactive training track
+# Wolverine training ground QA
 
-Verified 2026-10-16 with synthetic data on loopback only.
+## Releases
 
-## Implementation
+- SVG baseline published and verified: 20b4917c339e5435c350885c9540cfe54d88d42a, Vercel dpl_ofXiUprSLiFJCD94NKJma5L2vie4, https://wolverineworkout2.vercel.app.
+- This increment adds an optional, real WebGL 3D stadium using the existing pinned Three.js dependency. It is not an SVG simulation of 3D. Blender is absent and was not installed.
+- Earlier production rollback: dpl_HF8FaHmt7BCbyJNan2YXNgRhJyga / 0f12a46380b5d6056b80ae9c99e9dc043da0762e. The published SVG baseline is the immediate rollback target for the 3D increment.
 
-The home page uses a rust-colored SVG running track as a weekly calendar. Each station is a native button for a day. The adjacent panel opens the existing workout dialog, shows separate activity records, and logs runs through the existing validated local/cloud save path. The full planner and goal editor remain available. No schema, credential, provider or API changes were made.
+## Architecture and limits
 
-The race panel shows the saved countdown and jumps to race week. A saved race date is explicitly distinguished from a scheduled workout or readiness prediction. Weekly completed sessions, all-time recorded runs and distance use existing persisted state, not an animation or fabricated progress score.
+TrainingTrack owns selected date and uses the existing health state. TrainingWorld is lazy-loaded only after Enter 3D world. The procedural renderer builds raised track lanes, stepped seating, lights, a finish gate, seven selectable day stations, completion bars and a selected-day halo. Native day buttons and the selected workout panel remain available beside/below it. Camera rotation, zoom and overview buttons support keyboard and touch. Pointer raycasting selects the same day state; it never completes a workout or saves data.
 
-The same controls work in list view. Arrow keys move day focus; Enter activates. Native buttons remain in normal tab order. Selection uses the URL's trackDay parameter and browser history. Main navigation now also honors Back/Forward.
+Scheduled stations have taller columns; completed stations turn green; logged activity is a separate amber marker. Weekly bars use the existing scheduledWeekSummary, while the finish gate displays the saved race countdown. A saved race date is not a readiness prediction. The planner still explicitly distinguishes the four-week consistency block from a race-specific plan.
 
-Blender was not found on PATH, in /Applications, or in the checked local application/tool directories. Existing Blender source assets were preserved. No software was installed. This implementation uses inline SVG and HTML, with no WebGL context, new runtime dependency, external texture, render loop or new animation. Reduced-motion styles suppress inherited transitions. The smallest layout omits the infield decoration while keeping a readable progress summary.
+There are no remote assets, dependency changes, autoplay, shadow maps or perpetual animation loops. Finite 420 ms camera transitions follow selection and respect prefers-reduced-motion and an explicit camera-motion-off control. Pixel ratio is capped at 1.5 with a 1M-pixel budget. Offscreen/hidden views stop rendering. Unmount disposes geometry, textures, materials, controls, observers and the WebGL context. Unsupported WebGL, major performance caveats and context loss return to the lightweight SVG track. List view remains available.
 
-## Verified checks
+No API, credentials, schema, cloud account or persistence model changed. Existing voice/text check-in remains available and clearly reports unavailable AI. No paid model call, real health record, migration, subscription, new account or credential change was used.
 
-- `npm run typecheck`: passed.
-- `npm run lint`: passed.
-- `SKIP_ENV_CHECK=1 npm run build`: passed, including the final edits. Home route 62.4 kB; first-load JS 208 kB. The bypass is for a credential-free LOCAL build only, not a production deployment prescription.
-- 67 tests passed across training, marathon goal, running baseline, marathon progression/training, training/activity linking, pause, weekly summaries, local storage, distance and activity editing.
-- Browser: empty first-use state displayed a goal setup action and separate plan entry.
-- Cancelled a partially entered synthetic run. Reopening showed a fresh empty form and no saved activity.
-- Saved `Synthetic track QA run`, 25 minutes, 3 km. Exactly one record appeared and the totals changed to one run / 3 km.
-- Reload preserved that activity. A later production-server restart and reload preserved the run, race goal, plan and completion.
-- Saved `Synthetic Spring Marathon`, April 18, 2027. The existing setup opened the planner without using AI.
-- Previewed and explicitly activated the existing four-week consistency block. It accurately stated that the block does not adapt to the race date or include a taper.
-- Open workout on today's station opened the correct 20-minute walk/jog instructions.
-- Mark completed changed weekly progress to 1 of 1, independently of the logged activity. Reopening showed Completed.
-- Next week opened October 23. Browser Back restored October 16 and Forward restored October 23. Back to today restored the completed workout.
-- ArrowRight from Friday moved focus to Saturday; the visible focus ring was distinct. Activation and plan flows also worked with Enter.
-- List view replaced the oval with conventional day controls without changing saved data.
-- Go to race week reached April 18 and showed the saved race date, with no invented scheduled workout.
-- Mobile CSS viewport 320: document content width 312, no horizontal overflow. Also inspected a 487 CSS pixel mobile layout. Narrow infield overlap found and fixed.
-- Desktop CSS viewport 1440: document content width 1440, no horizontal overflow. Day targets approximately 66 x 74 px. Small-screen CSS targets at least 44 x 48 px.
-- Client error log inspection returned no errors during the initial interaction pass.
-- Browser viewport override reset; local preview tab retained. Other tasks' tabs were not operated.
+## Verification on 2026-10-16
 
-Screenshots: `output/playwright/track-desktop.jpg` and `output/playwright/track-mobile.jpg`. Screenshots contain synthetic data only. A fixed mobile navigation bar may appear partway through a full-page screenshot; it is a viewport-fixed control while scrolling.
+- All 165 synthetic tests passed; typecheck, ESLint, whitespace check and production build passed.
+- Initial home route remains about 63.1 kB / 209 kB first-load JS; the Three.js world is an explicit lazy load.
+- Live SVG release: clean first-use goal setup, explicit plan preview/activation, workout completion, cancellation of an unsaved log, one saved synthetic 25-minute/3-km run, reload persistence, day-selection Back/Forward, desktop/mobile screenshots. Public alias and commit metadata matched the release.
+- Local real 3D: WebGL canvas visibly rendered the stadium on desktop and 390px mobile. Synthetic race goal and plan activation updated the scene. Opening Friday's station launched the existing 20-minute walk/jog workout. Completion updated weekly progress to 1/1 and the station color.
+- ArrowRight moved focus Friday to Saturday; Enter selected Saturday and showed its recovery day. Rotation, zoom, overview and camera-motion-off controls worked. No console errors/warnings were observed during this pass.
+- Switching to lightweight track removed the canvas and restored SVG. List view retained all seven native day controls. Reload retained the synthetic goal, plan and completed session, with lightweight view as the initial low-power default.
+- Mobile 390 CSS px: document width 382, no horizontal overflow; canvas 340 x 360. Native camera/day controls remain available.
 
-## Limits and publication gate
+Physical-device multitouch, forced GPU context loss and OS reduced-motion emulation were not performed. These paths were reviewed in code; do not claim device-lab coverage. Earlier OpenAI authentication and Supabase cloud-service issues remain unresolved and separate from local planner functionality.
 
-No physical-device touch test or reduced-motion media emulation was performed. Touch-size/layout and reduced-motion behavior were reviewed in CSS. Browser control intermittently timed out; state was inspected before retrying. A final extra cross-tab navigation-history check timed out before dispatch; day-selection Back/Forward was positively verified.
-
-Production was rechecked in Vercel: team `logan-horowitzs-projects`, account `zev1085-2681`, project `wolverineworkout2`, deployment `HF8FaHmt7BCbyJNan2YXNgRhJyga`, Ready, source `0f12a46380b5d6056b80ae9c99e9dc043da0762e`. It still says automatic production deployments target main.
-
-GitHub remote refs were read successfully: feat/personal-health-agent is `bb57e78e0cbf2eac7c14fb65c473722eeb001832`; main is `9bc8fef887f537c38ff363a8b2126375dfa4dd92`. This work is based on bb57e78 in an isolated clone, preserving the original checkout. No push, promotion or deployment occurred. The local preview deliberately has no cloud/AI credentials; it must not be published as a substitute for the configured deployment.
-
-Previously reported OpenAI 401 and Supabase service issues were not repaired or concealed. Cloud account, paid inference, real health-data and provider credential verification remain outside this local QA.
-
-## Preview
-
-The verified production build is running at http://127.0.0.1:4193.
-To restart from this clone after the server stops:
-
-```
-SKIP_ENV_CHECK=1 npm run build
-node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 4193
-```
-
-This clone currently reuses the original checkout's installed node_modules via a symlink. No dependency versions or lockfile were changed. A standalone environment should install from the existing lockfile before building.
-
-## Publication compatibility review
-
-Compared production 0f12a46, planner base bb57e78 and track 425042d. Production to base changes only PHOTON_PAIRING.md, PHOTON_SETUP.md and RELEASE_STATUS.md. The documented pairing is not implemented or activated. No runtime, dependency, API, authentication, database/schema or saved-state change exists between those two bases.
-
-The track replaces the visual weekly overview and uses the existing planner, validation and persistence. Review caught the omitted RunWelcome entry. The existing voice/text check-in is now restored in an explicit expandable section, loaded on demand. Its microphone consent, cancellation, fallback, companion picker and account links are retained. No voice or AI call was made to verify it. The home screen now explicitly reports unavailable AI while keeping plan/log actions available.
-
-After that compatibility fix, all 165 tests across every tests/*.test.mjs file passed. Typecheck, lint and diff whitespace checks also passed. Full test coverage uses mocked providers and synthetic fixtures. No paid eval was run.
-
-Rollback retained: production deployment dpl_HF8FaHmt7BCbyJNan2YXNgRhJyga, commit 0f12a46380b5d6056b80ae9c99e9dc043da0762e, deployment URL https://wolverineworkout2-pb46m8ojt-logan-horowitzs-projects.vercel.app. Use the existing Vercel Instant Rollback action to that deployment if live acceptance fails. No rollback was executed.
+Final deployment identifiers and live 3D screenshots are recorded in the release report in output/playwright after publication.
