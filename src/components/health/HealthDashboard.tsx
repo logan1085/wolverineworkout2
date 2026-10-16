@@ -28,9 +28,8 @@ import HealthObject from "./HealthObject";
 import FocusSpace from "./FocusSpace";
 import HomeCalendar from "./HomeCalendar";
 import DailyRoutine from "./DailyRoutine";
-import TrainingWeek from "./TrainingWeek";
+import TrainingTrack from "./TrainingTrack";
 import TrainingPlanner from "./TrainingPlanner";
-import RunWelcome from "./RunWelcome";
 import MarathonWelcome from "./MarathonWelcome";
 import { readLocalHealth, commitLocalHealth, HEALTH_STORAGE_KEY, HEALTH_WRITE_LOCK } from "@/lib/health/local-health";
 import RoutineOnboarding from "./RoutineOnboarding";
@@ -110,9 +109,14 @@ export default function HealthDashboard() {
     setTab(next);
     const url = new URL(window.location.href);
     url.searchParams.set("tab", next);
-    window.history.replaceState({}, "", url);
+    window.history.pushState({}, "", url);
     window.scrollTo({ top: 0, behavior: "instant" });
   }
+  useEffect(() => {
+    const restore = () => { const selected = new URLSearchParams(location.search).get("tab"); setTab(tabs.includes(selected as Tab) ? selected as Tab : "Today"); };
+    window.addEventListener("popstate", restore);
+    return () => window.removeEventListener("popstate", restore);
+  }, []);
   const [data, setData] = useState<HealthState>(emptyHealth);
   const localRevision = useRef<string|null>(null);
   const loadedOwner = useRef<string|null>(null);
@@ -133,7 +137,6 @@ export default function HealthDashboard() {
   const aiUnavailable = session.aiStatus === "authentication_failed"
     ? "AI replies are unavailable because the service connection needs repair. Your saved training still works."
     : session.aiStatus === "not_configured" ? "AI replies are not connected yet. Your saved training still works." : "";
-  const voiceUnavailable = aiUnavailable || (session.aiStatus === "checking" ? "Checking voice availability…" : !session.local && !user && !session.auth ? "Voice check-in is unavailable while account sign-in is unavailable. You can still log your run." : "");
   const [checkingAccount, setCheckingAccount] = useState(false);
   async function refreshAccountStatus() {
     setCheckingAccount(true);
@@ -854,13 +857,9 @@ export default function HealthDashboard() {
         )}
         {tab === "Today" && (
           <>
+            <TrainingTrack state={current} today={today} sample={sample} disabled={!loaded||busy||!!historyError} cloud={!!user} onPlan={id=>{setTrainingSession(id);setModal("training");}} onLog={()=>setModal("activity")} onGoal={()=>{document.getElementById("track-race-setup")?.scrollIntoView({behavior:"instant",block:"start"});document.querySelector<HTMLElement>("#track-race-setup button, #track-race-setup input")?.focus({preventScroll:true});}}/>
+            <div id="track-race-setup">
             <MarathonWelcome key={(user?.id || "device")+String(sample)} character={companion.character} goal={current.profile.goal} raceDate={current.profile.raceDate} today={today} hasPlan={!!current.profile.training} loading={!loaded} disabled={!loaded||busy||!!historyError||sample} onSave={async (goal,raceDate)=>{if(busy)throw new Error("A save is already in progress.");setBusy(true);try{await save({...data,profile:{...data.profile,goal,raceDate}});}finally{setBusy(false);}}} onPlan={()=>{setTrainingSession(undefined);setModal("training");}}/>
-            <header className="running-page-heading"><div><span className="eyebrow">ONE DAY AT A TIME</span><h2>Today’s training</h2></div><span>{new Date(today+"T12:00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"})}</span></header>
-            <div className="running-overview-grid">
-            <div id="run-training" className="run-week-overview">
-            <TrainingWeek state={current} today={today} sample={sample} disabled={!loaded || busy || !!historyError} onLog={()=>setModal("activity")} onSetup={id=>{setTrainingSession(id);setModal("training");}}/>
-            </div>
-            <RunWelcome unavailable={voiceUnavailable} key={user?.id || "device"} character={companion.character} onText={()=>ask("I'd like to check in about whether I ran today and how I'm feeling. Ask me one question at a time.")} onLog={()=>setModal("activity")} onPlan={()=>{requestAnimationFrame(()=>document.getElementById("run-training")?.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"}));}} onCharacter={()=>setModal("character")} onAccount={()=>navigate("Connections")}/>
             </div>
             <button className="run-more-detail secondary" aria-expanded={trainingOpen} onClick={()=>setTrainingOpen(!trainingOpen)}>{trainingOpen?"Hide daily details −":"Daily routine & insights +"}</button>
             {trainingOpen && <div className="run-training-content">
