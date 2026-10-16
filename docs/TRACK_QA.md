@@ -12,7 +12,7 @@ TrainingTrack owns selected date and uses the existing health state. TrainingWor
 
 Scheduled stations have taller columns; completed stations turn green; logged activity is a separate amber marker. Weekly bars use the existing scheduledWeekSummary, while the finish gate displays the saved race countdown. A saved race date is not a readiness prediction. The planner still explicitly distinguishes the four-week consistency block from a race-specific plan.
 
-There are no remote assets, dependency changes, autoplay, shadow maps or perpetual animation loops. Finite 420 ms camera transitions follow selection and respect prefers-reduced-motion and an explicit camera-motion-off control. Pixel ratio is capped at 1.5 with a 1M-pixel budget. Offscreen/hidden views stop rendering. Unmount disposes geometry, textures, materials, controls, observers and the WebGL context. Unsupported WebGL, major performance caveats and context loss return to the lightweight SVG track. List view remains available.
+There are no remote assets, dependency changes, autoplay, shadow maps or perpetual animation loops. Finite 420 ms camera transitions follow selection and respect prefers-reduced-motion and an explicit camera-motion-off control. Pixel ratio is capped at 1.5 with a 1M-pixel budget. Offscreen/hidden views stop camera animation. Resize and control events draw one frame even when the canvas is offscreen, and the bounded drawing buffer is preserved for compositor/screenshot redraws. Unmount disposes geometry, textures, materials, controls, observers and the WebGL context. Unsupported WebGL, major performance caveats and context loss return to the lightweight SVG track. List view remains available.
 
 No API, credentials, schema, cloud account or persistence model changed. Existing voice/text check-in remains available and clearly reports unavailable AI. No paid model call, real health record, migration, subscription, new account or credential change was used.
 
@@ -29,3 +29,5 @@ No API, credentials, schema, cloud account or persistence model changed. Existin
 Physical-device multitouch, forced GPU context loss and OS reduced-motion emulation were not performed. These paths were reviewed in code; do not claim device-lab coverage. Earlier OpenAI authentication and Supabase cloud-service issues remain unresolved and separate from local planner functionality.
 
 Final deployment identifiers and live 3D screenshots are recorded in the release report in output/playwright after publication.
+
+Live QA found a blank-canvas edge case after viewport changes. The follow-up preserves the bounded drawing buffer and redraws on resize/control events even when the previous intersection state was offscreen. Whole-stadium framing also accounts for narrow aspect ratios. This does not add a perpetual animation loop.

@@ -7,7 +7,7 @@ type Options = { stations: WorldStation[]; completed: number; total: number; rac
 
 /** Procedural, asset-free stadium. No background animation, shadows or remote loads. */
 export function createTrainingWorld(host: HTMLElement, options: Options): WorldController {
-  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "low-power", failIfMajorPerformanceCaveat: true });
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, preserveDrawingBuffer: true, powerPreference: "low-power", failIfMajorPerformanceCaveat: true });
   renderer.setClearColor(0xe4e6db);
   renderer.domElement.setAttribute("aria-hidden", "true");
   host.appendChild(renderer.domElement);
@@ -15,7 +15,7 @@ export function createTrainingWorld(host: HTMLElement, options: Options): WorldC
   const camera = new THREE.PerspectiveCamera(40, 1, .1, 200);
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = false; controls.enablePan = false;
-  controls.minDistance = 13; controls.maxDistance = 72;
+  controls.minDistance = 13; controls.maxDistance = 100;
   controls.minPolarAngle = .15; controls.maxPolarAngle = Math.PI * .44;
   const geometries = new Set<THREE.BufferGeometry>();
   const materials = new Set<THREE.Material>();
@@ -82,7 +82,8 @@ export function createTrainingWorld(host: HTMLElement, options: Options): WorldC
   sign(options.raceLabel,8,0,4.3,-7.8,"#354f40","#fff6df");
   for(let i=0;i<8;i++) for(let j=0;j<2;j++) box(.8,.03,.35,(i+j)%2?0x344538:0xf6efd9,-2.8+i*.8,.12,-8.2+j*.35);
   sign("WOLVERINE  /  RUNNING CLUB",11,0,2,12.8);
-  function render() { if(!disposed&&!lost&&visible&&!document.hidden)renderer.render(scene,camera); }
+  // Keep the last frame for resize/compositor snapshots. No continuous loop is used.
+  function render() { if(!disposed&&!lost&&!document.hidden)renderer.render(scene,camera); }
   function cancel() { cancelAnimationFrame(frame);frame=0; }
   function transition(position: THREE.Vector3, target: THREE.Vector3, still: boolean) {
     cancel();
@@ -91,7 +92,7 @@ export function createTrainingWorld(host: HTMLElement, options: Options): WorldC
     const step = (now:number) => { if(disposed||lost)return; const t=Math.min(1,(now-start)/420);const ease=t*t*(3-2*t);camera.position.lerpVectors(from,position,ease);controls.target.lerpVectors(aim,target,ease);controls.update();render();if(t<1)frame=requestAnimationFrame(step);else frame=0; };
     frame=requestAnimationFrame(step);
   }
-  function overview() { const narrow=host.clientWidth<500; transition(new THREE.Vector3(narrow?28:23,narrow?36:28,narrow?41:32),new THREE.Vector3(0,0,0),true); }
+  function overview() { const narrow=host.clientWidth<500; transition(new THREE.Vector3(narrow?28:23,narrow?36:28,narrow?41:32).multiplyScalar(Math.max(1,1/camera.aspect)),new THREE.Vector3(0,0,0),true); }
   function resize() { const {width,height}=host.getBoundingClientRect();if(!width||!height)return;renderer.setPixelRatio(Math.min(devicePixelRatio,1.5,Math.sqrt(1000000/(width*height))));renderer.setSize(width,height);camera.aspect=width/height;camera.updateProjectionMatrix();render(); }
   const observer=new ResizeObserver(resize);observer.observe(host);
   const intersection=new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;if(!visible)cancel();else render();});intersection.observe(host);
