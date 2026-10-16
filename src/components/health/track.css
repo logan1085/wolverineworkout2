@@ -17,3 +17,4 @@
 .track-race button{display:block}
 .health-app .track-flat .track-caption{display:block}
 @media(max-width:390px){.track-infield{display:none}.track-race strong{flex-basis:100%;margin-bottom:6px}.track-race{gap:4px 12px}.track-station{min-height:48px}.track-caption{font-size:11px}}
+.health-app .track-checkin{margin:0 0 20px}.health-app .track-service-status{color:#c1c6c0;font-size:12px;line-height:1.6;margin:10px 0 16px}.health-app #track-checkin-panel .run-welcome{max-width:none}

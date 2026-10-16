@@ -58,3 +58,13 @@ node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 4193
 ```
 
 This clone currently reuses the original checkout's installed node_modules via a symlink. No dependency versions or lockfile were changed. A standalone environment should install from the existing lockfile before building.
+
+## Publication compatibility review
+
+Compared production 0f12a46, planner base bb57e78 and track 425042d. Production to base changes only PHOTON_PAIRING.md, PHOTON_SETUP.md and RELEASE_STATUS.md. The documented pairing is not implemented or activated. No runtime, dependency, API, authentication, database/schema or saved-state change exists between those two bases.
+
+The track replaces the visual weekly overview and uses the existing planner, validation and persistence. Review caught the omitted RunWelcome entry. The existing voice/text check-in is now restored in an explicit expandable section, loaded on demand. Its microphone consent, cancellation, fallback, companion picker and account links are retained. No voice or AI call was made to verify it. The home screen now explicitly reports unavailable AI while keeping plan/log actions available.
+
+After that compatibility fix, all 165 tests across every tests/*.test.mjs file passed. Typecheck, lint and diff whitespace checks also passed. Full test coverage uses mocked providers and synthetic fixtures. No paid eval was run.
+
+Rollback retained: production deployment dpl_HF8FaHmt7BCbyJNan2YXNgRhJyga, commit 0f12a46380b5d6056b80ae9c99e9dc043da0762e, deployment URL https://wolverineworkout2-pb46m8ojt-logan-horowitzs-projects.vercel.app. Use the existing Vercel Instant Rollback action to that deployment if live acceptance fails. No rollback was executed.

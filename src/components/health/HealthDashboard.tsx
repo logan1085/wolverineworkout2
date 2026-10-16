@@ -10,6 +10,7 @@ import Image from "next/image";
 import CharacterPicker from "./CharacterPicker";
 import { useCharacter } from "./useCharacter";
 import dynamic from "next/dynamic";
+const RunWelcome = dynamic(() => import("./RunWelcome"), { ssr: false });
 const SketchStudio = dynamic(() => import("./SketchStudio"), { ssr: false });
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -96,6 +97,7 @@ export default function HealthDashboard() {
   const { user, signIn, signUp, signOut } = useAuth();
   const companion = useCharacter(user?.id);
   const [trainingOpen,setTrainingOpen]=useState(false);
+  const [checkinOpen,setCheckinOpen]=useState(false);
   const [trainingSession,setTrainingSession]=useState<string|undefined>();
   const [tab, setTab] = useState<Tab>("Today");
   const [moreOpen, setMoreOpen] = useState(false);
@@ -137,6 +139,7 @@ export default function HealthDashboard() {
   const aiUnavailable = session.aiStatus === "authentication_failed"
     ? "AI replies are unavailable because the service connection needs repair. Your saved training still works."
     : session.aiStatus === "not_configured" ? "AI replies are not connected yet. Your saved training still works." : "";
+  const voiceUnavailable = aiUnavailable || (session.aiStatus === "checking" ? "Checking voice availability…" : !session.ai ? "AI voice is unavailable right now. Your saved training still works." : !session.local && !user && !session.auth ? "Voice check-in is unavailable while account sign-in is unavailable. You can still log your run." : "");
   const [checkingAccount, setCheckingAccount] = useState(false);
   async function refreshAccountStatus() {
     setCheckingAccount(true);
@@ -861,6 +864,11 @@ export default function HealthDashboard() {
             <div id="track-race-setup">
             <MarathonWelcome key={(user?.id || "device")+String(sample)} character={companion.character} goal={current.profile.goal} raceDate={current.profile.raceDate} today={today} hasPlan={!!current.profile.training} loading={!loaded} disabled={!loaded||busy||!!historyError||sample} onSave={async (goal,raceDate)=>{if(busy)throw new Error("A save is already in progress.");setBusy(true);try{await save({...data,profile:{...data.profile,goal,raceDate}});}finally{setBusy(false);}}} onPlan={()=>{setTrainingSession(undefined);setModal("training");}}/>
             </div>
+            <section className="track-checkin" aria-label="Companion check-in">
+              <button className="run-more-detail secondary" aria-expanded={checkinOpen} aria-controls="track-checkin-panel" onClick={()=>setCheckinOpen(!checkinOpen)}>{checkinOpen?"Close companion check-in":"Voice & text check-in"}</button>
+              {!checkinOpen&&<p className="track-service-status">{session.aiStatus==="checking"?"Checking AI availability…":session.ai?"AI check-in is available. You choose what to share.":"AI replies are unavailable right now. Planning and run logging still work."}</p>}
+              <div id="track-checkin-panel">{checkinOpen&&<RunWelcome unavailable={voiceUnavailable} key={user?.id || "device"} character={companion.character} onText={()=>ask("I'd like to check in about whether I ran today and how I'm feeling. Ask me one question at a time.")} onLog={()=>setModal("activity")} onPlan={()=>{setTrainingSession(undefined);setModal("training");}} onCharacter={()=>setModal("character")} onAccount={()=>navigate("Connections")}/>}</div>
+            </section>
             <button className="run-more-detail secondary" aria-expanded={trainingOpen} onClick={()=>setTrainingOpen(!trainingOpen)}>{trainingOpen?"Hide daily details −":"Daily routine & insights +"}</button>
             {trainingOpen && <div className="run-training-content">
             {!sample && <DailyRoutine state={data} today={today} disabled={!loaded || busy || !!historyError} onSetup={()=>setModal("onboarding")} onAction={id=>{if(id==="reflection")startCheckin();else if(id==="movement")setModal("activity");else ask("Help me choose a simple wind-down ritual for tonight based on my routine and recent context.");}} onToggle={id=>void act(async()=>{const key=`${today}:routine-${id}`;await save({...data,completed:data.completed.includes(key)?data.completed.filter(c=>c!==key):[...data.completed,key].slice(-1500)});})}/>}
