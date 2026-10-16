@@ -1,20 +1,20 @@
 /* A shared running-club material and type system for every health workspace page. */
-body .health-app.club-app{--ink:#293b31;--muted:#617064;--line:#d6dccf;--lime:#93432e;background:#eef0e7;color:var(--ink)}
+body .health-app.club-app{--ink:#293b31;--muted:#52634b;--line:#d6dccf;--lime:#93432e;background:#eef0e7;color:var(--ink)}
 body .health-app.club-app .health-main{max-width:1500px;padding-top:22px;padding-bottom:100px}
 body .health-app.club-app .rail{--ink:#eef3e7;--muted:#abbcae;--line:#3c5143;--lime:#c5d9b5;background:#20392d;border-color:#344c3d}
 body .health-app.club-app .rail nav button{color:#bbccbd;border-radius:8px;min-height:46px}
 body .health-app.club-app .rail nav button.selected{background:#f4f1e4;color:#293f30;box-shadow:0 2px 8px #0d20152b}
 body .health-app.club-app .rail .profile-button{background:#2b4335;border-color:#49614e;color:#f1f1e7}
 body .health-app.club-app .rail .wordmark,body .health-app.club-app .rail-bottom a{color:#f2f2e6}
-body .health-app.club-app .topbar{color:#617064;min-height:48px;border-bottom:1px solid #d6dccf;padding-bottom:16px;margin-bottom:24px}
+body .health-app.club-app .topbar{color:#52634b;min-height:48px;border-bottom:1px solid #d6dccf;padding-bottom:16px;margin-bottom:24px}
 body .health-app.club-app .greeting{padding:8px 0 28px;align-items:center;border-bottom:1px solid #d6dccf;margin:18px 0 24px;gap:24px}
 body .health-app.club-app .greeting h1{font:400 clamp(34px,4vw,54px)/1.08 Georgia,serif;letter-spacing:-1.6px;color:#293b31;margin:10px 0 12px}
-body .health-app.club-app .greeting p:not(.eyebrow){color:#617064;font-size:14px;line-height:1.65;max-width:600px}
+body .health-app.club-app .greeting p:not(.eyebrow){color:#52634b;font-size:14px;line-height:1.65;max-width:600px}
 body .health-app.club-app .eyebrow{color:#6c755d;font-size:10px;letter-spacing:1.6px;font-weight:700}
 body .health-app.club-app :is(.panel,.metric,.chat-panel,.context-panel,.activity-summary,.journal-entry,.memory-summary,.memory-card,.memory-conversation,.memory-suggestion,.memory-empty,.memory-setting){background:#fcfaf2;color:#293b31;border:1px solid #d6dccf;border-radius:14px;box-shadow:0 3px 16px #293b3105}
 body .health-app.club-app .panel{padding:26px}
 body .health-app.club-app :is(.panel h2,.context-panel h2,.empty-state h3,.chat-welcome h2,.memory-panel h2){font-family:Georgia,serif;font-weight:400;color:#293b31}
-body .health-app.club-app :is(.subtle,.empty-state p,.empty-inline,.context-item p,.context-note,.chat-title p,.chat-welcome p,.chat-footnote,.consent,.activity-row p,.activity-row strong small,.journal-tags,.memory-chat-bar,.memory-summary p,.memory-fact p,.privacy-card li,.garmin-card>p){color:#617064}
+body .health-app.club-app :is(.subtle,.empty-state p,.empty-inline,.context-item p,.context-note,.chat-title p,.chat-welcome p,.chat-footnote,.consent,.activity-row p,.activity-row strong small,.journal-tags,.memory-chat-bar,.memory-summary p,.memory-fact p,.privacy-card li,.garmin-card>p){color:#52634b}
 body .health-app.club-app :is(.primary,.light-btn){background:#93432e;color:#fff9ee;border:1px solid #93432e;border-radius:7px;min-height:44px;box-shadow:none}
 body .health-app.club-app :is(.secondary,.quiet-button,.sample-pill,.prompt-chips button,.range-toggle button,.memory-filters button,.memory-actions button){color:#36513c;background:#f7f6ed;border:1px solid #cbd3c1;border-radius:6px;min-height:44px}
 body .health-app.club-app :is(.range-toggle button.active,.memory-filters button.active){background:#36513c;color:#fff9ee;border-color:#36513c}
@@ -36,9 +36,9 @@ body .health-app.club-app .message{background:#eff1e6;color:#293b31;border-color
 body .health-app.club-app .memory-chat-bar{background:#e8eddf;border:1px solid #d6dccf;border-radius:8px;padding:10px 14px;margin-bottom:16px}
 body .health-app.club-app input:not([type=checkbox]),body .health-app.club-app select,body .health-app.club-app textarea{background:#fffdf7;color:#293b31;border-color:#bfcab5}
 body .health-app.club-app input::placeholder,body .health-app.club-app textarea::placeholder{color:#79836f}
-body .health-app.club-app .health-dialog{background:#fcfaf2;color:#293b31;border:1px solid #cbd3c1}body .health-app.club-app .health-dialog h2{color:#293b31;font-family:Georgia,serif}body .health-app.club-app .health-dialog p{color:#617064}
+body .health-app.club-app .health-dialog{background:#fcfaf2;color:#293b31;border:1px solid #cbd3c1}body .health-app.club-app .health-dialog h2{color:#293b31;font-family:Georgia,serif}body .health-app.club-app .health-dialog p{color:#52634b}
 body .health-app.club-app .connection-badge{background:#e9edde;color:#52664b}body .health-app.club-app .connection-badge.connected{background:#d6e5cc;color:#31522d}
-body .health-app.club-app .health-main>footer,body .health-app.club-app .track-service-status{color:#617064}
+body .health-app.club-app .health-main>footer,body .health-app.club-app .track-service-status{color:#52634b}
 body .health-app.club-app :is(button,a,input,textarea,select,summary):focus-visible{outline:3px solid #2d6283;outline-offset:4px}
 body .health-app.club-app .mobile-nav{background:#20392d;border-color:#435947}body .health-app.club-app .mobile-nav button{color:#c7d5c7}body .health-app.club-app .mobile-nav button.selected{background:#eff1e3;color:#293f30}
 @media(max-width:760px){body .health-app.club-app .health-main{padding-top:18px}body .health-app.club-app .greeting{padding:0 0 22px;gap:16px;flex-wrap:wrap}body .health-app.club-app .greeting h1{font-size:36px}body .health-app.club-app .greeting>.primary{width:100%}body .health-app.club-app .panel{padding:20px}body .health-app.club-app .club-inspiration>summary{padding:14px}body .health-app.club-app .club-inspiration>summary span{display:none}body .health-app.club-app .activity-summary{padding:22px}body .health-app.club-app .topbar{margin-bottom:18px}body .health-app.club-app.mobile-chat .greeting{display:none}}
@@ -47,3 +47,10 @@ body .health-app.club-app .range-toggle{background:#d4ddc9;gap:4px}
 body .health-app.club-app .panel.memory-setting{background:#e8eddf;color:#293b31;border-color:#d6dccf}
 body .health-app.club-app .panel.memory-setting :is(p,small),body .health-app.club-app .connection-note{color:#52634b}
 body .health-app.club-app .privacy-card{background:#edf0e3;color:#293b31;border-color:#d6dccf}
+
+/* Secondary copy must remain readable on the light club surfaces. */
+body .health-app.club-app :is(.eyebrow,.club-inspiration>summary span,.chart-column span,.activity-row strong small,.distance,.workout-link p,.workout-link h2,.memory-switch,.view-disclosure>summary,.knowledge-brief small,.connection-note){color:#52634b}
+body .health-app.club-app .focus-space .eyebrow{color:#c3d5ba}
+
+body .health-app.club-app :is(.chat-compose-area,.composer,.more-menu){background:#fcfaf2;color:#293b31;border-color:#d6dccf}
+body .health-app.club-app :is(.memory-chat-bar span,.chat-title p,.consent,.chat-footnote){color:#52634b}

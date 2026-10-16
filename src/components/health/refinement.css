@@ -188,7 +188,7 @@
 .health-app .mobile-menu :is(button,a) { background:#1c1e22; border-color:#373b42; color:#f5f6f7; }
 .health-app .mobile-menu :is(button,a) > span,.health-app .mobile-menu small { color:#aab0b9; }
 .health-app :is(.chat-welcome p,.garmin-card > p,.privacy-card li,.connection-list p) { color:#aab0b9; }
-.health-app .connection-note { color:#aab0b9 !important; }
+.health-app .connection-note { color:var(--muted); }
 .health-app :is(.data-scopes span,.connection-badge) { background:#272b30; color:#97dfc2; border-color:#373b42; }
 .health-app .strava-answer { background:#1c1e22; }
 .health-app :is(.garmin-card h2,.privacy-card h2,.strava-card h2 em) { font-family:var(--font-inter),sans-serif; font-style:normal; font-weight:500; }
@@ -647,8 +647,8 @@
 /* Race-first, conversation-led welcome. */
 .health-app .marathon-welcome {display:grid;grid-template-columns:1.1fr 1fr;gap:48px;align-items:center;background:#f1f3e9;color:#19362b;border:1px solid #d8dfd0;border-radius:24px;padding:52px 42px;margin:12px 0 38px;overflow:hidden;}
 .health-app .marathon-eyebrow {font-size:10px;letter-spacing:1.6px;font-weight:600;color:#587060;}
-.health-app .marathon-promise h1 {font-family:Georgia,serif;font-size:clamp(36px,4.3vw,62px);line-height:1.03;letter-spacing:-2.3px;font-weight:400;margin:26px 0 22px;color:#19362b;}
-.health-app .marathon-promise h1 em {font-weight:400;color:#447d52;}
+.health-app .marathon-promise h2 {font-family:Georgia,serif;font-size:clamp(36px,4.3vw,62px);line-height:1.03;letter-spacing:-2.3px;font-weight:400;margin:26px 0 22px;color:#19362b;}
+.health-app .marathon-promise h2 em {font-weight:400;color:#447d52;}
 .health-app .marathon-promise>p {font-size:14px;line-height:1.8;color:#607065;}
 .health-app .marathon-path {display:flex;align-items:center;gap:10px;margin-top:44px;font-size:10px;color:#6b806e;}
 .health-app .marathon-path span {display:flex;gap:7px;white-space:nowrap;}
@@ -683,9 +683,9 @@
 .health-app .marathon-saved>p {font-size:13px;line-height:1.7;color:#607065;margin-bottom:22px;overflow-wrap:anywhere;}
 .health-app .running-page-heading h2 {font-size:25px;letter-spacing:-.7px;margin:8px 0;}
 @media(max-width:1100px){.health-app .marathon-welcome {gap:26px;padding:34px 26px;}.health-app .marathon-path {gap:6px;font-size:9px;}}
-@media(max-width:760px){.health-app .marathon-welcome {grid-template-columns:1fr;gap:28px;padding:30px 18px 20px;border-radius:18px;margin:8px 0 28px;}.health-app .marathon-promise{text-align:center;}.health-app .marathon-promise h1{font-size:43px;letter-spacing:-1.8px;margin:20px 0 16px;}.health-app .marathon-promise>p{font-size:13px;}.health-app .marathon-path{margin:24px auto 0;max-width:310px;}.health-app .marathon-conversation{padding:20px;}.health-app .marathon-agent img{width:62px;height:62px;}.health-app .marathon-conversation h2{font-size:22px;}.health-app .marathon-eyebrow{font-size:8px;letter-spacing:1.1px;}.health-app .marathon-suggestions button{min-height:42px;}.health-app .desktop-break{display:none;}}
-@media(max-width:360px){.health-app .marathon-promise h1{font-size:35px;}.health-app .marathon-conversation{padding:16px;}.health-app .marathon-agent strong{font-size:17px;}}
-@media(max-width:760px){.health-app .marathon-welcome{padding-top:24px;gap:20px;}.health-app .marathon-promise h1{font-size:36px;line-height:1.08;margin:16px 0 12px;}.health-app .marathon-promise h1 br{display:none;}.health-app .marathon-promise>p{font-size:12px;line-height:1.6;}.health-app .marathon-path{display:none;}.health-app .marathon-agent{padding-bottom:14px;margin-bottom:16px;}.health-app .marathon-conversation{padding:18px;}}
+@media(max-width:760px){.health-app .marathon-welcome {grid-template-columns:1fr;gap:28px;padding:30px 18px 20px;border-radius:18px;margin:8px 0 28px;}.health-app .marathon-promise{text-align:center;}.health-app .marathon-promise h2{font-size:43px;letter-spacing:-1.8px;margin:20px 0 16px;}.health-app .marathon-promise>p{font-size:13px;}.health-app .marathon-path{margin:24px auto 0;max-width:310px;}.health-app .marathon-conversation{padding:20px;}.health-app .marathon-agent img{width:62px;height:62px;}.health-app .marathon-conversation h2{font-size:22px;}.health-app .marathon-eyebrow{font-size:8px;letter-spacing:1.1px;}.health-app .marathon-suggestions button{min-height:42px;}.health-app .desktop-break{display:none;}}
+@media(max-width:360px){.health-app .marathon-promise h2{font-size:35px;}.health-app .marathon-conversation{padding:16px;}.health-app .marathon-agent strong{font-size:17px;}}
+@media(max-width:760px){.health-app .marathon-welcome{padding-top:24px;gap:20px;}.health-app .marathon-promise h2{font-size:36px;line-height:1.08;margin:16px 0 12px;}.health-app .marathon-promise h2 br{display:none;}.health-app .marathon-promise>p{font-size:12px;line-height:1.6;}.health-app .marathon-path{display:none;}.health-app .marathon-agent{padding-bottom:14px;margin-bottom:16px;}.health-app .marathon-conversation{padding:18px;}}
 
 .health-app .marathon-countdown {border-left:3px solid #87a779;padding:4px 0 4px 14px;margin:0 0 22px;}
 .health-app .marathon-countdown strong {display:block;font-size:16px;color:#284e38;}
@@ -751,7 +751,7 @@
 .health-app .marathon-return>img{width:80px;height:80px;object-fit:contain;flex:none;}
 .health-app .marathon-return-copy{min-width:0;flex:1;}
 .health-app .marathon-return .eyebrow{color:#526653;font-size:10px;letter-spacing:1.2px;}
-.health-app .marathon-return h1{font-size:30px;line-height:1.15;letter-spacing:-1px;margin:7px 0 8px;overflow-wrap:anywhere;color:#19362b;}
+.health-app .marathon-return h2{font-size:30px;line-height:1.15;letter-spacing:-1px;margin:7px 0 8px;overflow-wrap:anywhere;color:#19362b;}
 .health-app .marathon-return p{margin:0;font-size:13px;line-height:1.6;color:#526653;}
 .health-app .marathon-return p strong{font-weight:600;color:#294b38;}
 .health-app .marathon-return-actions{display:flex;flex-direction:column;align-items:center;gap:4px;}
@@ -761,7 +761,7 @@
 @media(max-width:760px){
  .health-app .marathon-return{display:grid;grid-template-columns:52px minmax(0,1fr);gap:12px;padding:18px 16px;margin:8px 0 24px;border-radius:18px;}
  .health-app .marathon-return>img{width:52px;height:62px;}
- .health-app .marathon-return h1{font-size:25px;letter-spacing:-.7px;}
+ .health-app .marathon-return h2{font-size:25px;letter-spacing:-.7px;}
  .health-app .marathon-return .eyebrow{font-size:8px;letter-spacing:.8px;}
  .health-app .marathon-return-actions{grid-column:1/-1;display:flex;flex-direction:row;justify-content:space-between;gap:8px;}
  .health-app .marathon-return-actions button{font-size:11px;padding:10px;}

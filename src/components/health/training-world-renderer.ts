@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { fetchTrainingWorldAsset } from "./training-world-asset";
 
 export type WorldStation = { label: string; status: string; completed: boolean; scheduled: boolean; logged: boolean };
 export type WorldController = { select: (index: number, still: boolean) => void; move: (action: string) => void; dispose: () => void };
@@ -46,8 +47,7 @@ export function createTrainingWorld(host: HTMLElement, options: Options): WorldC
   const assetRequest = new AbortController();
   // The export is validated to contain embedded buffers/textures only.
   // Static baked lighting uses one unlit mesh; live markers remain independently selectable.
-  fetch("/models/training/training-ground-v1.glb", {signal:assetRequest.signal})
-    .then(response => { if(!response.ok)throw new Error("Stadium asset unavailable");return response.arrayBuffer(); })
+  fetchTrainingWorldAsset(assetRequest.signal)
     .then(buffer => new GLTFLoader().parseAsync(buffer,""))
     .then(gltf => {
       const loadedGeometries = new Set<THREE.BufferGeometry>();

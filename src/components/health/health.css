@@ -1175,7 +1175,7 @@ button:disabled {
 }
 .connection-note {
   font-size: 12px !important;
-  color: #a4b897 !important;
+  color: var(--muted);
   line-height: 1.8;
   display: block;
   margin-top: 17px;
