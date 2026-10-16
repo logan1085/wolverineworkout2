@@ -38,6 +38,7 @@ import HealthIcon from "./HealthIcon";
 import Modal from "./Modal";
 import "./sketch.css";
 import "./refinement.css";
+import "./club.css";
 import MemoryPanel from "./MemoryPanel";
 import StravaConnection from "./StravaConnection";
 import { useMobileViewport } from "./useMobileViewport";
@@ -767,7 +768,7 @@ export default function HealthDashboard() {
           dialogTrigger.current = event.target.closest<HTMLElement>("button");
         }
       }}
-      className={`health-app ${tab === "Today" ? `run-home ${trainingOpen ? "training-open" : ""}` : ""} ${tab === "Your agent" ? "mobile-chat" : ""} ${keyboardOpen ? "keyboard-open" : ""}`}
+      className={`health-app club-app ${tab === "Today" ? `run-home ${trainingOpen ? "training-open" : ""}` : ""} ${tab === "Your agent" ? "mobile-chat" : ""} ${keyboardOpen ? "keyboard-open" : ""}`}
     >
       <aside className="rail">
         <Link className="wordmark" href="/" aria-label="Wolverine home">
@@ -1282,7 +1283,7 @@ export default function HealthDashboard() {
               </button>
             </div>
 
-            <FocusSpace kind="movement" onAsk={ask}/>
+            <details className="club-inspiration"><summary>Movement inspiration <span>Optional companion guidance</span></summary><FocusSpace kind="movement" onAsk={ask}/></details>
             <div className="activity-summary">
               <div>
                 <span className="eyebrow">
@@ -1408,7 +1409,7 @@ export default function HealthDashboard() {
                 ＋ Daily check-in
               </button>
             </div>
-            <FocusSpace kind="reflection" onAsk={ask}/>
+            <details className="club-inspiration"><summary>Reflection prompts <span>Optional companion guidance</span></summary><FocusSpace kind="reflection" onAsk={ask}/></details>
             <div className="journal-grid">
               <section className="panel">
                 <div className="section-heading">

@@ -1,0 +1,13 @@
+{
+  "authoring": "Blender",
+  "blenderVersion": "4.5.0",
+  "source": "assets/blender/training/training-ground-v1.blend",
+  "model": "/models/training/training-ground-v1.glb",
+  "poster": "/models/training/training-ground-poster-v1.png",
+  "lighting": "Cycles combined bake, 2048x2048 atlas, KHR_materials_unlit",
+  "triangles": 39912,
+  "bytes": 1464780,
+  "sha256": "f6f7dba7ea18bc4f25e87fd1606576a43aea7e5d5868498196abc003b5d04a38",
+  "runtimeDrawMeshes": 1,
+  "externalAssets": false
+}

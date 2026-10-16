@@ -25,16 +25,16 @@ export default function TrainingWorld(props: TrainingWorldProps) {
       controller.current = createTrainingWorld(host.current, {
         ...latest.current,
         onSelect: index => latest.current.onSelect(index),
+        onReady: () => setReady(true),
         onLost: () => { setReady(false); setError(true); latest.current.onFallback(); },
       });
-      setReady(true);
     } catch { setError(true); latest.current.onFallback(); }
     return () => { controller.current?.dispose(); controller.current = null; };
   }, [sceneKey]);
   useEffect(() => { controller.current?.select(props.selected, still); }, [props.selected, still, sceneKey]);
   return <div className="training-world">
-    <div className="world-topline"><span className="track-kicker">YOUR 3D TRAINING GROUND</span><span role="status">{error ? "3D unavailable · day controls still work" : ready ? "3D ready · renders only when you interact" : "Opening the stadium…"}</span></div>
-    <div ref={host} className="world-canvas" role="img" aria-label="Interactive three-dimensional running stadium. Seven day stations correspond to the buttons below. Select a day to move the camera and read its workout." />
+    <div className="world-topline"><span className="track-kicker">BLENDER-AUTHORED TRAINING GROUND</span><span role="status">{error ? "3D unavailable · day controls still work" : ready ? "3D ready · renders only when you interact" : "Loading the baked stadium…"}</span></div>
+    <div ref={host} className={`world-canvas ${ready?"world-ready":"world-loading"}`} role="img" aria-label="Interactive three-dimensional running stadium. Seven day stations correspond to the buttons below. Select a day to move the camera and read its workout." />
     {error ? <div className="world-error"><p>This device could not keep a 3D view running. Your training is safe.</p><button onClick={props.onFallback}>Use lightweight track</button></div> : <>
       <div className="world-controls" role="group" aria-label="3D camera controls">
         <button disabled={!ready} onClick={() => controller.current?.move("left")}>Rotate left</button>
