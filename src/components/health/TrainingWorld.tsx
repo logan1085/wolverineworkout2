@@ -8,7 +8,7 @@ export type TrainingWorldProps = {
   raceLabel: string; onSelect: (index: number) => void; onFallback: () => void;
 };
 
-/** Loaded only after an explicit request. The conventional day controls stay outside this canvas. */
+/** The landing scene loads automatically; lightweight and list views remain available. The conventional day controls stay outside this canvas. */
 export default function TrainingWorld(props: TrainingWorldProps) {
   const host = useRef<HTMLDivElement>(null);
   const controller = useRef<WorldController | null>(null);

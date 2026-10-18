@@ -30,6 +30,7 @@ import FocusSpace from "./FocusSpace";
 import HomeCalendar from "./HomeCalendar";
 import DailyRoutine from "./DailyRoutine";
 import TrainingTrack from "./TrainingTrack";
+import RunningHistory from "./RunningHistory";
 import TrainingPlanner from "./TrainingPlanner";
 import MarathonWelcome from "./MarathonWelcome";
 import { readLocalHealth, commitLocalHealth, HEALTH_STORAGE_KEY, HEALTH_WRITE_LOCK } from "@/lib/health/local-health";
@@ -862,6 +863,7 @@ export default function HealthDashboard() {
         {tab === "Today" && (
           <>
             <TrainingTrack state={current} today={today} sample={sample} disabled={!loaded||busy||!!historyError} cloud={!!user} onPlan={id=>{setTrainingSession(id);setModal("training");}} onLog={()=>setModal("activity")} onGoal={()=>{document.getElementById("track-race-setup")?.scrollIntoView({behavior:"instant",block:"start"});document.querySelector<HTMLElement>("#track-race-setup button, #track-race-setup input")?.focus({preventScroll:true});}}/>
+            <RunningHistory activities={current.activities} today={today} sample={sample} loading={!loaded||!!historyError} onLog={()=>setModal("activity")} onConnections={()=>navigate("Connections")}/>
             <div id="track-race-setup">
             <MarathonWelcome key={(user?.id || "device")+String(sample)} character={companion.character} goal={current.profile.goal} raceDate={current.profile.raceDate} today={today} hasPlan={!!current.profile.training} loading={!loaded} disabled={!loaded||busy||!!historyError||sample} onSave={async (goal,raceDate)=>{if(busy)throw new Error("A save is already in progress.");setBusy(true);try{await save({...data,profile:{...data.profile,goal,raceDate}});}finally{setBusy(false);}}} onPlan={()=>{setTrainingSession(undefined);setModal("training");}}/>
             </div>
