@@ -1,5 +1,5 @@
 /* A shared running-club material and type system for every health workspace page. */
-body .health-app.club-app{--ink:#293b31;--muted:#52634b;--line:#d6dccf;--lime:#93432e;background:#eef0e7;color:var(--ink)}
+body .health-app.club-app{--club-accent:#985535;--club-accent-hover:#7c4228;--ink:#293b31;--muted:#52634b;--line:#d6dccf;--lime:var(--club-accent);background:#eef0e7;color:var(--ink)}
 body .health-app.club-app .health-main{max-width:1500px;padding-top:22px;padding-bottom:100px}
 body .health-app.club-app .rail{--ink:#eef3e7;--muted:#abbcae;--line:#3c5143;--lime:#c5d9b5;background:#20392d;border-color:#344c3d}
 body .health-app.club-app .rail nav button{color:#bbccbd;border-radius:8px;min-height:46px}
@@ -15,7 +15,7 @@ body .health-app.club-app :is(.panel,.metric,.chat-panel,.context-panel,.activit
 body .health-app.club-app .panel{padding:26px}
 body .health-app.club-app :is(.panel h2,.context-panel h2,.empty-state h3,.chat-welcome h2,.memory-panel h2){font-family:Georgia,serif;font-weight:400;color:#293b31}
 body .health-app.club-app :is(.subtle,.empty-state p,.empty-inline,.context-item p,.context-note,.chat-title p,.chat-welcome p,.chat-footnote,.consent,.activity-row p,.activity-row strong small,.journal-tags,.memory-chat-bar,.memory-summary p,.memory-fact p,.privacy-card li,.privacy-card>p,.garmin-card>p){color:#52634b}
-body .health-app.club-app :is(.primary,.light-btn){background:#93432e;color:#fff9ee;border:1px solid #93432e;border-radius:7px;min-height:44px;box-shadow:none}
+body .health-app.club-app :is(.primary,.light-btn){background:var(--club-accent);color:#fff9ee;border:1px solid var(--club-accent);border-radius:7px;min-height:44px;box-shadow:none}
 body .health-app.club-app :is(.secondary,.quiet-button,.sample-pill,.prompt-chips button,.range-toggle button,.memory-filters button,.memory-actions button){color:#36513c;background:#f7f6ed;border:1px solid #cbd3c1;border-radius:6px;min-height:44px}
 body .health-app.club-app :is(.range-toggle button.active,.memory-filters button.active){background:#36513c;color:#fff9ee;border-color:#36513c}
 body .health-app.club-app .activity-summary{padding:26px 30px;margin-bottom:24px;background:#e3e9d9}
@@ -54,3 +54,7 @@ body .health-app.club-app .focus-space .eyebrow{color:#c3d5ba}
 
 body .health-app.club-app :is(.chat-compose-area,.composer,.more-menu){background:#fcfaf2;color:#293b31;border-color:#d6dccf}
 body .health-app.club-app :is(.memory-chat-bar span,.chat-title p,.consent,.chat-footnote){color:#52634b}
+
+/* Wolverine portfolio accent: loganzev.com/projects/wolverine (--case-ink). */
+body .health-app.club-app :is(.marathon-primary,.track-preview-action button,.range-toggle button.active,.memory-filters button.active,.track-station[aria-pressed=true]){background:var(--club-accent);border-color:var(--club-accent);color:#fff9ee}
+body .health-app.club-app :is(.primary,.light-btn,.marathon-primary,.track-primary,.track-preview-action button):not(:disabled):hover{background:var(--club-accent-hover);border-color:var(--club-accent-hover)}
