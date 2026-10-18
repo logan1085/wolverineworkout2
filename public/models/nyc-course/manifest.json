@@ -1,0 +1,18 @@
+{
+  "title": "NYC Marathon course schematic",
+  "authoringTool": "Blender 4.5.0",
+  "renderEngine": "Cycles",
+  "source": "assets/blender/nyc-course/nyc-course-schematic.blend",
+  "builder": "scripts/blender/build_nyc_course.py",
+  "image": "nyc-course-schematic.png",
+  "sha256": "02b36b1ac80c8a3442ba25ce6232b2442767c90fb60eb30e4ad68611f1c1fa34",
+  "dimensions": [
+    1800,
+    1400
+  ],
+  "scope": "Original stylized diorama, not geographic or elevation data. Landmark sequence checked against NYRR 2026 map.",
+  "courseSource": "https://cms.prod.nyrr.org/api/document-files/file/TCSNYCM26_Map_Course_090226_RD3.pdf",
+  "checked": "2026-10-18",
+  "archiveBranch": "archive/marathon-training-2026-10-18",
+  "archiveCommit": "3b55840c17b943f6ad22a3e45a2c977e8c82bc4a"
+}

@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { AuthProvider } from "@/contexts/AuthContext";
+import SiteProviders from "@/components/SiteProviders";
 
 const inter = localFont({
   variable: "--font-inter",
@@ -15,7 +15,7 @@ const robotoCondensed = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Wolverine — Your personal trainer for your marathon",
+  title: "Wolverine — NYC Marathon Course Explorer",
   applicationName: "Wolverine",
   icons: { icon: { url: "/wolverine-icon.svg", type: "image/svg+xml" } },
   appleWebApp: {
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
   },
   description:
-    "Your personal trainer for your marathon. Set your race goal, build your training week, and track your progress with Pip.",
+    "Explore the NYC Marathon through a Blender-rendered course schematic, clickable landmarks and official NYRR race-day notes.",
 };
 
 // Next 15 requires viewport to be its own export; leaving it on `metadata` was
@@ -34,7 +34,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#111b17",
+  themeColor: "#f7f5ef",
   interactiveWidget: "resizes-content",
 };
 
@@ -48,7 +48,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${robotoCondensed.variable} antialiased`}
       >
-        <AuthProvider>{children}</AuthProvider>
+        <SiteProviders>{children}</SiteProviders>
       </body>
     </html>
   );
